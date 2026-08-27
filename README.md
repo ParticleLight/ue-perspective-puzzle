@@ -64,7 +64,6 @@ Source/<Module>/Private/PerspectivePuzzleManager.cpp
 
 - [实现笔记：场景、材质、检测与机关](docs/透视拼接谜题技术文档.md)
 - [代码导读：PerspectivePuzzleManager](docs/PerspectivePuzzleManager代码详解.md)
-- [视频口播文案](docs/视频文案_UE透视拼接检测.md)
 
 ## License
 
