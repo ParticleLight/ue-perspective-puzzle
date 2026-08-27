@@ -1,107 +1,70 @@
 # UE C++ 透视拼接谜题检测
 
-用 Unreal Engine 5 C++ 实现《鬼泣5 / 异环》式**透视拼接谜题**的可复用检测组件。
+一个 UE5 C++ 透视拼接谜题的实现记录与可复用检测组件。
 
-玩家从特定位置观察分布在不同深度物体上的图案碎片；当碎片在视野中拼合、玩家视线对准图案并持续保持一段时间后，谜题触发成功。示例包含**动态发光反馈**和**蓝图开门机关**的接入思路。
+碎片被放在不同深度的物体上。玩家位于标定位置、视线指向图案中心并保持一段时间后，`APerspectivePuzzleManager` 触发 `OnPuzzleSolved`。项目使用 Decal 显示碎片，用动态材质实例驱动发光。
 
-> 本仓库提供检测代码与中文技术文档，**不包含完整 UE 工程、第三方 Fab 资产、贴图或关卡文件**。
+> 仓库只包含 C++ 代码和文档，不包含完整 UE 工程、关卡、贴图或 Fab 资产。
 
-## 实现效果
+## 机制
 
-- 多个图案碎片分布在柱子、墙面等不同深度的物体上。
-- 玩家站到正确位置时，碎片在透视视角中对齐。
-- 图案发光会随持续对齐进度逐渐增强。
-- 视线移开、低头或站位偏离时进度清零。
-- 持续对齐指定时间后触发 `OnPuzzleSolved` 蓝图事件，可连接开门、音效、动画等机关。
+判定分三步：
 
-## 检测原理
+1. **位置**：标定时记录每个碎片相对于观察点的方向和距离。运行时对每个碎片重新计算，方向用点积比较，距离用绝对差比较；通过碎片的比例达到阈值才算位置有效。
+2. **视线**：相机前向向量与“标定点到图案几何中心”的方向做点积。位置正确但低头或转头不会通过。
+3. **持续时间**：对齐状态持续到 `HoldDuration` 后触发 `OnPuzzleSolved`。中断时进度归零。
 
-检测由三层组成：
+这不是屏幕图像识别，也不依赖具体贴图内容；它只比较相机与碎片之间的几何关系。
 
-1. **位置检测**：标定时记录每个碎片相对正确观察点的方向与距离；运行时重新计算相机到每个碎片的方向与距离，分别比较。
-   - 方向使用单位向量点积判断；
-   - 距离使用绝对差判断；
-   - 按通过碎片比例得出位置是否有效。
-2. **视线检测**：相机前向向量与「标定原点 → 所有碎片几何中心」的目标方向做点积，防止玩家站对位置却低头或转头也触发。
-3. **持续时间检测**：只有连续保持对齐达到 `HoldDuration`，才会触发成功事件。
+## 接入
 
-详细解释请看 [透视拼接谜题技术文档](docs/透视拼接谜题技术文档.md)。
+### 代码
 
-## 目录
+复制以下文件到项目模块：
 
 ```text
-.
-├── Source/CPP1/
-│   ├── Public/PerspectivePuzzleManager.h     # 组件声明与可调参数
-│   └── Private/PerspectivePuzzleManager.cpp  # 标定、检测、发光实现
-├── docs/
-│   ├── 透视拼接谜题技术文档.md                 # 从零搭建完整机制
-│   ├── PerspectivePuzzleManager代码详解.md    # .h / .cpp 逐段解析
-│   └── 视频文案_UE透视拼接检测.md              # 配套技术视频口播文案
-├── LICENSE
-└── README.md
+Source/<Module>/Public/PerspectivePuzzleManager.h
+Source/<Module>/Private/PerspectivePuzzleManager.cpp
 ```
 
-## 快速接入
+将 `CPP1_API` 替换为项目模块导出宏。例如模块名为 `MyGame` 时，替换为 `MYGAME_API`。
 
-### 1. 导入代码
+### 场景配置
 
-将以下两个文件复制到你的 UE C++ 项目模块中：
+1. 以 `APerspectivePuzzleManager` 创建蓝图，例如 `BP_PuzzleManager`，放到正确观察位置的地面。
+2. 在 **Puzzle → Fragment Actors** 中填入全部碎片 Actor。当前实现优先处理带 `UDecalComponent` 的 Actor，也兼容静态网格体组件。
+3. 设置 `Camera Height Offset`，使 Manager 的标定原点与玩家相机高度一致。
+4. 点击 **Calibrate** 记录当前观察点；运行时 `BeginPlay` 也会自动标定一次。
+5. 在蓝图中实现 `OnPuzzleSolved`，连接门、音效或其他关卡逻辑。
 
-```text
-Source/<你的模块名>/Public/PerspectivePuzzleManager.h
-Source/<你的模块名>/Private/PerspectivePuzzleManager.cpp
-```
+### 发光（可选）
 
-将代码中的 `CPP1_API` 替换为你的项目模块导出宏，例如项目模块叫 `MyGame`，则替换为 `MYGAME_API`。重新编译项目。
+碎片母材质需要一个名为 `GlowIntensity` 的 Scalar Parameter。将它用于 **EmissiveColor**，不要直接叠到 BaseColor；对齐进度会写入 0 到 1。需要光晕时，在 Post Process Volume 中启用 Bloom。
 
-### 2. 创建蓝图
+## 参数起点
 
-1. 在内容浏览器中，以 `PerspectivePuzzleManager` 为父类创建蓝图，例如 `BP_PuzzleManager`。
-2. 把该蓝图放进关卡，并摆在正确观察位置的地面上。
-3. 在 Details 面板的 **Puzzle → Fragment Actors** 中，依次拖入所有图案碎片的 Actor（如 Decal Actor）。
-4. 把 `Camera Height Offset` 设为玩家相机相对地面的高度。
-5. 点击 **Calibrate** 按钮记录正确观察点。
+| 参数 | 起点 | 说明 |
+|---|---:|---|
+| `DotProductThreshold` | `0.98` | 相机位置相对碎片方向的容差 |
+| `DistanceTolerance` | `100` | 相机到碎片距离的容差（cm） |
+| `ViewAngleThreshold` | `0.98 ~ 0.99` | 相机前向与图案中心方向的容差 |
+| `RequiredPassRate` | `0.8` | 需要通过的碎片比例 |
+| `HoldDuration` | `2.0` | 连续对齐秒数 |
+| `DetectionInterval` | `0.1` | 定时检测间隔 |
 
-### 3. 连接成功事件
+## 实现备注
 
-在 `BP_PuzzleManager` 事件图中实现 `OnPuzzleSolved`：
-
-```text
-OnPuzzleSolved → 你的机关逻辑
-```
-
-例如通过 `GetActorOfClass → Cast → OpenDoor` 调用门蓝图的开门事件。
-
-### 4. 接入发光反馈（可选）
-
-碎片材质中创建名为 `GlowIntensity` 的标量参数，并将其接入 **EmissiveColor**，不要接入 BaseColor。管理器会在对齐过程中自动向该参数写入 0→1 的进度值。
-
-建议为场景添加 Post Process Volume，开启 Bloom 以获得光晕。
-
-## 默认可调参数
-
-| 参数 | 作用 | 建议起点 |
-|---|---|---:|
-| `DotProductThreshold` | 位置方向容差 | `0.98` |
-| `DistanceTolerance` | 相机到碎片的距离容差 | `100` |
-| `ViewAngleThreshold` | 视线对准图案中心的容差 | `0.98 ~ 0.99` |
-| `RequiredPassRate` | 需要通过的碎片比例 | `0.8` |
-| `HoldDuration` | 需连续保持对齐的秒数 | `2.0` |
-| `DetectionInterval` | 检测间隔 | `0.1` |
-
-## 重要说明
-
-- `Calibrate()` 会在 `BeginPlay` 自动调用。如果你在运行前手动移动了碎片或 Manager，需要重新标定。
-- 碎片深度差异越明显，透视拼接的视觉效果与位置辨识度越强。
-- 项目源文件使用 **UTF-8 with BOM** 编码，避免 UHT 处理中文注释时产生问题。
-- 本实现将 `FragmentMaterials` 写成 `TArray<UMaterialInstanceDynamic*>`，以规避前向声明类型与 `TObjectPtr` 容器组合在此项目版本中产生的 UHT/模板错误。
+- 碎片深度差越大，视觉视差和位置区分度越明显。
+- 移动碎片、Manager 或改变相机高度后，需要重新标定。
+- 源文件以 UTF-8 with BOM 保存。此项目曾因 UHT 对中文/BOM 的处理出现生成代码错误。
+- `FragmentMaterials` 使用 `TArray<UMaterialInstanceDynamic*>`。在该项目环境里，前向声明类型与 `TArray<TObjectPtr<T>>` 的组合触发过模板静态断言。
+- `CachedPC` 目前是未使用的遗留字段，不参与检测。
 
 ## 文档
 
-- [完整技术文档：从图案、材质、Decal 到检测与开门](docs/透视拼接谜题技术文档.md)
-- [代码详解：PerspectivePuzzleManager 头文件与源文件逐段解析](docs/PerspectivePuzzleManager代码详解.md)
-- [视频文案：《UE，用C++还原鬼泣5/异环中的透视拼接检测》](docs/视频文案_UE透视拼接检测.md)
+- [实现笔记：场景、材质、检测与机关](docs/透视拼接谜题技术文档.md)
+- [代码导读：PerspectivePuzzleManager](docs/PerspectivePuzzleManager代码详解.md)
+- [视频口播文案](docs/视频文案_UE透视拼接检测.md)
 
 ## License
 
