@@ -63,7 +63,7 @@ Source/<Module>/Private/PerspectivePuzzleManager.cpp
 ## 文档
 
 - [实现笔记：场景、材质、检测与机关](docs/透视拼接谜题技术文档.md)
-- [代码导读：PerspectivePuzzleManager](docs/PerspectivePuzzleManager代码详解.md)
+- [代码：PerspectivePuzzleManager](docs/PerspectivePuzzleManager代码详解.md)
 
 ## License
 
