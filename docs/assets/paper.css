@@ -159,8 +159,21 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
 @media print{
   @page{size:A4;margin:20mm 18mm}
   html,body{background:#fff!important;color:#000!important}
-  html[data-theme="dark"]{--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#fafafa;--side:#fff}
-  html[data-theme="dark"] figure svg{background:#fff;padding:0}
+  /* 默认打印成白底；?print=dark 时改为深色打印 */
+  html[data-theme="dark"]:not(.print-dark){--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#fafafa;--side:#fff}
+  html[data-theme="dark"]:not(.print-dark) figure svg{background:#fff;padding:0}
+  .chapter{content-visibility:visible!important;contain-intrinsic-size:none!important}
+  html.print-dark,html.print-dark body,html.print-dark .shell,html.print-dark .paper,html.print-dark article{background:#17191c!important;color:#e9e6e2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html.print-dark body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:#17191c;z-index:-1;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html.print-dark{--ink:#e9e6e2;--ink-soft:#c6c2bc;--muted:#a09c95;--faint:#8a867f;--rule:#4c4f54;--rule-soft:#34373c;--paper:#17191c;--shade:#1f2226;--side:#17191c}
+  html.print-dark figure svg{background:#f2f2f3!important;padding:10px}
+  html.print-dark .body thead th{border-top-color:#cbc8c2;border-bottom-color:#cbc8c2}
+  html.print-dark .body tbody tr:last-child td{border-bottom-color:#cbc8c2}
+  html.print-dark pre.code{background:#1f2226!important;border-color:#3b3e43!important;color:#ddd9d3!important}
+  html.print-dark .tok-key{color:#f2efeb}
+  html.print-dark .tok-str,html.print-dark .tok-num,html.print-dark .tok-fn{color:#c9c5bf}
+  html.print-dark .tok-com{color:#8b8781}
+  html.print-dark a{color:#9dc3ea!important}
   .masthead,.sidebar,.code-wrap .copy,.anchor{display:none!important}
   .shell{display:block;max-width:none}
   .paper{padding:0}

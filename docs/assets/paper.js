@@ -15,7 +15,11 @@
     var saved = null;
     try { saved = localStorage.getItem("paper-theme"); } catch (e) {}
     var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(saved || (prefersDark ? "dark" : "light"));
+    var params = new URLSearchParams(location.search);
+    var forced = params.get("theme");
+    applyTheme(forced === "dark" || forced === "light" ? forced : (saved || (prefersDark ? "dark" : "light")));
+    /* ?print=dark ：打印时保留深色（配合浏览器"另存为 PDF"） */
+    if (params.get("print") === "dark") document.documentElement.classList.add("print-dark");
   })();
   if (themeBtn) themeBtn.addEventListener("click", function () {
     var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
