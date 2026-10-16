@@ -25,11 +25,29 @@
     });
   });
 
+  /* 手风琴目录：只展开当前章，避免目录自身成为需要滚动的容器（滚轮被吞） */
+  function chapterLiOf(a) { return a ? a.closest(".toc-chapter") : null; }
+  function openChapterOf(a) {
+    var li = chapterLiOf(a);
+    if (!li) return;
+    $$("#toc .toc-chapter.open").forEach(function (x) { if (x !== li) x.classList.remove("open"); });
+    li.classList.add("open");
+  }
+  $$("#toc .toc-chapter").forEach(function (li) {
+    var head = li.querySelector(":scope > a");
+    if (head) head.addEventListener("click", function () { openChapterOf(head); });
+  });
+  var firstChapter = $("#toc .toc-chapter");
+  if (firstChapter) firstChapter.classList.add("open");
+  var activeLink = $("#toc a.active");
+  if (activeLink) openChapterOf(activeLink);
+
   /* 目录过滤 */
   var filter = $("#tocFilter");
   if (filter) {
     filter.addEventListener("input", function () {
       var q = filter.value.trim().toLowerCase();
+      document.body.classList.toggle("toc-filtering", !!q);
       $$("#toc .toc-chapter").forEach(function (li) {
         li.classList.toggle("filtered", !!q && li.textContent.toLowerCase().indexOf(q) === -1);
       });
@@ -55,8 +73,10 @@
         if (!a) return;
         $$("#toc a.active").forEach(function (x) { x.classList.remove("active"); });
         a.classList.add("active");
+        openChapterOf(a);
         var r = a.getBoundingClientRect(), sr = sidebar.getBoundingClientRect();
-        if (r.top < sr.top + 36 || r.bottom > sr.bottom - 36) a.scrollIntoView({ block: "nearest" });
+        if (r.top < sr.top + 36) sidebar.scrollTop -= (sr.top + 36 - r.top);
+        else if (r.bottom > sr.bottom - 36) sidebar.scrollTop += (r.bottom - (sr.bottom - 36));
       });
     }, { rootMargin: "-60px 0px -72% 0px", threshold: 0 });
     targets.forEach(function (t) { io.observe(t); });
