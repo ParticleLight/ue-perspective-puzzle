@@ -62,6 +62,7 @@ Source/<Module>/Private/PerspectivePuzzleManager.cpp
 
 ## 文档
 
+- [在线技术文档：视角检测系统的设计与实现](https://particlelight.github.io/ue-perspective-puzzle/) — 标定、判据、材质与参数标定的完整论述（源文件在 [docs/](docs/)）
 - [实现笔记：场景、材质、检测与机关](docs/透视拼接谜题技术文档.md)
 - [代码：PerspectivePuzzleManager](docs/PerspectivePuzzleManager代码详解.md)
 
