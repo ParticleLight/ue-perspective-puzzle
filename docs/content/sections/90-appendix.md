@@ -13,7 +13,7 @@ title: 附录
 
 | 参数 | 类型 | 默认值 | 单位/量纲 | 取值范围（meta） |
 |------|------|--------|-----------|------------------|
-| `FragmentActors` | `TArray2` | 空数组 | — | 无限制 |
+| `FragmentActors` | `TArray<AActor*>` | 空数组 | — | 无限制 |
 | `CameraHeightOffset` | `float` | `160.0f` | 世界单位（厘米） | `ClampMin = 0.0f` |
 | `GlowParameterName` | `FName` | `TEXT("GlowIntensity")` | — | 无限制 |
 
@@ -77,7 +77,7 @@ title: 附录
 
 | 编号 | 报错/现象 | 根因 | 处置 |
 |------|-----------|------|------|
-| B-1 | `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase11>" 的模板参数列表中使用或无法从中推导` 与 `E0094 数组的大小必须大于零`，位置指向 `StaticAssertCompleteType.h` 第 34、35 行，并连带 `IsContiguousContainer.h` 第 41–44 行 | 容器模板实例化时元素类型不完整（只有前向声明）。本工程的触发条件是把成员写成 `TArray12>` 而 `T` 未定义 | 把该类成员改为裸指针数组（本工程为 `TArray13`）；报错位置在引擎内部，不要修改引擎头文件 |
+| B-1 | `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase<错误类型>>" 的模板参数列表中使用或无法从中推导` 与 `E0094 数组的大小必须大于零`，位置指向 `StaticAssertCompleteType.h` 第 34、35 行，并连带 `IsContiguousContainer.h` 第 41–44 行 | 容器模板实例化时元素类型不完整（只有前向声明）。本工程的触发条件是把成员写成 `TArray<TObjectPtr<T>>` 而 `T` 未定义 | 把该类成员改为裸指针数组（本工程为 `TArray<UMaterialInstanceDynamic*>`）；报错位置在引擎内部，不要修改引擎头文件 |
 | B-2 | `无法打开 源 文件 "PerspectivePuzzleManager.generated.h"` | 生成头文件缺失：头文件名与类声明不匹配，或 UHT 未重新生成 | 核对文件名与 `#include` 中的名称一致；清理 `Intermediate/Build/Win64/UnrealEditor/Inc/CPP1` 后重新构建 |
 | B-3 | `无法打开 源 文件 "SharedDefinitions.UnrealEd.Project.ValApi.ValExpApi.Cpp20.InclOrderUnreal5_6.h"` | 共享定义文件随中间目录一并被清理，或上一次构建中途失败留下不完整状态 | 关闭编辑器后执行一次完整重建，使构建系统重新生成全部中间文件 |
 | B-4 | `The identifier 'GENERATED_BODY' was detected in a block being skipped. Was this intentional?` | `GENERATED_BODY()` 位于被条件编译跳过的代码块中，UHT 未处理该宏 | 把 `GENERATED_BODY()` 移出条件编译区，使其始终处于活动分支 |

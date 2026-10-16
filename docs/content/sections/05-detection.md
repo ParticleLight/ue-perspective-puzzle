@@ -225,7 +225,9 @@ title: 运行期检测：方向—距离联合判据与状态机
 | --- | --- | --- | --- |
 | 守卫与取视点 | 已解出或无标定数据即返回；取得 `CamLoc` 与 `CamForward` | `if (bIsSolved &#124;&#124; CalibratedData.Num() == 0) return;` | 5.2 |
 | 视线判据 | 朝向是否对准图案中心 | `ViewDot >= ViewAngleThreshold` | 5.5 |
-| 位置判据 | 逐碎片比对方向与距离 | `Dot >= DotProductThreshold && DistDiff 10代码 5-7 发光参数写入（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
+| 位置判据 | 逐碎片比对方向与距离 | `Dot >= DotProductThreshold && DistDiff <= DistanceTolerance` |
+
+<p class="caption">代码 5-7 发光参数写入（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
 
 ```cpp
 	// 更新碎片发光：对齐时随 SolveProgress 逐渐增强，失焦时归零

@@ -246,7 +246,7 @@ void APerspectivePuzzleManager::DrawDebugCalibration(float Duration) const
 | 产物 | 类型 | 运行期使用位置 |
 | --- | --- | --- |
 | `CalibratedOrigin` | `FVector` | 视线判据的方向计算；调试绘制（青色球）；位置偏差日志 |
-| `CalibratedData` | `TArray45` | 逐碎片的方向与距离比对；通过率的分母 |
+| `CalibratedData` | `TArray<FCalibratedMarkPoint>` | 逐碎片的方向与距离比对；通过率的分母 |
 | `CalibratedViewTarget` | `FVector` | 视线判据的参考点；调试绘制中不单独显示 |
 
 边界与注意事项：
