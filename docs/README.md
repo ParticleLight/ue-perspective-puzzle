@@ -13,7 +13,8 @@ docs/
 ├─ assets/paper.css        版式（印刷体正文、三线表、代码清单、A4 打印样式）
 ├─ assets/paper.js         目录过滤、滚动定位、移动端目录、代码复制
 ├─ content/front.md        题名、摘要、关键词
-├─ content/sections/*.md   各章正文（Markdown）
+├─ content/sections/*.md   各章正文（Markdown，插图以 draw.io 渲染的 SVG 内联）
+├─ figures/*.xml           draw.io 图源文件（可直接用 draw.io 打开编辑）
 └─ tools/                  构建脚本
    ├─ md.mjs               Markdown → HTML 渲染（含单色语法高亮）
    ├─ build-docs.mjs       读取 content/ 生成 index.html
@@ -32,5 +33,5 @@ node tools/build-docs.mjs
 
 - 章节文件只用 `###` 作为小节标题，并显式写出编号（如 `### 4.1 …`）；章标题由构建脚本生成。
 - 表格标题写在表格上方：`<p class="caption">表 4-1 …</p>`；代码清单同理。
-- 插图使用内联 SVG，且只用灰阶（#111–#f5f5f5），不使用彩色：`<figure><svg …></svg><figcaption>图 4-1 …</figcaption></figure>`。
+- 流程/关系类插图由 draw.io 绘制：源文件在 `figures/*.xml`，导出 SVG 后内联进章节（只用灰阶 #111–#f5f5f5，不使用彩色）：`<figure><svg …></svg><figcaption>图 4-1 …</figcaption></figure>`。
 - 公式用 `<span class="eq">…</span>` 或 `<p class="eq">…</p>`；正文中文引号使用「」或“”。
