@@ -93,9 +93,9 @@ UE 工程中的报错信息有一个显著特点：**最先出现的错误往往
 
 以引擎头文件 `StaticAssertCompleteType.h` 为例，报告中出现的是两条错误：
 
-- `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase<错误类型>>" 的模板参数列表中使用或无法从中推导`（位于 `StaticAssertCompleteType.h` 第 34 行）
+- `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase<<错误类型>>" 的模板参数列表中使用或无法从中推导`（位于 `StaticAssertCompleteType.h` 第 34 行）
 - `E0094 数组的大小必须大于零`（位于同一文件第 35 行）
-- 连带出现 `E0842 模板参数 "T" 未在类模板 "TIsContiguousContainer<错误类型>>" 的模板参数列表中使用或无法从中推导` 与多条 `E0094`（位于 `IsContiguousContainer.h` 第 41–44 行）
+- 连带出现 `E0842 模板参数 "T" 未在类模板 "TIsContiguousContainer<<错误类型>>" 的模板参数列表中使用或无法从中推导` 与多条 `E0094`（位于 `IsContiguousContainer.h` 第 41–44 行）
 
 这些位置都在引擎内部，不可能由业务代码的直接改动引起。它们的实际含义是：某个容器模板在实例化时拿到了一个**不完整类型**（只有前向声明、没有定义的类），引擎为此准备的静态断言在展开时失败，错误于是被报告在断言所在的头文件里。在本工程中，触发条件是把容器元素写成 `TObjectPtr<T>` 而 `T` 只是前向声明；改用裸指针数组 `TArray<UMaterialInstanceDynamic*>` 后该组报错消失。这一取舍已在 7.2 节说明：成员 `FragmentMaterials` 使用裸指针，其生命周期由持有它的 Decal/网格体组件保证。
 
