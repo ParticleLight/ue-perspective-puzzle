@@ -16,7 +16,8 @@ html[data-theme="dark"] .tok-key{color:#f2efeb}
 html[data-theme="dark"] .tok-str,html[data-theme="dark"] .tok-num,html[data-theme="dark"] .tok-fn{color:#c9c5bf}
 html[data-theme="dark"] .tok-com{color:#8b8781}
 html[data-theme="dark"] pre.code{color:#ddd9d3}
-html[data-theme="dark"] figure svg{filter:invert(1) hue-rotate(180deg) brightness(1.04)}
+/* 插图：深色模式下给图一块浅色底板，保留设计时的对比度（反色会让浅灰柱体与深色背景糊在一起） */
+html[data-theme="dark"] figure svg{background:#f4f4f5;padding:14px;box-sizing:border-box;color:#16181a}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-padding-top:64px}
@@ -159,7 +160,7 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
   @page{size:A4;margin:20mm 18mm}
   html,body{background:#fff!important;color:#000!important}
   html[data-theme="dark"]{--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#fafafa;--side:#fff}
-  html[data-theme="dark"] figure svg{filter:none}
+  html[data-theme="dark"] figure svg{background:#fff;padding:0}
   .masthead,.sidebar,.code-wrap .copy,.anchor{display:none!important}
   .shell{display:block;max-width:none}
   .paper{padding:0}
