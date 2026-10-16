@@ -1,41 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>透视图案拼接谜题：基于方向—距离联合判据的视角检测系统</title>
 <meta name="description" content="虚幻引擎 5 中的系统架构、标定方法、运行期检测与视觉反馈实现">
 <meta name="author" content="Particle Light">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <meta property="og:title" content="透视图案拼接谜题：基于方向—距离联合判据的视角检测系统">
 <meta property="og:description" content="虚幻引擎 5 中的系统架构、标定方法、运行期检测与视觉反馈实现">
 <meta property="og:type" content="article">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c2603f'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='white' font-family='Georgia,serif'%3E%C2%A7%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2316181a' font-family='Georgia,serif'%3E%C2%A7%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/paper.css">
 </head>
 <body>
-<div class="progress"><span id="progressBar"></span></div>
-
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#top"><span class="mark">§</span><span class="brand-title">透视图案拼接谜题的视角检测系统</span></a>
-    <nav class="topnav">
-      <a href="#ch1">正文</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="running-title" href="#top">透视图案拼接谜题的视角检测系统</a>
+    <nav>
+      <a href="#abstract">摘要</a>
       <a href="#appendix">附录</a>
       <a href="#references">参考文献</a>
+      <button id="btnToc" class="text-btn only-mobile" type="button">目录</button>
+      <button id="btnPrint" class="text-btn" type="button">打印</button>
     </nav>
-    <div class="topbar-actions">
-      <button id="btnTheme" class="icon-btn" title="切换深色 / 浅色">◐</button>
-      <button id="btnPrint" class="icon-btn" title="打印 / 导出 PDF">打印</button>
-      <button id="btnToc" class="icon-btn only-mobile" title="目录">目录</button>
-    </div>
   </div>
 </header>
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <div class="side-head">
-      <input id="tocFilter" type="search" placeholder="过滤目录…" autocomplete="off">
+      <input id="tocFilter" type="search" placeholder="过滤目录" autocomplete="off">
     </div>
     <nav class="toc" id="toc"><ul><li class="toc-chapter"><a href="#ch1">1  引言</a><ul><li><a href="#1-1-问题背景">1.1 问题背景</a></li><li><a href="#1-2-问题的形式化描述">1.2 问题的形式化描述</a></li><li><a href="#1-3-本文范围">1.3 本文范围</a></li><li><a href="#1-4-约定">1.4 约定</a></li></ul></li>
 <li class="toc-chapter"><a href="#ch2">2  检测方案的比较与选型</a><ul><li><a href="#2-1-视觉前提-视差与透视">2.1 视觉前提：视差与透视</a></li><li><a href="#2-2-三类候选方案">2.2 三类候选方案</a></li><li><a href="#2-3-选型结论">2.3 选型结论</a></li><li><a href="#2-4-与其他要素的关系">2.4 与其他要素的关系</a></li></ul></li>
@@ -49,18 +44,16 @@
 <li class="toc-chapter"><a href="#appendix">附录</a><ul><li><a href="#a-1-拼图与标定参数">A.1 拼图与标定参数</a></li><li><a href="#a-2-检测参数">A.2 检测参数</a></li><li><a href="#a-3-只读状态与可调用接口">A.3 只读状态与可调用接口</a></li><li><a href="#b-1-构建期与运行期故障对照">B.1 构建期与运行期故障对照</a></li><li><a href="#b-2-排查顺序">B.2 排查顺序</a></li><li><a href="#c-1-从空工程到可运行谜题">C.1 从空工程到可运行谜题</a></li></ul></li>
 <li class="toc-chapter"><a href="#references">参考文献</a><ul><li><a href="#91-1-参考资料">91.1 参考资料</a></li><li><a href="#91-2-实现依据说明">91.2 实现依据说明</a></li></ul></li></ul></nav>
     <div class="side-foot">
-      <div class="side-stats"><span>80,414 字</span><span>191 分钟</span><span>29 段代码</span><span>28 张表</span><span>8 幅图</span></div>
-      <button id="btnTop" class="mini" type="button">↑ 回到顶部</button>
+      <button id="btnTop" class="text-btn" type="button">回到顶部</button>
     </div>
   </aside>
 
   <main id="top" class="paper">
     <article>
       <header class="title-block">
-        <p class="doctype">技术报告 · Technical Report</p>
         <h1>透视图案拼接谜题：基于方向—距离联合判据的视角检测系统</h1>
         <p class="subtitle">虚幻引擎 5 中的系统架构、标定方法、运行期检测与视觉反馈实现</p>
-        <p class="byline">Particle Light<span class="dot">·</span>2026 年 8 月</p>
+        <p class="byline">Particle Light<span class="sep">·</span>2026 年 8 月<span class="sep">·</span>技术报告 · Technical Report</p>
         <p class="source-line"></p>
       </header>
 
@@ -89,7 +82,7 @@
 <h3 id="1-2-问题的形式化描述">1.2 问题的形式化描述</h3>
 <p>设场景中有 N 个碎片（N ≥ 1），第 i 个碎片的世界坐标为 p<sub>i</sub>。设计者在场景中选定一个观察位置 o（位于相机高度）与一个朝向 f，使所有碎片在该视角下拼合为完整图案。</p>
 <p>判定目标是：给定当前相机位置 c 与朝向 f<sub>c</sub>，判断 (c, f<sub>c</sub>) 是否落在 (o, f) 的一个可接受邻域内，并输出连续的对齐程度，用于驱动视觉反馈。</p>
-<p>该描述同时说明了两件事：其一，判定必须同时覆盖位置与朝向；其二，输出应是连续量而非布尔量，因为谜题通常需要一个&quot;逐渐对齐&quot;的反馈过程。</p>
+<p>该描述同时说明了两件事：其一，判定必须同时覆盖位置与朝向；其二，输出应是连续量而非布尔量，因为谜题通常需要一个“逐渐对齐”的反馈过程。</p>
 <h3 id="1-3-本文范围">1.3 本文范围</h3>
 <ul>
 <li>第 2 章给出三类候选检测方案的比较与选型依据；</li>
@@ -115,7 +108,7 @@
 <h3 id="2-1-视觉前提-视差与透视">2.1 视觉前提：视差与透视</h3>
 <p>碎片能在特定视角拼合，依赖两个几何事实。</p>
 <p><strong>其一，视差随观察位置变化。</strong> 两个位于不同纵深的物体，在相机移动时其投影的相对位置会发生相对位移。设碎片 A、B 分别位于深度 d<sub>A</sub>、d<sub>B</sub>（d<sub>A</sub> ≠ d<sub>B</sub>），相机横向移动 Δ 时，两者在成像平面上的位移差约为 Δ·(1/d<sub>A</sub> − 1/d<sub>B</sub>)。因此碎片一旦摆放完毕，能拼合的位置集合就被唯一确定——这正是谜题只在一个特定位置成立的原因。</p>
-<p><strong>其二，投影关系随观察方向变化。</strong> 相机朝向决定成像平面的姿态：朝向偏离时，同一组碎片在屏幕上的相对位置随之变化，图案不再吻合。因此&quot;位置正确&quot;并不蕴含&quot;朝向正确&quot;。</p>
+<p><strong>其二，投影关系随观察方向变化。</strong> 相机朝向决定成像平面的姿态：朝向偏离时，同一组碎片在屏幕上的相对位置随之变化，图案不再吻合。因此“位置正确”并不蕴含“朝向正确”。</p>
 <p>上述两点共同说明：判定量必须同时对位置与朝向敏感，且敏感度应随偏离程度单调变化，才能提供渐进反馈。</p>
 <h3 id="2-2-三类候选方案">2.2 三类候选方案</h3>
 <p class="caption">表 2-1 三类检测方案的比较</p>
@@ -129,7 +122,7 @@
 <li><strong>判定层</strong>：运行期重复同一组计算，按阈值逐项比对，得到通过率与朝向匹配结果。</li>
 <li><strong>状态层</strong>：以通过率与朝向的联合条件驱动一个带保持时间的状态机，输出对齐事件与进度。</li>
 </ol>
-<p>需要强调的是，方案 C 判定的是<strong>视角</strong>而非<strong>成像结果</strong>：它不检查碎片是否真的在屏幕上拼合，而是检查&quot;相机是否处在能让它们拼合的那个位置和朝向&quot;。二者的差别在遮挡场景下会体现出来——若某个碎片被中间物体挡住，方案 C 仍会判定对齐。第 5 章给出的视线判据只能约束朝向，不能替代遮挡检测；这一点在第 9 章作为局限列出。</p>
+<p>需要强调的是，方案 C 判定的是<strong>视角</strong>而非<strong>成像结果</strong>：它不检查碎片是否真的在屏幕上拼合，而是检查“相机是否处在能让它们拼合的那个位置和朝向”。二者的差别在遮挡场景下会体现出来——若某个碎片被中间物体挡住，方案 C 仍会判定对齐。第 5 章给出的视线判据只能约束朝向，不能替代遮挡检测；这一点在第 9 章作为局限列出。</p>
 <h3 id="2-4-与其他要素的关系">2.4 与其他要素的关系</h3>
 <p>检测只是谜题的一半，另一半是图案的呈现。两者的接口位于材质参数：</p>
 <ul>
@@ -141,14 +134,14 @@
 
 <section class="chapter" id="ch3">
 <h2><a class="anchor" href="#ch3" aria-label="链接到本节">#</a><span class="cnum">3</span>系统架构与运行时对象模型</h2>
-<p>透视拼接谜题的判定目标只有一句话：<strong>玩家是否站在标定过的那个视点上，并朝着标定过的方向观察</strong>。这句话里没有任何&quot;碎片自身的行为&quot;，因此系统不需要为每个碎片写逻辑，只需要一个能在全局视角下比对&quot;当前相机状态&quot;与&quot;标定状态&quot;的宿主对象。</p>
+<p>透视拼接谜题的判定目标只有一句话：<strong>玩家是否站在标定过的那个视点上，并朝着标定过的方向观察</strong>。这句话里没有任何“碎片自身的行为”，因此系统不需要为每个碎片写逻辑，只需要一个能在全局视角下比对“当前相机状态”与“标定状态”的宿主对象。</p>
 <p>这一约束直接决定了整体形态：一个管理器 Actor 独占全部逻辑与状态，碎片只作为被引用的场景对象，玩家相机是唯一的运行时输入源。本章说明该划分的设计动机、两条数据链路，以及对外暴露的接口与生命周期。文中引用的源码片段保留原始标识符与注释，缩进统一按四空格归一。</p>
 <h3 id="3-1-设计目标与约束">3.1 设计目标与约束</h3>
 <p>系统需要同时满足四组约束，它们共同排除了若干看似更简单的实现方式。</p>
-<p><strong>其一：碎片数量可变。</strong> 一个图案可以被拆成 2 块、4 块或 9 块。任何形如&quot;遍历两个固定对象&quot;的写法都会在拆分数变化时失效，因此碎片必须以<strong>列表</strong>形式登记，且所有判定循环、通过率计算、发光遍历都只能以列表长度为准，不能出现与具体数量绑定的常数。</p>
+<p><strong>其一：碎片数量可变。</strong> 一个图案可以被拆成 2 块、4 块或 9 块。任何形如“遍历两个固定对象”的写法都会在拆分数变化时失效，因此碎片必须以<strong>列表</strong>形式登记，且所有判定循环、通过率计算、发光遍历都只能以列表长度为准，不能出现与具体数量绑定的常数。</p>
 <p><strong>其二：碎片摆放自由。</strong> 碎片在场景中的位置由人工摆放决定，三维位置、朝向、承载物（柱子、墙面、悬浮平面）都不受系统约束。系统只能读取碎片的世界坐标，不能对摆放提出格式要求。</p>
-<p><strong>其三：可重新标定。</strong> &quot;正确视角&quot;不是预先写死在数据里的常量，而是在编辑期由人工把碎片摆好之后，由系统<strong>现场测量并固化</strong>的一组数据；摆放调整后可以重新执行同一次测量，覆盖旧数据。这意味着标定过程必须是幂等的、可重复调用的，且不能依赖于任何一次性的初始化路径。</p>
-<p><strong>其四：判定是全局的，而表现是局部的。</strong> 是否&quot;拼合成功&quot;取决于全部碎片的整体状态（通过比例），以及玩家视线是否落在图案整体上；而&quot;成功后做什么&quot;（开门、播放动画、显示提示）属于表现层，与判定算法无关，且改动频率远高于算法。两者必须解耦，否则每次调整表现都需要重新编译 C++。</p>
+<p><strong>其三：可重新标定。</strong> “正确视角”不是预先写死在数据里的常量，而是在编辑期由人工把碎片摆好之后，由系统<strong>现场测量并固化</strong>的一组数据；摆放调整后可以重新执行同一次测量，覆盖旧数据。这意味着标定过程必须是幂等的、可重复调用的，且不能依赖于任何一次性的初始化路径。</p>
+<p><strong>其四：判定是全局的，而表现是局部的。</strong> 是否“拼合成功”取决于全部碎片的整体状态（通过比例），以及玩家视线是否落在图案整体上；而“成功后做什么”（开门、播放动画、显示提示）属于表现层，与判定算法无关，且改动频率远高于算法。两者必须解耦，否则每次调整表现都需要重新编译 C++。</p>
 <h3 id="3-2-角色划分-管理器-碎片-玩家相机">3.2 角色划分：管理器、碎片、玩家相机</h3>
 <p>系统由三类参与者构成，彼此之间是单向引用关系。</p>
 <p class="caption">表 3-1 运行时角色与职责</p>
@@ -157,39 +150,39 @@
 <figure>
 <svg viewBox="0 0 820 300" width="100%" height="300" role="img" aria-label="管理器、碎片与玩家相机的关系">
   <defs>
-    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#a99a80"/></marker>
-    <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7b93ad"/></marker>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#8f8f8f"/></marker>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#6b6b6b"/></marker>
   </defs>
-  <rect x="300" y="16" width="230" height="74" rx="8" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="415" y="44" text-anchor="middle" font-size="14" fill="#3a3226">APerspectivePuzzleManager</text>
-  <text x="415" y="64" text-anchor="middle" font-size="11" fill="#6b6154">标定数据 · 状态 · 定时器</text>
-  <text x="415" y="80" text-anchor="middle" font-size="11" fill="#6b6154">事件派发 · 发光写入</text>
-  <rect x="40" y="170" width="180" height="66" rx="8" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="130" y="196" text-anchor="middle" font-size="13" fill="#3a3226">碎片 Actor A</text>
-  <text x="130" y="216" text-anchor="middle" font-size="11" fill="#6b6154">Decal / StaticMesh</text>
-  <rect x="250" y="170" width="180" height="66" rx="8" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="340" y="196" text-anchor="middle" font-size="13" fill="#3a3226">碎片 Actor B</text>
-  <text x="340" y="216" text-anchor="middle" font-size="11" fill="#6b6154">不同纵深位置</text>
-  <rect x="460" y="170" width="180" height="66" rx="8" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="550" y="196" text-anchor="middle" font-size="13" fill="#3a3226">碎片 Actor N</text>
-  <text x="550" y="216" text-anchor="middle" font-size="11" fill="#6b6154">数量可变</text>
-  <rect x="672" y="170" width="132" height="66" rx="8" fill="#eaeff5" stroke="#94a8bd"/>
-  <text x="738" y="196" text-anchor="middle" font-size="12" fill="#2b4a6a">玩家相机</text>
-  <text x="738" y="216" text-anchor="middle" font-size="11" fill="#2b4a6a">PlayerController</text>
-  <line x1="360" y1="92" x2="150" y2="168" stroke="#a99a80" stroke-width="1.5" marker-end="url(#ar)"/>
-  <line x1="415" y1="92" x2="350" y2="168" stroke="#a99a80" stroke-width="1.5" marker-end="url(#ar)"/>
-  <line x1="470" y1="92" x2="540" y2="168" stroke="#a99a80" stroke-width="1.5" marker-end="url(#ar)"/>
-  <line x1="700" y1="168" x2="500" y2="96" stroke="#7b93ad" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ar2)"/>
-  <text x="150" y="130" font-size="11" fill="#6b6154">登记引用 / 读取世界坐标</text>
-  <text x="520" y="146" font-size="11" fill="#2b4a6a">运行时查询视点</text>
-  <text x="24" y="278" font-size="11" fill="#6b6154">实线：管理器对碎片的读取（标定期与初始化期各一次）　　虚线：运行期对相机的查询（每 DetectionInterval 一次）</text>
+  <rect x="300" y="16" width="230" height="74" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="415" y="44" text-anchor="middle" font-size="14" fill="#262626">APerspectivePuzzleManager</text>
+  <text x="415" y="64" text-anchor="middle" font-size="11" fill="#3f3f3f">标定数据 · 状态 · 定时器</text>
+  <text x="415" y="80" text-anchor="middle" font-size="11" fill="#3f3f3f">事件派发 · 发光写入</text>
+  <rect x="40" y="170" width="180" height="66" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="130" y="196" text-anchor="middle" font-size="13" fill="#262626">碎片 Actor A</text>
+  <text x="130" y="216" text-anchor="middle" font-size="11" fill="#3f3f3f">Decal / StaticMesh</text>
+  <rect x="250" y="170" width="180" height="66" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="340" y="196" text-anchor="middle" font-size="13" fill="#262626">碎片 Actor B</text>
+  <text x="340" y="216" text-anchor="middle" font-size="11" fill="#3f3f3f">不同纵深位置</text>
+  <rect x="460" y="170" width="180" height="66" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="550" y="196" text-anchor="middle" font-size="13" fill="#262626">碎片 Actor N</text>
+  <text x="550" y="216" text-anchor="middle" font-size="11" fill="#3f3f3f">数量可变</text>
+  <rect x="672" y="170" width="132" height="66" rx="2" fill="#c8c8c8" stroke="#a4a4a4"/>
+  <text x="738" y="196" text-anchor="middle" font-size="12" fill="#262626">玩家相机</text>
+  <text x="738" y="216" text-anchor="middle" font-size="11" fill="#262626">PlayerController</text>
+  <line x1="360" y1="92" x2="150" y2="168" stroke="#8f8f8f" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="415" y1="92" x2="350" y2="168" stroke="#8f8f8f" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="470" y1="92" x2="540" y2="168" stroke="#8f8f8f" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="700" y1="168" x2="500" y2="96" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ar2)"/>
+  <text x="150" y="130" font-size="11" fill="#3f3f3f">登记引用 / 读取世界坐标</text>
+  <text x="520" y="146" font-size="11" fill="#262626">运行时查询视点</text>
+  <text x="24" y="278" font-size="11" fill="#3f3f3f">实线：管理器对碎片的读取（标定期与初始化期各一次）　　虚线：运行期对相机的查询（每 DetectionInterval 一次）</text>
 </svg>
 <figcaption>图 3-1 运行时对象模型：管理器是唯一的逻辑宿主，碎片与相机只提供数据</figcaption>
 </figure>
 <h3 id="3-3-为什么把逻辑集中在管理器">3.3 为什么把逻辑集中在管理器</h3>
-<p>把检测分散到各个碎片上（每个碎片自己判断&quot;是否被正确观察&quot;）在直觉上更&quot;面向对象&quot;，但在本问题里会立即遇到三处无法局部化的依赖。</p>
-<p><strong>全局通过率无法由局部决定。</strong> 判定条件之一是&quot;通过检测的碎片占比不低于 <code>RequiredPassRate</code>&quot;。单个碎片只能知道自己是否通过，无从知道总数与通过数。若把计数责任上移，碎片上的判定逻辑就只剩&quot;方向点积与距离差&quot;这一条，形同虚设。</p>
-<p><strong>视线检测的参考点是全局量。</strong> 视线判定使用的目标方向由&quot;所有碎片位置的几何中心&quot;决定：</p>
+<p>把检测分散到各个碎片上（每个碎片自己判断“是否被正确观察”）在直觉上更“面向对象”，但在本问题里会立即遇到三处无法局部化的依赖。</p>
+<p><strong>全局通过率无法由局部决定。</strong> 判定条件之一是“通过检测的碎片占比不低于 <code>RequiredPassRate</code>”。单个碎片只能知道自己是否通过，无从知道总数与通过数。若把计数责任上移，碎片上的判定逻辑就只剩“方向点积与距离差”这一条，形同虚设。</p>
+<p><strong>视线检测的参考点是全局量。</strong> 视线判定使用的目标方向由“所有碎片位置的几何中心”决定：</p>
 <p class="caption">代码 3-1 图案中心的定义与计算（节选自 Calibrate 实现）</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code>    <span class="tok-key">FVector</span> CenterAccum = <span class="tok-key">FVector</span>::ZeroVector;
     int32 Count = <span class="tok-num">0</span>;
@@ -214,13 +207,13 @@
     <span class="tok-com">// 图案中心 = 所有碎片的几何中心，作为视线检测的参考点</span>
     CalibratedViewTarget = (Count &gt; <span class="tok-num">0</span>) ? CenterAccum / Count : CalibratedOrigin;</code></pre></div>
 <p>这个中心是全部碎片位置的算术平均，任何一个碎片都无法单独计算；它也不等于任何一个碎片的位置。把视线检测放到碎片上，就必须把中心作为额外数据下发，等于把耦合显式化而没有消除。</p>
-<p><strong>状态必须是单点。</strong> <code>bIsSolved</code>、<code>SolveProgress</code>、<code>HoldTimer</code>、<code>bWasAligned</code> 描述的是&quot;整个谜题&quot;的状态。若每个碎片各持一份，就会出现&quot;碎片的成功标记不一致&quot;这类无法收敛的问题；事件派发（<code>OnViewAligned</code> / <code>OnViewLost</code> / <code>OnPuzzleSolved</code>）也必须是唯一的边沿触发点，否则一次对齐会触发 N 次事件。</p>
+<p><strong>状态必须是单点。</strong> <code>bIsSolved</code>、<code>SolveProgress</code>、<code>HoldTimer</code>、<code>bWasAligned</code> 描述的是“整个谜题”的状态。若每个碎片各持一份，就会出现“碎片的成功标记不一致”这类无法收敛的问题；事件派发（<code>OnViewAligned</code> / <code>OnViewLost</code> / <code>OnPuzzleSolved</code>）也必须是唯一的边沿触发点，否则一次对齐会触发 N 次事件。</p>
 <p>此外还有两条工程上的收益：检测只需要<strong>一个</strong>定时器句柄（<code>DetectionTimerHandle</code>），而不是每个碎片一个；判定逻辑集中在约百行的单个函数内，便于整体替换判定策略。</p>
-<p>需要说明的是，&quot;集中&quot;并不意味着管理器侵入碎片的行为。它对碎片的接触只有三类：读取世界坐标、为碎片组件创建动态材质实例、向该实例写入标量参数。碎片的位置、旋转与缩放始终由人工维护，管理器从不修改任何变换。</p>
+<p>需要说明的是，“集中”并不意味着管理器侵入碎片的行为。它对碎片的接触只有三类：读取世界坐标、为碎片组件创建动态材质实例、向该实例写入标量参数。碎片的位置、旋转与缩放始终由人工维护，管理器从不修改任何变换。</p>
 <h3 id="3-4-数据流-标定期与运行期">3.4 数据流：标定期与运行期</h3>
 <p>系统的数据流分为两条彼此独立的链路，分别在不同的时间尺度上运行。</p>
-<p><strong>标定期链路</strong>把&quot;场景事实&quot;转换成&quot;判定依据&quot;。输入是登记在 <code>FragmentActors</code> 中的碎片列表与管理器自身的位置；输出是两类标定数据：逐碎片的 <code>CalibratedData</code>，以及供视线判定使用的 <code>CalibratedViewTarget</code>；标定视点本身（<code>CalibratedOrigin</code>）也在这一步确定。</p>
-<p>每个碎片的数据被组织为一个 <code>USTRUCT</code>，把&quot;哪个 Actor、标定时在哪、相对标定点的方向与距离&quot;聚合在同一结构内，避免使用多个平行数组而在增删碎片时错位：</p>
+<p><strong>标定期链路</strong>把“场景事实”转换成“判定依据”。输入是登记在 <code>FragmentActors</code> 中的碎片列表与管理器自身的位置；输出是两类标定数据：逐碎片的 <code>CalibratedData</code>，以及供视线判定使用的 <code>CalibratedViewTarget</code>；标定视点本身（<code>CalibratedOrigin</code>）也在这一步确定。</p>
+<p>每个碎片的数据被组织为一个 <code>USTRUCT</code>，把“哪个 Actor、标定时在哪、相对标定点的方向与距离”聚合在同一结构内，避免使用多个平行数组而在增删碎片时错位：</p>
 <p class="caption">代码 3-2 FCalibratedMarkPoint：单碎片的标定数据（节选）</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code><span class="tok-com">//单个碎片的标定数据</span>
  
@@ -242,77 +235,77 @@ USTRUCT(BlueprintType)
     <span class="tok-com">// 从标定位置到碎片的直线距离 </span>
     <span class="tok-key">float</span> TargetDistance;
 };</code></pre></div>
-<p>选择&quot;方向 + 距离&quot;而不是&quot;相对坐标&quot;，是因为运行期的比对对象正好是这两个量：方向用点积比较（对角度敏感），距离用绝对差比较（对尺度敏感）。若存相对坐标，检测时仍需先算出长度与单位向量，等于把同一份计算做了两遍。</p>
-<p><strong>运行期链路</strong>以固定的时间间隔采样玩家相机，把&quot;当前相机状态&quot;与标定数据比对，产生状态迁移与对外消息。</p>
+<p>选择“方向 + 距离”而不是“相对坐标”，是因为运行期的比对对象正好是这两个量：方向用点积比较（对角度敏感），距离用绝对差比较（对尺度敏感）。若存相对坐标，检测时仍需先算出长度与单位向量，等于把同一份计算做了两遍。</p>
+<p><strong>运行期链路</strong>以固定的时间间隔采样玩家相机，把“当前相机状态”与标定数据比对，产生状态迁移与对外消息。</p>
 <figure>
 <svg viewBox="0 0 840 420" width="100%" height="420" role="img" aria-label="标定期与运行期数据流">
-  <text x="20" y="26" font-size="13" fill="#8a5a2b">标定期（编辑期或 BeginPlay 触发一次）</text>
-  <rect x="20" y="40" width="170" height="52" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="105" y="62" text-anchor="middle" font-size="12" fill="#3a3226">FragmentActors</text>
-  <text x="105" y="79" text-anchor="middle" font-size="10" fill="#6b6154">人工登记的碎片列表</text>
-  <rect x="250" y="36" width="150" height="60" rx="7" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="325" y="60" text-anchor="middle" font-size="12" fill="#3a3226">Calibrate()</text>
-  <text x="325" y="78" text-anchor="middle" font-size="10" fill="#6b6154">测量方向与距离</text>
-  <rect x="460" y="20" width="180" height="46" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="550" y="40" text-anchor="middle" font-size="12" fill="#3a3226">CalibratedData[]</text>
-  <text x="550" y="57" text-anchor="middle" font-size="10" fill="#6b6154">逐碎片：方向 + 距离</text>
-  <rect x="460" y="76" width="180" height="46" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="550" y="96" text-anchor="middle" font-size="12" fill="#3a3226">CalibratedViewTarget</text>
-  <text x="550" y="113" text-anchor="middle" font-size="10" fill="#6b6154">碎片几何中心</text>
-  <rect x="690" y="48" width="130" height="46" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="755" y="68" text-anchor="middle" font-size="12" fill="#3a3226">CalibratedOrigin</text>
-  <text x="755" y="85" text-anchor="middle" font-size="10" fill="#6b6154">标定视点</text>
-  <line x1="190" y1="66" x2="248" y2="66" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="400" y1="60" x2="458" y2="46" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="400" y1="66" x2="458" y2="96" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="400" y1="72" x2="688" y2="72" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="20" y1="140" x2="820" y2="140" stroke="#ddd4c2" stroke-width="1"/>
-  <text x="20" y="168" font-size="13" fill="#2b4a6a">运行期（每 DetectionInterval 采样一次）</text>
-  <rect x="20" y="184" width="170" height="52" rx="7" fill="#eaeff5" stroke="#94a8bd"/>
-  <text x="105" y="206" text-anchor="middle" font-size="12" fill="#2b4a6a">玩家相机</text>
-  <text x="105" y="223" text-anchor="middle" font-size="10" fill="#2b4a6a">位置 + 朝向</text>
-  <rect x="250" y="180" width="150" height="60" rx="7" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="325" y="204" text-anchor="middle" font-size="12" fill="#3a3226">CheckPuzzle()</text>
-  <text x="325" y="222" text-anchor="middle" font-size="10" fill="#6b6154">逐碎片比对 + 视线比对</text>
-  <rect x="460" y="164" width="180" height="46" rx="7" fill="#f7ecec" stroke="#c08a8a"/>
-  <text x="550" y="184" text-anchor="middle" font-size="12" fill="#7a3232">bAlignedNow</text>
-  <text x="550" y="201" text-anchor="middle" font-size="10" fill="#7a3232">通过率 ≥ 阈值 且 视线对准</text>
-  <rect x="460" y="222" width="180" height="46" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="550" y="242" text-anchor="middle" font-size="12" fill="#3a3226">HoldTimer / SolveProgress</text>
-  <text x="550" y="259" text-anchor="middle" font-size="10" fill="#6b6154">持续计时与进度</text>
-  <rect x="690" y="164" width="130" height="46" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="755" y="184" text-anchor="middle" font-size="12" fill="#3a3226">bIsSolved</text>
-  <text x="755" y="201" text-anchor="middle" font-size="10" fill="#6b6154">终止条件</text>
-  <rect x="250" y="300" width="180" height="52" rx="7" fill="#f2eeee" stroke="#bfa0a0"/>
-  <text x="340" y="322" text-anchor="middle" font-size="12" fill="#7a3232">蓝图事件</text>
-  <text x="340" y="339" text-anchor="middle" font-size="10" fill="#7a3232">Aligned / Lost / Progress / Solved</text>
-  <rect x="470" y="300" width="180" height="52" rx="7" fill="#f2eeee" stroke="#bfa0a0"/>
-  <text x="560" y="322" text-anchor="middle" font-size="12" fill="#7a3232">材质标量参数</text>
-  <text x="560" y="339" text-anchor="middle" font-size="10" fill="#7a3232">GlowIntensity</text>
-  <line x1="190" y1="210" x2="248" y2="210" stroke="#7b93ad" stroke-width="1.5"/>
-  <line x1="400" y1="200" x2="458" y2="186" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="400" y1="216" x2="458" y2="240" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="620" y1="245" x2="700" y2="200" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="330" y1="240" x2="330" y2="298" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="430" y1="326" x2="468" y2="326" stroke="#a99a80" stroke-width="1.5"/>
-  <text x="20" y="392" font-size="11" fill="#6b6154">标定期只依赖场景摆放，运行期只依赖相机采样；两条链路之间唯一的接口是 CalibratedData 与标定原点、图案中心。</text>
-  <text x="20" y="410" font-size="11" fill="#6b6154">对齐状态发生翻转时派发一次性事件；进度与发光则在每次采样后按当前值刷新。</text>
+  <text x="20" y="26" font-size="13" fill="#3a3a3a">标定期（编辑期或 BeginPlay 触发一次）</text>
+  <rect x="20" y="40" width="170" height="52" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="105" y="62" text-anchor="middle" font-size="12" fill="#262626">FragmentActors</text>
+  <text x="105" y="79" text-anchor="middle" font-size="10" fill="#3f3f3f">人工登记的碎片列表</text>
+  <rect x="250" y="36" width="150" height="60" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="325" y="60" text-anchor="middle" font-size="12" fill="#262626">Calibrate()</text>
+  <text x="325" y="78" text-anchor="middle" font-size="10" fill="#3f3f3f">测量方向与距离</text>
+  <rect x="460" y="20" width="180" height="46" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="550" y="40" text-anchor="middle" font-size="12" fill="#262626">CalibratedData[]</text>
+  <text x="550" y="57" text-anchor="middle" font-size="10" fill="#3f3f3f">逐碎片：方向 + 距离</text>
+  <rect x="460" y="76" width="180" height="46" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="550" y="96" text-anchor="middle" font-size="12" fill="#262626">CalibratedViewTarget</text>
+  <text x="550" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">碎片几何中心</text>
+  <rect x="690" y="48" width="130" height="46" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="755" y="68" text-anchor="middle" font-size="12" fill="#262626">CalibratedOrigin</text>
+  <text x="755" y="85" text-anchor="middle" font-size="10" fill="#3f3f3f">标定视点</text>
+  <line x1="190" y1="66" x2="248" y2="66" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="400" y1="60" x2="458" y2="46" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="400" y1="66" x2="458" y2="96" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="400" y1="72" x2="688" y2="72" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="20" y1="140" x2="820" y2="140" stroke="#c8c8c8" stroke-width="1"/>
+  <text x="20" y="168" font-size="13" fill="#262626">运行期（每 DetectionInterval 采样一次）</text>
+  <rect x="20" y="184" width="170" height="52" rx="2" fill="#c8c8c8" stroke="#a4a4a4"/>
+  <text x="105" y="206" text-anchor="middle" font-size="12" fill="#262626">玩家相机</text>
+  <text x="105" y="223" text-anchor="middle" font-size="10" fill="#262626">位置 + 朝向</text>
+  <rect x="250" y="180" width="150" height="60" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="325" y="204" text-anchor="middle" font-size="12" fill="#262626">CheckPuzzle()</text>
+  <text x="325" y="222" text-anchor="middle" font-size="10" fill="#3f3f3f">逐碎片比对 + 视线比对</text>
+  <rect x="460" y="164" width="180" height="46" rx="2" fill="#f5f5f5" stroke="#5a5a5a"/>
+  <text x="550" y="184" text-anchor="middle" font-size="12" fill="#262626">bAlignedNow</text>
+  <text x="550" y="201" text-anchor="middle" font-size="10" fill="#262626">通过率 ≥ 阈值 且 视线对准</text>
+  <rect x="460" y="222" width="180" height="46" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="550" y="242" text-anchor="middle" font-size="12" fill="#262626">HoldTimer / SolveProgress</text>
+  <text x="550" y="259" text-anchor="middle" font-size="10" fill="#3f3f3f">持续计时与进度</text>
+  <rect x="690" y="164" width="130" height="46" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="755" y="184" text-anchor="middle" font-size="12" fill="#262626">bIsSolved</text>
+  <text x="755" y="201" text-anchor="middle" font-size="10" fill="#3f3f3f">终止条件</text>
+  <rect x="250" y="300" width="180" height="52" rx="2" fill="#c8c8c8" stroke="#a9a9a9"/>
+  <text x="340" y="322" text-anchor="middle" font-size="12" fill="#262626">蓝图事件</text>
+  <text x="340" y="339" text-anchor="middle" font-size="10" fill="#262626">Aligned / Lost / Progress / Solved</text>
+  <rect x="470" y="300" width="180" height="52" rx="2" fill="#c8c8c8" stroke="#a9a9a9"/>
+  <text x="560" y="322" text-anchor="middle" font-size="12" fill="#262626">材质标量参数</text>
+  <text x="560" y="339" text-anchor="middle" font-size="10" fill="#262626">GlowIntensity</text>
+  <line x1="190" y1="210" x2="248" y2="210" stroke="#6b6b6b" stroke-width="1.5"/>
+  <line x1="400" y1="200" x2="458" y2="186" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="400" y1="216" x2="458" y2="240" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="620" y1="245" x2="700" y2="200" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="330" y1="240" x2="330" y2="298" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="430" y1="326" x2="468" y2="326" stroke="#8f8f8f" stroke-width="1.5"/>
+  <text x="20" y="392" font-size="11" fill="#3f3f3f">标定期只依赖场景摆放，运行期只依赖相机采样；两条链路之间唯一的接口是 CalibratedData 与标定原点、图案中心。</text>
+  <text x="20" y="410" font-size="11" fill="#3f3f3f">对齐状态发生翻转时派发一次性事件；进度与发光则在每次采样后按当前值刷新。</text>
 </svg>
 <figcaption>图 3-2 标定期与运行期两条数据链路</figcaption>
 </figure>
 <p class="caption">表 3-2 运行时数据结构与生命周期</p>
 <div class="table-wrap"><table><thead><tr><th>数据项</th><th>产生时机</th><th>更新方式</th><th>消费方</th></tr></thead><tbody><tr><td><code>FragmentActors</code></td><td>编辑期人工登记</td><td>仅编辑期</td><td><code>Calibrate</code>、<code>CacheFragmentMaterials</code></td></tr><tr><td><code>CalibratedData</code></td><td>标定</td><td>每次标定整体重建</td><td><code>CheckPuzzle</code>、<code>DrawDebugCalibration</code></td></tr><tr><td><code>CalibratedOrigin</code></td><td>标定</td><td>每次标定重算</td><td><code>CheckPuzzle</code> 的视线判定、调试绘制</td></tr><tr><td><code>CalibratedViewTarget</code></td><td>标定</td><td>每次标定重算</td><td><code>CheckPuzzle</code> 的视线判定</td></tr><tr><td><code>HoldTimer</code> / <code>SolveProgress</code></td><td>运行期</td><td>每次采样累加或清零</td><td>蓝图事件、发光写入</td></tr><tr><td><code>bIsSolved</code></td><td>运行期</td><td>单向置位，仅重置可清除</td><td>采样入口保护、蓝图读取</td></tr><tr><td><code>FragmentMaterials</code></td><td><code>BeginPlay</code></td><td>初始化期建立，之后只写参数</td><td>发光写入</td></tr></tbody></table></div>
 <h3 id="3-5-对外接口设计">3.5 对外接口设计</h3>
-<p>对外接口按&quot;谁能改、谁能调、谁能实现&quot;分成三组，全部通过 UE 的反射宏声明，因此无需修改 C++ 即可在编辑器中完成配置与表现层接线。</p>
+<p>对外接口按“谁能改、谁能调、谁能实现”分成三组，全部通过 UE 的反射宏声明，因此无需修改 C++ 即可在编辑器中完成配置与表现层接线。</p>
 <p class="caption">表 3-3 对外接口清单</p>
 <div class="table-wrap"><table><thead><tr><th>接口</th><th>反射宏</th><th>分类</th><th>用途</th></tr></thead><tbody><tr><td><code>FragmentActors</code></td><td><code>EditAnywhere</code></td><td><code>Puzzle</code></td><td>登记全部碎片 Actor，数量任意</td></tr><tr><td><code>CameraHeightOffset</code></td><td><code>EditAnywhere</code> + <code>ClampMin=0</code></td><td><code>Puzzle</code></td><td>把管理器位置抬升到观察者眼睛高度</td></tr><tr><td><code>GlowParameterName</code></td><td><code>EditAnywhere</code></td><td><code>Puzzle</code></td><td>发光用的材质标量参数名；留空则跳过发光</td></tr><tr><td><code>DotProductThreshold</code></td><td><code>EditAnywhere</code> + <code>ClampMin/ClampMax</code></td><td><code>Detection</code></td><td>单碎片的<strong>方向</strong>容差，语义为夹角余弦</td></tr><tr><td><code>ViewAngleThreshold</code></td><td><code>EditAnywhere</code> + <code>ClampMin/ClampMax</code></td><td><code>Detection</code></td><td><strong>视线</strong>容差，独立于位置判定</td></tr><tr><td><code>DistanceTolerance</code></td><td><code>EditAnywhere</code> + <code>ClampMin=0</code></td><td><code>Detection</code></td><td>单碎片的距离容差（世界单位）</td></tr><tr><td><code>RequiredPassRate</code></td><td><code>EditAnywhere</code> + <code>ClampMin/ClampMax</code></td><td><code>Detection</code></td><td>通过比例阈值</td></tr><tr><td><code>HoldDuration</code></td><td><code>EditAnywhere</code> + <code>ClampMin=0</code></td><td><code>Detection</code></td><td>需要连续保持对齐的时长</td></tr><tr><td><code>DetectionInterval</code></td><td><code>EditAnywhere</code> + <code>ClampMin=0.05</code></td><td><code>Detection</code></td><td>采样间隔，同时充当时长累加的步长</td></tr><tr><td><code>bIsSolved</code> / <code>SolveProgress</code></td><td><code>BlueprintReadOnly</code></td><td><code>State</code></td><td>供蓝图读取的状态快照</td></tr><tr><td><code>Calibrate()</code></td><td><code>BlueprintCallable</code> + <code>CallInEditor</code></td><td><code>Puzzle</code></td><td>建立标定数据；可在编辑器细节面板直接执行</td></tr><tr><td><code>ResetPuzzle()</code></td><td><code>BlueprintCallable</code></td><td><code>Puzzle</code></td><td>状态复位并重开检测定时器</td></tr><tr><td><code>DrawDebugCalibration(float)</code></td><td><code>BlueprintCallable</code> + <code>CallInEditor</code></td><td><code>Debug</code></td><td>绘制标定原点、碎片位置与连线</td></tr><tr><td><code>OnPuzzleSolved()</code></td><td><code>BlueprintImplementableEvent</code></td><td><code>Events</code></td><td>判定成功时派发一次</td></tr><tr><td><code>OnViewAligned()</code></td><td><code>BlueprintImplementableEvent</code></td><td><code>Events</code></td><td>由未对齐进入对齐时派发一次</td></tr><tr><td><code>OnViewLost()</code></td><td><code>BlueprintImplementableEvent</code></td><td><code>Events</code></td><td>由对齐进入未对齐时派发一次</td></tr><tr><td><code>OnProgressUpdated(float)</code></td><td><code>BlueprintImplementableEvent</code></td><td><code>Events</code></td><td>每次采样后派发当前进度</td></tr></tbody></table></div>
 <p>三个分组的设计意图各不相同。</p>
-<p><strong>参数（<code>EditAnywhere</code>）承担调参职责。</strong> 方向容差、距离容差、通过比例、保持时长都属于手感参数，需要在运行时反复试凑。把它们暴露为可编辑属性，调参过程就不需要重新编译；<code>ClampMin</code> / <code>ClampMax</code> 元数据同时起到范围保护作用——例如方向容差被约束在 <span class="eq">[0.9, 1.0]</span>，而余弦值只有落在该区间才对应&quot;小角度偏差&quot;这一物理含义。</p>
+<p><strong>参数（<code>EditAnywhere</code>）承担调参职责。</strong> 方向容差、距离容差、通过比例、保持时长都属于手感参数，需要在运行时反复试凑。把它们暴露为可编辑属性，调参过程就不需要重新编译；<code>ClampMin</code> / <code>ClampMax</code> 元数据同时起到范围保护作用——例如方向容差被约束在 <span class="eq">[0.9, 1.0]</span>，而余弦值只有落在该区间才对应“小角度偏差”这一物理含义。</p>
 <p><strong>状态（<code>BlueprintReadOnly</code>）只读不写。</strong> 状态由判定逻辑单方面维护，若同时开放写权限，蓝图侧的任何误写都会让状态机与判定结果脱节；只读暴露既满足了表现层读取进度的需求，又保持了状态的单一来源。</p>
-<p><strong>表现（<code>BlueprintImplementableEvent</code>）只在 C++ 中声明。</strong> 这四个函数没有 C++ 实现体，蓝图侧以事件节点形式出现，实现内容完全由表现层决定。这样划分的收益是双向的：C++ 侧只需保证&quot;在正确的时机调用一次&quot;，不必知道成功后要开门还是播放音效；表现侧则可以在不触碰判定算法的前提下增删逻辑，且不需要重新编译 C++ 模块。</p>
+<p><strong>表现（<code>BlueprintImplementableEvent</code>）只在 C++ 中声明。</strong> 这四个函数没有 C++ 实现体，蓝图侧以事件节点形式出现，实现内容完全由表现层决定。这样划分的收益是双向的：C++ 侧只需保证“在正确的时机调用一次”，不必知道成功后要开门还是播放音效；表现侧则可以在不触碰判定算法的前提下增删逻辑，且不需要重新编译 C++ 模块。</p>
 <p>值得注意的是事件语义被刻意设计为两种形态。<code>OnViewAligned</code> / <code>OnViewLost</code> 属于<strong>边沿触发</strong>：由 <code>bWasAligned</code> 保存上一次采样结果，只有状态发生翻转时才各触发一次，适合播放一次性的音效或动画。<code>OnProgressUpdated</code> 则属于<strong>电平刷新</strong>：它在对齐期间随每次采样派发，携带连续变化的进度值，适合驱动进度条或渐强效果。</p>
-<p>两者在&quot;失去对齐&quot;这一情形下的分工需要特别留意：失焦分支把 <code>HoldTimer</code> 与 <code>SolveProgress</code> 清零，但<strong>不派发</strong> <code>OnProgressUpdated</code>，归零通知完全由 <code>OnViewLost</code> 承担。表现层若只在 <code>OnProgressUpdated</code> 中更新进度显示，就会在失焦瞬间停留在上一次的进度值上；正确做法是在 <code>OnViewLost</code> 中同步复位显示。</p>
-<p>成功分支在置位 <code>bIsSolved</code> 之后又显式派发了一次 <code>OnProgressUpdated(1.0f)</code>。由于该次采样的进度值经 <code>Clamp</code> 后已经是 1.0，这次派发在数值上是重复的；它的实际作用是把&quot;成功即进度为 1&quot;这一契约写在成功路径上，而不是依赖钳制的边界行为。</p>
+<p>两者在“失去对齐”这一情形下的分工需要特别留意：失焦分支把 <code>HoldTimer</code> 与 <code>SolveProgress</code> 清零，但<strong>不派发</strong> <code>OnProgressUpdated</code>，归零通知完全由 <code>OnViewLost</code> 承担。表现层若只在 <code>OnProgressUpdated</code> 中更新进度显示，就会在失焦瞬间停留在上一次的进度值上；正确做法是在 <code>OnViewLost</code> 中同步复位显示。</p>
+<p>成功分支在置位 <code>bIsSolved</code> 之后又显式派发了一次 <code>OnProgressUpdated(1.0f)</code>。由于该次采样的进度值经 <code>Clamp</code> 后已经是 1.0，这次派发在数值上是重复的；它的实际作用是把“成功即进度为 1”这一契约写在成功路径上，而不是依赖钳制的边界行为。</p>
 <h3 id="3-6-生命周期">3.6 生命周期</h3>
 <p>Actor 的生命周期钩子只有两个被使用：构造函数负责建立组件结构，<code>BeginPlay</code> 负责按固定顺序完成一次性初始化。</p>
 <p class="caption">代码 3-3 构造函数与 BeginPlay 的初始化顺序（节选，中间的空 Tick 实现已省略）</p>
@@ -331,13 +324,13 @@ USTRUCT(BlueprintType)
     ResetPuzzle();
     DrawDebugCalibration(<span class="tok-num">100000.0f</span>); <span class="tok-com">// 调试：运行时持续显示目标位置和碎片位置</span>
 }</code></pre></div>
-<p><strong>构造函数只做两件事。</strong> 其一是<strong>关闭逐帧 Tick</strong>（<code>bCanEverTick = false</code>）：检测由定时器按 <code>DetectionInterval</code> 驱动，逐帧回调（约 16 ms 一次）既无必要也浪费性能，关闭后 <code>Tick</code> 的实现体保持为空且不会被调用。其二是<strong>指定根组件</strong>。根组件是 Actor 组件树的锚点，<code>RootComponent</code> 必须被赋值，否则组件无法参与变换层级。此处选择 <code>UArrowComponent</code> 而非更&quot;通用&quot;的 <code>USceneComponent</code>，原因是箭头在编辑器中自带方向可视化：管理器在关卡里同时表达&quot;标定位置&quot;和&quot;观察朝向&quot;两个信息，箭头使两者都能被肉眼确认，摆放阶段不必依赖调试绘制。</p>
+<p><strong>构造函数只做两件事。</strong> 其一是<strong>关闭逐帧 Tick</strong>（<code>bCanEverTick = false</code>）：检测由定时器按 <code>DetectionInterval</code> 驱动，逐帧回调（约 16 ms 一次）既无必要也浪费性能，关闭后 <code>Tick</code> 的实现体保持为空且不会被调用。其二是<strong>指定根组件</strong>。根组件是 Actor 组件树的锚点，<code>RootComponent</code> 必须被赋值，否则组件无法参与变换层级。此处选择 <code>UArrowComponent</code> 而非更“通用”的 <code>USceneComponent</code>，原因是箭头在编辑器中自带方向可视化：管理器在关卡里同时表达“标定位置”和“观察朝向”两个信息，箭头使两者都能被肉眼确认，摆放阶段不必依赖调试绘制。</p>
 <p><strong><code>BeginPlay</code> 的四步顺序不可交换。</strong> <code>Calibrate()</code> 必须先于 <code>CacheFragmentMaterials()</code>，因为标定可能因空指针等原因跳过部分碎片，而材质缓存遍历的是同一份 <code>FragmentActors</code> 列表，两者共享同一轮人工登记结果；若先建材质再标定，一旦中途调整了列表就会出现索引错位。<code>ResetPuzzle()</code> 必须在标定之后，因为它除了复位状态，还负责<strong>启动检测定时器</strong>——定时器的第一次回调会立即使用标定数据，若数据尚未建立，首次采样会因 <code>CalibratedData.Num() == 0</code> 直接返回。最后的 <code>DrawDebugCalibration(100000.0f)</code> 传入一个极大的持续时长，使调试几何体在整个运行期间保持可见，便于在游玩过程中确认标定位置是否与预期一致。</p>
-<p><strong>重置与初始化共用同一条路径。</strong> <code>ResetPuzzle()</code> 同时承担&quot;首次启动&quot;与&quot;重复调用&quot;两种语义：它先清除既有的定时器句柄再重新注册，因此重复调用不会叠加多个定时器；状态字段被显式复位为初值，<code>bIsSolved</code> 也随之清除。这一设计使系统天然支持&quot;谜题重新开始&quot;，代价是解谜成功后若再次调用重置会重新开启检测，该行为是否符合预期取决于使用场景，需要在关卡逻辑中明确约定。</p>
+<p><strong>重置与初始化共用同一条路径。</strong> <code>ResetPuzzle()</code> 同时承担“首次启动”与“重复调用”两种语义：它先清除既有的定时器句柄再重新注册，因此重复调用不会叠加多个定时器；状态字段被显式复位为初值，<code>bIsSolved</code> 也随之清除。这一设计使系统天然支持“谜题重新开始”，代价是解谜成功后若再次调用重置会重新开启检测，该行为是否符合预期取决于使用场景，需要在关卡逻辑中明确约定。</p>
 <h3 id="3-7-小结">3.7 小结</h3>
 <ul>
 <li>判定目标的全局性决定了架构形态：碎片只提供世界坐标与材质，相机只提供视点采样，全部状态与判定逻辑集中在单一的管理器 Actor 中。</li>
-<li>碎片数量可变这一约束贯穿实现：所有循环、通过率、材质遍历都以列表长度为准，判定结果由&quot;通过比例&quot;而非&quot;全部通过&quot;给出，使拆分数量变化时无需修改任何常数。</li>
+<li>碎片数量可变这一约束贯穿实现：所有循环、通过率、材质遍历都以列表长度为准，判定结果由“通过比例”而非“全部通过”给出，使拆分数量变化时无需修改任何常数。</li>
 <li>数据被明确划分为两条链路：标定期把场景事实固化为 <code>CalibratedData</code>、<code>CalibratedOrigin</code> 与 <code>CalibratedViewTarget</code>；运行期只做采样比对，产生状态迁移与对外消息。</li>
 <li>接口按职责三分：可编辑属性承担调参，只读属性暴露状态，<code>BlueprintImplementableEvent</code> 把表现层完全外置，使判定算法与表现形式可以独立演进。</li>
 <li>生命周期上关闭了逐帧 Tick，改由固定间隔的定时器驱动；<code>BeginPlay</code> 中标定、材质缓存、重置与调试绘制四步的先后顺序由数据依赖决定，不可交换。</li>
@@ -346,7 +339,7 @@ USTRUCT(BlueprintType)
 
 <section class="chapter" id="ch4">
 <h2><a class="anchor" href="#ch4" aria-label="链接到本节">#</a><span class="cnum">4</span>标定：正确视角的确定与数据表示</h2>
-<p>透视拼接谜题把一张图案拆成若干碎片，分别贴在不同深度的物体表面。只有当观察者处在某一个特定位置、朝某一个特定方向看去时，碎片才会在视野里拼合成完整图案。这意味着系统的第一项任务不是&quot;检测&quot;，而是把一个几何事实固定下来：<strong>设计者认定的那个正确视角，究竟对应哪些可计算的量</strong>。这个过程称为标定（calibration）。</p>
+<p>透视拼接谜题把一张图案拆成若干碎片，分别贴在不同深度的物体表面。只有当观察者处在某一个特定位置、朝某一个特定方向看去时，碎片才会在视野里拼合成完整图案。这意味着系统的第一项任务不是“检测”，而是把一个几何事实固定下来：<strong>设计者认定的那个正确视角，究竟对应哪些可计算的量</strong>。这个过程称为标定（calibration）。</p>
 <p>标定只在场景确定后执行一次，产物是一份紧凑的数据表；运行期检测的全部工作，就是把实时相机状态与这份数据表逐项比对。因此标定的数据表示直接决定了检测判据的表达能力——少存一个量，就会有一整类错误姿势无法被排除。</p>
 <h3 id="4-1-标定的目标">4.1 标定的目标</h3>
 <p>标定需要回答两个问题：</p>
@@ -354,7 +347,7 @@ USTRUCT(BlueprintType)
 <li><strong>观察者应当站在哪里</strong>——一个世界坐标，称为标定原点（<code>CalibratedOrigin</code>）；</li>
 <li><strong>从这个位置看出去，各碎片呈现为何种几何关系</strong>——为每个碎片保存一个方向与一个距离。</li>
 </ol>
-<p>值得强调的是标定的输入：它读取的是<strong>碎片在场景中的摆放位置</strong>，而不是图案图像本身。碎片是被人为摆放到&quot;在正确视角下恰好拼合&quot;的位置上的，因此&quot;正确视角&quot;与&quot;标定时所采样的那组几何关系&quot;在系统中等价。这一等价关系带来两个直接后果：</p>
+<p>值得强调的是标定的输入：它读取的是<strong>碎片在场景中的摆放位置</strong>，而不是图案图像本身。碎片是被人为摆放到“在正确视角下恰好拼合”的位置上的，因此“正确视角”与“标定时所采样的那组几何关系”在系统中等价。这一等价关系带来两个直接后果：</p>
 <ul>
 <li>判定基准完全由场景摆放决定，调整图案的视觉拼接效果不需要改动检测代码；</li>
 <li>一旦碎片位置改变，旧标定立即失效，且失效是<strong>静默</strong>的——检测不会报错，只会永远不通过。</li>
@@ -366,12 +359,12 @@ USTRUCT(BlueprintType)
 <p>各量的含义如下：</p>
 <p class="eq">Origin = ManagerLocation + (0, 0, h)，h = CameraHeightOffset</p>
 <p>其中 <code>CameraHeightOffset</code> 的默认值是 160.0（单位与 UE 的世界单位一致，即厘米），并带有 <code>meta = (ClampMin = 0.0f)</code> 的下限约束。</p>
-<p><strong>为什么要拆成两个量。</strong> 把 Manager 放在地面上摆放，符合关卡编辑的直觉：地面是天然的参考平面，坐标水平方向的 X/Y 可以直接对着地砖网格拖拽，Z 保持在 0 便于判断&quot;人站在哪一格&quot;。真正需要精确控制的只是高度，于是把高度单独抽成一个可调标量。若把原点直接绑在 Actor 上，则需要把 Actor 悬空放置到视高，既难以对准地面网格，也让&quot;水平站位&quot;与&quot;观察高度&quot;两个互相独立的意图挤在同一个坐标里。</p>
-<p><strong>高度偏移的语义是&quot;玩家视高&quot;。</strong> 运行期的位置判据用的是玩家相机位置，因此 <code>CameraHeightOffset</code> 必须等于该角色实际的眼高，而不是一个想当然的经验值。一旦两者不一致，原点就会与相机存在一个固定的垂直偏差，这个偏差会<strong>同时污染方向与距离</strong>两项判据：相机沿着垂直方向偏离原点后，指向碎片的单位向量会整体倾斜，点积随之下降；同时相机到碎片的距离也会改变。</p>
-<p>这种失效有一类特征明显的现象：水平站位完全正确、朝向也正确，但判定始终不通过，且日志中&quot;相机到原点的距离&quot;稳定停在一个非零值上。例如把 Manager 放在 Z=0 的地面、偏移取默认 160，而角色相机实际位于 Z=246 时：</p>
+<p><strong>为什么要拆成两个量。</strong> 把 Manager 放在地面上摆放，符合关卡编辑的直觉：地面是天然的参考平面，坐标水平方向的 X/Y 可以直接对着地砖网格拖拽，Z 保持在 0 便于判断“人站在哪一格”。真正需要精确控制的只是高度，于是把高度单独抽成一个可调标量。若把原点直接绑在 Actor 上，则需要把 Actor 悬空放置到视高，既难以对准地面网格，也让“水平站位”与“观察高度”两个互相独立的意图挤在同一个坐标里。</p>
+<p><strong>高度偏移的语义是“玩家视高”。</strong> 运行期的位置判据用的是玩家相机位置，因此 <code>CameraHeightOffset</code> 必须等于该角色实际的眼高，而不是一个想当然的经验值。一旦两者不一致，原点就会与相机存在一个固定的垂直偏差，这个偏差会<strong>同时污染方向与距离</strong>两项判据：相机沿着垂直方向偏离原点后，指向碎片的单位向量会整体倾斜，点积随之下降；同时相机到碎片的距离也会改变。</p>
+<p>这种失效有一类特征明显的现象：水平站位完全正确、朝向也正确，但判定始终不通过，且日志中“相机到原点的距离”稳定停在一个非零值上。例如把 Manager 放在 Z=0 的地面、偏移取默认 160，而角色相机实际位于 Z=246 时：</p>
 <p class="caption">代码 4-2 高度不匹配时的典型日志</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="text"><code>LogTemp: Cam=X=2644.057 Y=2669.098 Z=246.052 Origin=X=2635.150 Y=2667.804 Z=160.000 Offset=86.5</code></pre></div>
-<p>水平方向只差约 10 个单位，垂直方向却差了 86 个单位——偏差几乎全部来自高度，足以让方向判据跌出容差。把 <code>CameraHeightOffset</code> 改为 246（即角色真实视高）后，原点与相机重合并恢复通过。这里的结论不是&quot;某个数值错了&quot;，而是：<strong>该参数没有可继承的默认值，必须按角色实测</strong>。</p>
+<p>水平方向只差约 10 个单位，垂直方向却差了 86 个单位——偏差几乎全部来自高度，足以让方向判据跌出容差。把 <code>CameraHeightOffset</code> 改为 246（即角色真实视高）后，原点与相机重合并恢复通过。这里的结论不是“某个数值错了”，而是：<strong>该参数没有可继承的默认值，必须按角色实测</strong>。</p>
 <p class="caption">表 4-1 标定原点的构成</p>
 <div class="table-wrap"><table><thead><tr><th>组成</th><th>来源</th><th>语义</th><th>约束</th></tr></thead><tbody><tr><td>ManagerLocation</td><td>Manager Actor 的关卡摆放位置</td><td>玩家应当站立的水平位置</td><td>关卡编辑时确定</td></tr><tr><td>CameraHeightOffset</td><td>类默认值 160.0，可实例覆盖</td><td>从地面到玩家视高的垂直距离</td><td><code>ClampMin = 0.0f</code></td></tr><tr><td>CalibratedOrigin</td><td>两者相加</td><td>位置判据与视线判据的共同基准点</td><td>每次 <code>Calibrate()</code> 重算</td></tr></tbody></table></div>
 <h3 id="4-3-单碎片标定量-方向与距离的极坐标分解">4.3 单碎片标定量：方向与距离的极坐标分解</h3>
@@ -398,18 +391,18 @@ USTRUCT(BlueprintType)
     <span class="tok-key">float</span> TargetDistance;
 };</code></pre></div>
 <p class="caption">表 4-2 `FCalibratedMarkPoint` 字段与用途</p>
-<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>含义</th><th>运行期用途</th></tr></thead><tbody><tr><td><code>FragmentActor</code></td><td><code>AActor*</code></td><td>场景中的碎片 Actor，带 <code>UPROPERTY(EditAnywhere, BlueprintReadWrite)</code></td><td>关联关系；不参与数值比对</td></tr><tr><td><code>WorldLocation</code></td><td><code>FVector</code></td><td>标定时刻碎片的真实世界坐标</td><td>运行期计算&quot;相机→碎片&quot;的当前方向与距离；调试图元中的橙色球</td></tr><tr><td><code>TargetDirection</code></td><td><code>FVector</code></td><td>由原点指向碎片的<strong>单位</strong>方向向量</td><td>方向判据的比较基准</td></tr><tr><td><code>TargetDistance</code></td><td><code>float</code></td><td>原点到碎片的直线距离（标量）</td><td>距离判据的比较基准</td></tr></tbody></table></div>
-<p><strong>为什么存&quot;方向 + 距离&quot;而不是只存位置。</strong> 只存位置在原理上也能恢复方向与距离（做减法即可），但把二者显式分解出来会带来两点实质差别。</p>
-<p>其一，判据可以直接建立在&quot;相对相机&quot;的量上，无需在每次检测里重复推导基准。更关键的是第二点：<strong>方向与距离在几何上互补，各自存在一整类无法分辨的退化情形</strong>。</p>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>含义</th><th>运行期用途</th></tr></thead><tbody><tr><td><code>FragmentActor</code></td><td><code>AActor*</code></td><td>场景中的碎片 Actor，带 <code>UPROPERTY(EditAnywhere, BlueprintReadWrite)</code></td><td>关联关系；不参与数值比对</td></tr><tr><td><code>WorldLocation</code></td><td><code>FVector</code></td><td>标定时刻碎片的真实世界坐标</td><td>运行期计算“相机→碎片”的当前方向与距离；调试图元中的橙色球</td></tr><tr><td><code>TargetDirection</code></td><td><code>FVector</code></td><td>由原点指向碎片的<strong>单位</strong>方向向量</td><td>方向判据的比较基准</td></tr><tr><td><code>TargetDistance</code></td><td><code>float</code></td><td>原点到碎片的直线距离（标量）</td><td>距离判据的比较基准</td></tr></tbody></table></div>
+<p><strong>为什么存“方向 + 距离”而不是只存位置。</strong> 只存位置在原理上也能恢复方向与距离（做减法即可），但把二者显式分解出来会带来两点实质差别。</p>
+<p>其一，判据可以直接建立在“相对相机”的量上，无需在每次检测里重复推导基准。更关键的是第二点：<strong>方向与距离在几何上互补，各自存在一整类无法分辨的退化情形</strong>。</p>
 <ul>
-<li><strong>方向对&quot;沿射线的前后位置&quot;完全不敏感。</strong> 设标定原点为 $O$、碎片为 $P$，令 $\hat{d} = (P - O)/|P - O|$ 为标定方向。若把相机沿同一条射线前后移动，即 $C = O + t\hat{d}$（$t &gt; 0$），则当前方向</li>
+<li><strong>方向对“沿射线的前后位置”完全不敏感。</strong> 设标定原点为 $O$、碎片为 $P$，令 $\hat{d} = (P - O)/|P - O|$ 为标定方向。若把相机沿同一条射线前后移动，即 $C = O + t\hat{d}$（$t &gt; 0$），则当前方向</li>
 </ul>
 <p class="eq">(P − C)/|P − C| = ((1 − t)·(P − O))/|1 − t|·|P − O| = ±d̂</p>
 <p>  始终与标定方向平行，点积恒为 1。但沿射线前后移动会直接改变观察距离，使其在不同深度上的碎片产生不同比例的缩放，图案因<strong>视差</strong>而散开。仅靠方向判据，这条射线上的任意位置都会通过。</p>
 <ul>
-<li><strong>距离对&quot;绕碎片的横向位置&quot;不敏感。</strong> 若相机在以碎片为球心、<code>TargetDistance</code> 为半径的球面上移动，相机到碎片的距离保持不变，但方向已经改变。</li>
+<li><strong>距离对“绕碎片的横向位置”不敏感。</strong> 若相机在以碎片为球心、<code>TargetDistance</code> 为半径的球面上移动，相机到碎片的距离保持不变，但方向已经改变。</li>
 </ul>
-<p>两者合起来才构成一个完整的约束：方向锁住&quot;从原点看出去的角位置&quot;，距离锁住&quot;沿该方向的尺度&quot;。这在几何上正是把 $(P - O)$ 做了<strong>极坐标分解</strong>——一个单位方向加一个半径。检测侧的对偶形式是：</p>
+<p>两者合起来才构成一个完整的约束：方向锁住“从原点看出去的角位置”，距离锁住“沿该方向的尺度”。这在几何上正是把 $(P - O)$ 做了<strong>极坐标分解</strong>——一个单位方向加一个半径。检测侧的对偶形式是：</p>
 <p class="eq">Dot = Ĉ·d̂ ≥ DotProductThreshold，DistDiff = |&#124;C − P&#124; − TargetDistance| ≤ DistanceTolerance</p>
 <p>关于反射标记还有一个容易忽略的细节：四个字段中只有 <code>FragmentActor</code> 带有 <code>UPROPERTY</code> 宏，<code>WorldLocation</code>、<code>TargetDirection</code>、<code>TargetDistance</code> 都是普通成员。这意味着后三者不参与引擎的反射与序列化，不会出现在细节面板中，也不能直接被蓝图读写。它们被当作纯运行期数据使用——这是有意的取舍，但也意味着标定结果无法在编辑器里逐项目视检查，只能依赖 4.6 的调试绘制。</p>
 <h3 id="4-4-图案中心-视线判据的单一参考点">4.4 图案中心：视线判据的单一参考点</h3>
@@ -439,14 +432,14 @@ USTRUCT(BlueprintType)
 	CalibratedViewTarget = (Count &gt; <span class="tok-num">0</span>) ? CenterAccum / Count : CalibratedOrigin;</code></pre></div>
 <p>其定义即等权算术平均：</p>
 <p class="eq">CalibratedViewTarget = (1/N) Σᵢ pᵢ，N 为有效碎片数</p>
-<p><strong>为什么不用&quot;各碎片方向的平均&quot;。</strong> 一个自然的替代方案是先把每个碎片的单位方向向量求平均，用结果作为视线参考方向。这种做法有三个问题，且第一个是致命的：</p>
+<p><strong>为什么不用“各碎片方向的平均”。</strong> 一个自然的替代方案是先把每个碎片的单位方向向量求平均，用结果作为视线参考方向。这种做法有三个问题，且第一个是致命的：</p>
 <ol>
 <li><strong>可能退化为零向量。</strong> 若两个碎片相对原点近似相反（例如一前一后），单位向量的平均长度趋近于 0；<code>GetSafeNormal()</code> 对零长度向量返回零向量，随后与相机朝向的点积恒为 0，视线判据将<strong>永远</strong>无法通过。这类失败既不报错也无法通过调参救回。</li>
-<li><strong>丢失&quot;看向何处&quot;的语义。</strong> 方向平均把距离完全不同的碎片当作等权样本，得到的既不对应任何碎片，也不对应图案的视觉中心。</li>
-<li><strong>与位置判据的职责重叠。</strong> 位置判据已经是&quot;逐碎片比方向&quot;的多路比较；视线判据需要回答的是另一个问题——观察者是否正看着<strong>图案整体</strong>。几何中心正是拼合后图案的视觉中心，与&quot;看向图案&quot;这一行为直接对应。</li>
+<li><strong>丢失“看向何处”的语义。</strong> 方向平均把距离完全不同的碎片当作等权样本，得到的既不对应任何碎片，也不对应图案的视觉中心。</li>
+<li><strong>与位置判据的职责重叠。</strong> 位置判据已经是“逐碎片比方向”的多路比较；视线判据需要回答的是另一个问题——观察者是否正看着<strong>图案整体</strong>。几何中心正是拼合后图案的视觉中心，与“看向图案”这一行为直接对应。</li>
 </ol>
 <p>由此形成职责分离：<strong>位置判据逐碎片比较（多路方向 + 多路距离），视线判据只比较一个方向（原点 → 几何中心）</strong>。</p>
-<p>需要留意一个退化分支：当 <code>Count</code> 为 0 时，代码把 <code>CalibratedViewTarget</code> 直接取为 <code>CalibratedOrigin</code>。此时&quot;几何中心减原点&quot;是零向量，视线方向无定义，判据恒不通过。实际上 <code>CheckPuzzle()</code> 在 <code>CalibratedData.Num() == 0</code> 时会提前返回，因此该分支属于防御性写法，而不是可运行的正常路径。</p>
+<p>需要留意一个退化分支：当 <code>Count</code> 为 0 时，代码把 <code>CalibratedViewTarget</code> 直接取为 <code>CalibratedOrigin</code>。此时“几何中心减原点”是零向量，视线方向无定义，判据恒不通过。实际上 <code>CheckPuzzle()</code> 在 <code>CalibratedData.Num() == 0</code> 时会提前返回，因此该分支属于防御性写法，而不是可运行的正常路径。</p>
 <h3 id="4-5-标定流程与调用时机">4.5 标定流程与调用时机</h3>
 <p>标定在 <code>BeginPlay()</code> 中与材质缓存、状态重置一起构成初始化序列：</p>
 <p class="caption">代码 4-5 初始化序列（节选自 `PerspectivePuzzleManager.cpp`）</p>
@@ -461,13 +454,13 @@ USTRUCT(BlueprintType)
 }</code></pre></div>
 <p>四步的顺序不是随意的：</p>
 <ol>
-<li><code>Calibrate()</code> <strong>必须最先</strong>。<code>ResetPuzzle()</code> 会开启一个以 <code>DetectionInterval</code>（0.1 秒）为周期的循环定时器，而 <code>CheckPuzzle()</code> 的第一句就是&quot;已解出或标定数据为空则返回&quot;。如果定时器先于标定启动，最初的若干个检测周期会静默地在空数据上返回——功能上无害，但会掩盖&quot;标定失败&quot;这一真实故障。</li>
+<li><code>Calibrate()</code> <strong>必须最先</strong>。<code>ResetPuzzle()</code> 会开启一个以 <code>DetectionInterval</code>（0.1 秒）为周期的循环定时器，而 <code>CheckPuzzle()</code> 的第一句就是“已解出或标定数据为空则返回”。如果定时器先于标定启动，最初的若干个检测周期会静默地在空数据上返回——功能上无害，但会掩盖“标定失败”这一真实故障。</li>
 <li><code>CacheFragmentMaterials()</code> 在标定之后执行，为每个碎片建立可供运行时改参的动态材质实例；检测通过时写入发光参数的就是这批实例。</li>
 <li><code>ResetPuzzle()</code> 清零状态并启动定时器，从此进入运行期检测。</li>
 <li><code>DrawDebugCalibration(100000.0f)</code> 以约 27.8 小时的存活时间绘制标定图元，等效于常驻显示。</li>
 </ol>
 <p><code>Calibrate()</code> 自身的副作用同样值得注意。它以 <code>CalibratedData.Empty()</code> 开头，因此重复调用是幂等的——先清空再重建，不会累积旧条目。这正是它能够被挂到编辑器按钮上（<code>CallInEditor = &quot;true&quot;</code>）反复执行的前提：改动碎片位置后重新标定，得到的一定是当前场景的完整快照。</p>
-<p>标定结束时写入的日志是判断&quot;碎片有没有被正确挂上&quot;的第一手证据：</p>
+<p>标定结束时写入的日志是判断“碎片有没有被正确挂上”的第一手证据：</p>
 <p class="caption">代码 4-6 标定结果日志（节选自 `PerspectivePuzzleManager.cpp`）</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code>	<span class="tok-key">UE_LOG</span>(LogTemp, Log, <span class="tok-key">TEXT</span>(<span class="tok-str">&quot;Calibrate: %d points recorded, view target %s&quot;</span>), CalibratedData.Num(), *CalibratedViewTarget.ToString());</code></pre></div>
 <p>标定条目数少于预期，通常意味着 <code>FragmentActors</code> 数组中有空槽或漏拖。这里存在一处需要留意的<strong>容忍度不一致</strong>：<code>Calibrate()</code> 用 <code>if (!Actor) continue;</code> 跳过空槽，并且只对有效碎片计数（因此通过率的分子分母始终自洽）；而 <code>CacheFragmentMaterials()</code> 没有任何空指针防护，它直接对数组的每个元素调用 <code>FindComponentByClass</code>。两者对同一份 <code>FragmentActors</code> 的健壮性不同，实践含义是：<strong><code>FragmentActors</code> 中不应保留未赋值的空槽</strong>。</p>
@@ -490,40 +483,40 @@ USTRUCT(BlueprintType)
 }</code></pre></div>
 <p class="caption">表 4-3 调试图元的语义</p>
 <div class="table-wrap"><table><thead><tr><th>图元</th><th>位置</th><th>尺寸与颜色</th><th>用于核对</th></tr></thead><tbody><tr><td><code>DrawDebugSphere</code></td><td><code>CalibratedOrigin</code></td><td>半径 20，12 段，青色</td><td>标定原点是否落在预期视高上</td></tr><tr><td><code>DrawDebugSphere</code></td><td>每个 <code>Point.WorldLocation</code></td><td>半径 15，8 段，橙色</td><td>碎片是否被正确收录、位置是否与视觉一致</td></tr><tr><td><code>DrawDebugLine</code></td><td>原点 → 碎片</td><td>黄色</td><td>方向与距离的整体形态是否符合预期</td></tr></tbody></table></div>
-<p><strong>为什么用 DrawDebug 而不是运行时 UI。</strong> 需要核对的三个量全部是<strong>世界空间</strong>的量，调试图元与它们处在同一坐标系中，可以用眼睛直接比较&quot;球是否正好在视平线上&quot;&quot;连线是否穿过碎片中心&quot;。而屏幕空间的 UMG 只能显示数值，无法回答&quot;这个数在场景里对应哪里&quot;。此外，调试绘制不需要新增任何资产，也不改变 Actor 的组件结构。</p>
-<p>调用时机上有一处细节：函数签名的默认参数是 <code>Duration = 5.0f</code>，而初始化时传入的是 <code>100000.0f</code>，把临时可视化变成了常驻可视化。这也提示了一个使用要点——该函数同时被标记为 <code>CallInEditor</code>，可以在编辑器里手动触发一次短时绘制；若只依赖默认参数，图元会在 5 秒后消失，容易误判为&quot;没有绘制&quot;。</p>
-<p>实际操作上，标定核对的方法是：站到预期位置，观察青色球是否恰好位于视平线上，同时查看日志里相机到原点的距离是否趋近 0。若两者都成立，则高度偏移正确；若球明显偏高或偏低，则应回到 4.2 修正 <code>CameraHeightOffset</code>，而不是去放松方向阈值来&quot;凑&quot;通过。</p>
+<p><strong>为什么用 DrawDebug 而不是运行时 UI。</strong> 需要核对的三个量全部是<strong>世界空间</strong>的量，调试图元与它们处在同一坐标系中，可以用眼睛直接比较“球是否正好在视平线上”“连线是否穿过碎片中心”。而屏幕空间的 UMG 只能显示数值，无法回答“这个数在场景里对应哪里”。此外，调试绘制不需要新增任何资产，也不改变 Actor 的组件结构。</p>
+<p>调用时机上有一处细节：函数签名的默认参数是 <code>Duration = 5.0f</code>，而初始化时传入的是 <code>100000.0f</code>，把临时可视化变成了常驻可视化。这也提示了一个使用要点——该函数同时被标记为 <code>CallInEditor</code>，可以在编辑器里手动触发一次短时绘制；若只依赖默认参数，图元会在 5 秒后消失，容易误判为“没有绘制”。</p>
+<p>实际操作上，标定核对的方法是：站到预期位置，观察青色球是否恰好位于视平线上，同时查看日志里相机到原点的距离是否趋近 0。若两者都成立，则高度偏移正确；若球明显偏高或偏低，则应回到 4.2 修正 <code>CameraHeightOffset</code>，而不是去放松方向阈值来“凑”通过。</p>
 <figure>
 <svg viewBox="0 0 780 320" width="780" height="320" role="img" aria-label="标定几何示意">
-<defs><marker id="arw4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b756b"/></marker></defs>
-<line x1="30" y1="272" x2="750" y2="272" stroke="#b9b2a5" stroke-width="2"/>
-<text x="700" y="292" font-size="12" fill="#7b756b">地面 Z = 0</text>
-<rect x="78" y="244" width="30" height="28" rx="3" fill="#efece5" stroke="#a89f8f"/>
-<text x="60" y="262" font-size="12" fill="#4a463f">Manager</text>
-<line x1="93" y1="244" x2="93" y2="152" stroke="#7b756b" stroke-dasharray="4 3" marker-end="url(#arw4a)"/>
-<text x="100" y="205" font-size="12" fill="#a3432a">CameraHeightOffset = 160</text>
-<circle cx="93" cy="148" r="7" fill="#2aa6b8"/>
-<text x="106" y="140" font-size="12.5" fill="#1c1a17">CalibratedOrigin（标定原点 = 玩家视高）</text>
-<rect x="404" y="176" width="22" height="96" fill="#efece5" stroke="#a89f8f"/>
-<circle cx="415" cy="140" r="6" fill="#e08a2a"/>
-<text x="352" y="130" font-size="12.5" fill="#1c1a17">碎片 A（近，柱面）</text>
-<rect x="636" y="120" width="18" height="152" fill="#efece5" stroke="#a89f8f"/>
-<circle cx="645" cy="104" r="6" fill="#e08a2a"/>
-<text x="596" y="94" font-size="12.5" fill="#1c1a17">碎片 B（远，墙面）</text>
-<line x1="93" y1="148" x2="409" y2="140" stroke="#c8962e" stroke-width="1.6"/>
-<line x1="93" y1="148" x2="639" y2="104" stroke="#c8962e" stroke-width="1.6"/>
-<circle cx="530" cy="122" r="6" fill="#3f9142"/>
-<text x="440" y="150" font-size="12.5" fill="#1c1a17">CalibratedViewTarget</text>
-<text x="440" y="167" font-size="12" fill="#7b756b">（碎片几何中心）</text>
-<line x1="93" y1="148" x2="524" y2="122" stroke="#3f9142" stroke-width="1.6" stroke-dasharray="6 4"/>
-<text x="150" y="120" font-size="12" fill="#3f9142">视线判据方向 = 归一点（中心 − 原点）</text>
+<defs><marker id="arw4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b6b"/></marker></defs>
+<line x1="30" y1="272" x2="750" y2="272" stroke="#b3b3b3" stroke-width="2"/>
+<text x="700" y="292" font-size="12" fill="#6b6b6b">地面 Z = 0</text>
+<rect x="78" y="244" width="30" height="28" rx="3" fill="#c8c8c8" stroke="#9a9a9a"/>
+<text x="60" y="262" font-size="12" fill="#3a3a3a">Manager</text>
+<line x1="93" y1="244" x2="93" y2="152" stroke="#6b6b6b" stroke-dasharray="4 3" marker-end="url(#arw4a)"/>
+<text x="100" y="205" font-size="12" fill="#262626">CameraHeightOffset = 160</text>
+<circle cx="93" cy="148" r="7" fill="#838383"/>
+<text x="106" y="140" font-size="12.5" fill="#1f1f1f">CalibratedOrigin（标定原点 = 玩家视高）</text>
+<rect x="404" y="176" width="22" height="96" fill="#c8c8c8" stroke="#9a9a9a"/>
+<circle cx="415" cy="140" r="6" fill="#262626"/>
+<text x="352" y="130" font-size="12.5" fill="#1f1f1f">碎片 A（近，柱面）</text>
+<rect x="636" y="120" width="18" height="152" fill="#c8c8c8" stroke="#9a9a9a"/>
+<circle cx="645" cy="104" r="6" fill="#262626"/>
+<text x="596" y="94" font-size="12.5" fill="#1f1f1f">碎片 B（远，墙面）</text>
+<line x1="93" y1="148" x2="409" y2="140" stroke="#999999" stroke-width="1.6"/>
+<line x1="93" y1="148" x2="639" y2="104" stroke="#999999" stroke-width="1.6"/>
+<circle cx="530" cy="122" r="6" fill="#6b6b6b"/>
+<text x="440" y="150" font-size="12.5" fill="#1f1f1f">CalibratedViewTarget</text>
+<text x="440" y="167" font-size="12" fill="#6b6b6b">（碎片几何中心）</text>
+<line x1="93" y1="148" x2="524" y2="122" stroke="#6b6b6b" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="150" y="120" font-size="12" fill="#6b6b6b">视线判据方向 = 归一点（中心 − 原点）</text>
 </svg>
 <figcaption>图 4-1 标定的几何构成：原点、碎片方向/距离与图案中心</figcaption>
 </figure>
 <h3 id="4-7-小结与边界">4.7 小结与边界</h3>
-<p>标定的实质是<strong>一次性采样</strong>：把&quot;正确视角&quot;固化为原点坐标、每碎片的方向与距离、以及图案中心三项产物。运行期不再重新推导任何基准，只做比对。这种设计的代价与收益都很明确：判据简单、稳定、可解释，但基准与场景摆放严格绑定。</p>
+<p>标定的实质是<strong>一次性采样</strong>：把“正确视角”固化为原点坐标、每碎片的方向与距离、以及图案中心三项产物。运行期不再重新推导任何基准，只做比对。这种设计的代价与收益都很明确：判据简单、稳定、可解释，但基准与场景摆放严格绑定。</p>
 <p class="caption">表 4-4 标定产物的运行期去向</p>
-<div class="table-wrap"><table><thead><tr><th>产物</th><th>类型</th><th>运行期使用位置</th></tr></thead><tbody><tr><td><code>CalibratedOrigin</code></td><td><code>FVector</code></td><td>视线判据的方向计算；调试绘制（青色球）；位置偏差日志</td></tr><tr><td><code>CalibratedData</code></td><td><code>TArray&lt;FCalibratedMarkPoint&gt;</code></td><td>逐碎片的方向与距离比对；通过率的分母</td></tr><tr><td><code>CalibratedViewTarget</code></td><td><code>FVector</code></td><td>视线判据的参考点；调试绘制中不单独显示</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>产物</th><th>类型</th><th>运行期使用位置</th></tr></thead><tbody><tr><td><code>CalibratedOrigin</code></td><td><code>FVector</code></td><td>视线判据的方向计算；调试绘制（青色球）；位置偏差日志</td></tr><tr><td><code>CalibratedData</code></td><td><code>TArray45</code></td><td>逐碎片的方向与距离比对；通过率的分母</td></tr><tr><td><code>CalibratedViewTarget</code></td><td><code>FVector</code></td><td>视线判据的参考点；调试绘制中不单独显示</td></tr></tbody></table></div>
 <p>边界与注意事项：</p>
 <ol>
 <li><strong>改变碎片位置后必须重新标定。</strong> 运行期不会读取碎片的实时位置来更新基准，旧标定的失配是静默的。</li>
@@ -536,7 +529,7 @@ USTRUCT(BlueprintType)
 
 <section class="chapter" id="ch5">
 <h2><a class="anchor" href="#ch5" aria-label="链接到本节">#</a><span class="cnum">5</span>运行期检测：方向—距离联合判据与状态机</h2>
-<p>标定给出一份静态基准：原点、每个碎片的方向与距离、以及图案中心。运行期的任务是把实时相机状态与这份基准逐项比对，并把&quot;连续多个周期都成立&quot;这一时间维度纳入判定。整个检测由两部分构成：一组<strong>空间判据</strong>（方向、距离、通过率、视线），以及一个<strong>状态机</strong>（边沿事件、保持计时、完成与重置）。</p>
+<p>标定给出一份静态基准：原点、每个碎片的方向与距离、以及图案中心。运行期的任务是把实时相机状态与这份基准逐项比对，并把“连续多个周期都成立”这一时间维度纳入判定。整个检测由两部分构成：一组<strong>空间判据</strong>（方向、距离、通过率、视线），以及一个<strong>状态机</strong>（边沿事件、保持计时、完成与重置）。</p>
 <h3 id="5-1-检测的时间模型-定时器轮询而非逐帧-tick">5.1 检测的时间模型：定时器轮询而非逐帧 Tick</h3>
 <p>检测的驱动方式在构造阶段就已确定，其中起决定作用的是这一行：</p>
 <p class="caption">代码 5-1 关闭 Actor 的逐帧 Tick（节选自 `PerspectivePuzzleManager.cpp`）</p>
@@ -546,8 +539,8 @@ USTRUCT(BlueprintType)
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code>	GetWorldTimerManager().ClearTimer(DetectionTimerHandle);
 	GetWorldTimerManager().SetTimer(DetectionTimerHandle, <span class="tok-key">this</span>, &amp;APerspectivePuzzleManager::CheckPuzzle, DetectionInterval, <span class="tok-key">true</span>);</code></pre></div>
 <p><code>SetTimer</code> 的最后一个实参 <code>true</code> 表示循环触发，周期为 <code>DetectionInterval</code>（默认 0.1 秒），即 <strong>10 Hz</strong> 的检测频率。</p>
-<p><strong>为什么不用逐帧 Tick。</strong> 判据处理的是玩家的空间位置，而人移动的速度在量级上是每帧若干厘米；把采样率从 60 Hz 降到 10 Hz，检测的最坏延迟是 0.1 秒，远低于&quot;玩家察觉到判定没响应&quot;的阈值。反过来，逐帧检测会把同一套&quot;逐碎片求差 + 点积&quot;的计算量放大约 6 倍，而收益为零——判据本身是幂等的纯比较，不存在需要逐帧积分的状态。</p>
-<p>这一选择有两个附带语义：其一，计时以<strong>检测周期</strong>为单位（见 5.6），&quot;持续 1.5 秒&quot;等价于&quot;连续 15 个检测周期都判定为对齐&quot;；其二，定时器仍运行在游戏线程上，受调度粒度约束，极长的单帧同样会推迟回调。</p>
+<p><strong>为什么不用逐帧 Tick。</strong> 判据处理的是玩家的空间位置，而人移动的速度在量级上是每帧若干厘米；把采样率从 60 Hz 降到 10 Hz，检测的最坏延迟是 0.1 秒，远低于“玩家察觉到判定没响应”的阈值。反过来，逐帧检测会把同一套“逐碎片求差 + 点积”的计算量放大约 6 倍，而收益为零——判据本身是幂等的纯比较，不存在需要逐帧积分的状态。</p>
+<p>这一选择有两个附带语义：其一，计时以<strong>检测周期</strong>为单位（见 5.6），“持续 1.5 秒”等价于“连续 15 个检测周期都判定为对齐”；其二，定时器仍运行在游戏线程上，受调度粒度约束，极长的单帧同样会推迟回调。</p>
 <h3 id="5-2-相机状态的获取">5.2 相机状态的获取</h3>
 <p>单次检测首先取得玩家视点，并对空指针做保护：</p>
 <p class="caption">代码 5-3 取玩家控制器与视点（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
@@ -560,7 +553,7 @@ USTRUCT(BlueprintType)
 	FRotator CamRot;
 	PC-&gt;GetPlayerViewPoint(CamLoc, CamRot);
 	<span class="tok-key">FVector</span> CamForward = CamRot.Vector();</code></pre></div>
-<p>三个环节各自有明确意图：<code>GetPlayerController(GetWorld(), 0)</code> 取本地玩家 0 号控制器，索引 0 意味着单机单玩家假设，分屏或多玩家场景需要另行扩展；<code>if (!PC || !PC-&gt;PlayerCameraManager) return;</code> 是必要的防御，因为 <code>GetPlayerViewPoint</code> 的实现内部依赖 <code>PlayerCameraManager</code>，不先判空则可能在相机管理器尚未建立的瞬间崩溃；<code>GetPlayerViewPoint(CamLoc, CamRot)</code> 返回的是<strong>相机</strong>的世界位置与旋转而非 Pawn 的位置——相机可能带有弹簧臂滞后、震动或视角混合，判定必须建立在&quot;玩家实际看到的视点&quot;上，而非角色的逻辑坐标。</p>
+<p>三个环节各自有明确意图：<code>GetPlayerController(GetWorld(), 0)</code> 取本地玩家 0 号控制器，索引 0 意味着单机单玩家假设，分屏或多玩家场景需要另行扩展；<code>if (!PC || !PC-&gt;PlayerCameraManager) return;</code> 是必要的防御，因为 <code>GetPlayerViewPoint</code> 的实现内部依赖 <code>PlayerCameraManager</code>，不先判空则可能在相机管理器尚未建立的瞬间崩溃；<code>GetPlayerViewPoint(CamLoc, CamRot)</code> 返回的是<strong>相机</strong>的世界位置与旋转而非 Pawn 的位置——相机可能带有弹簧臂滞后、震动或视角混合，判定必须建立在“玩家实际看到的视点”上，而非角色的逻辑坐标。</p>
 <p><code>CamRot.Vector()</code> 取旋转的前向单位向量；旋转中的 Roll 分量不影响前向向量，因此相机翻滚不会干扰视线判据。同一样本内，位置判据使用 <code>CamLoc</code>，视线判据使用 <code>CamForward</code>，二者来自同一次采样，保证两项判据考察的是同一瞬间的状态，不会出现位置与朝向错帧。</p>
 <h3 id="5-3-位置判据-方向与距离的联合约束">5.3 位置判据：方向与距离的联合约束</h3>
 <p>对每个碎片，代码计算两个偏差量，并要求二者同时落入容差：</p>
@@ -590,24 +583,24 @@ USTRUCT(BlueprintType)
 <p class="eq">DistDiff = &#124;&#124;P − C&#124; − TargetDistance&#124; ≤ DistanceTolerance</p>
 <p>其中 C 为相机位置，P 为碎片世界坐标，d̂ 为标定方向。由于 d̂ 与当前方向都是单位向量，<code>Dot</code> 即二者夹角的余弦 <code>cos θ</code>。由此可把阈值翻译成角度：默认值 <code>DotProductThreshold = 0.996</code> 对应约 5.13°，即工程表述中的&quot;cos(5°)&quot;；属性上的 <code>ClampMin = 0.9</code> 与 <code>ClampMax = 1.0</code> 把取值范围限制在 0° 到约 25.8° 之间。</p>
 <p class="caption">表 5-1 方向阈值与角度容差的对应</p>
-<div class="table-wrap"><table><thead><tr><th><code>DotProductThreshold</code></th><th>对应角度</th><th>语义</th></tr></thead><tbody><tr><td>0.996（默认）</td><td>约 5.1°</td><td>&quot;站得很准&quot;的量级</td></tr><tr><td>0.900（ClampMin）</td><td>约 25.8°</td><td>参数允许的最松值</td></tr></tbody></table></div>
-<p>距离判据是<strong>绝对差</strong>而非相对误差：<code>DistanceTolerance = 50</code> 的含义是&quot;相机到碎片的距离与标定距离相差不超过 50 个世界单位（厘米）&quot;。绝对差有一个直接后果——同一个容差对不同距离的碎片严格程度并不相同：对 300 单位外的碎片，50 单位相当于约 17% 的相对误差；对 1500 单位外的碎片则只有约 3%。当场景中碎片的标定距离相差悬殊时，若需要等价的相对严格度，应把这一项改为按比例判定。</p>
-<p>两项判据缺一不可：<strong>方向对&quot;沿标定射线的前后位移&quot;完全不敏感</strong>（沿该射线移动时 cos θ 恒为 1），只有距离项能约束它；而<strong>距离对&quot;绕碎片球面的横向位移&quot;不敏感</strong>，只有方向项能约束它（详见 4.3）。日志中&quot;点积很高但距离差很大&quot;与&quot;距离差很小但点积很低&quot;这两类条目，正对应两种单侧偏差。</p>
+<div class="table-wrap"><table><thead><tr><th><code>DotProductThreshold</code></th><th>对应角度</th><th>语义</th></tr></thead><tbody><tr><td>0.996（默认）</td><td>约 5.1°</td><td>“站得很准”的量级</td></tr><tr><td>0.900（ClampMin）</td><td>约 25.8°</td><td>参数允许的最松值</td></tr></tbody></table></div>
+<p>距离判据是<strong>绝对差</strong>而非相对误差：<code>DistanceTolerance = 50</code> 的含义是“相机到碎片的距离与标定距离相差不超过 50 个世界单位（厘米）”。绝对差有一个直接后果——同一个容差对不同距离的碎片严格程度并不相同：对 300 单位外的碎片，50 单位相当于约 17% 的相对误差；对 1500 单位外的碎片则只有约 3%。当场景中碎片的标定距离相差悬殊时，若需要等价的相对严格度，应把这一项改为按比例判定。</p>
+<p>两项判据缺一不可：<strong>方向对“沿标定射线的前后位移”完全不敏感</strong>（沿该射线移动时 cos θ 恒为 1），只有距离项能约束它；而<strong>距离对“绕碎片球面的横向位移”不敏感</strong>，只有方向项能约束它（详见 4.3）。日志中“点积很高但距离差很大”与“距离差很小但点积很低”这两类条目，正对应两种单侧偏差。</p>
 <figure>
 <svg viewBox="0 0 780 270" width="780" height="270" role="img" aria-label="位置判据的几何示意">
-<defs><marker id="arw5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b756b"/></marker></defs>
-<polygon points="70,150 740,55 740,193" fill="#f3e7e2"/>
-<line x1="70" y1="150" x2="740" y2="124" stroke="#a3432a" stroke-width="1.4" stroke-dasharray="7 4"/>
-<line x1="70" y1="150" x2="740" y2="55" stroke="#c8b8ac"/><line x1="70" y1="150" x2="740" y2="193" stroke="#c8b8ac"/>
-<circle cx="70" cy="150" r="7" fill="#2aa6b8"/><text x="18" y="176" font-size="12.5" fill="#1c1a17">相机 C</text>
-<ellipse cx="520" cy="128" rx="58" ry="44" fill="none" stroke="#3f9142" stroke-width="1.4" stroke-dasharray="5 4"/>
-<circle cx="520" cy="128" r="6" fill="#e08a2a"/><text x="534" y="122" font-size="12.5" fill="#1c1a17">碎片 P</text>
-<text x="330" y="196" font-size="12" fill="#3f9142">距离容差 ±50 世界单位</text>
-<line x1="70" y1="150" x2="620" y2="117" stroke="#2a7fb8" stroke-width="1.6" marker-end="url(#arw5a)"/>
-<text x="250" y="106" font-size="12" fill="#2a7fb8">当前方向 (P − C) 归一化</text>
-<text x="176" y="140" font-size="12" fill="#a3432a">标定方向 d̂（Dot = cos θ）</text>
-<text x="600" y="52" font-size="12" fill="#a3432a">±5° 角锥</text>
-<text x="60" y="228" font-size="12.5" fill="#4a463f">通过条件：cos(当前方向, d̂) ≥ 0.996 且 ||P − C| − TargetDistance| ≤ 50</text>
+<defs><marker id="arw5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b6b"/></marker></defs>
+<polygon points="70,150 740,55 740,193" fill="#c8c8c8"/>
+<line x1="70" y1="150" x2="740" y2="124" stroke="#262626" stroke-width="1.4" stroke-dasharray="7 4"/>
+<line x1="70" y1="150" x2="740" y2="55" stroke="#bbbbbb"/><line x1="70" y1="150" x2="740" y2="193" stroke="#bbbbbb"/>
+<circle cx="70" cy="150" r="7" fill="#838383"/><text x="18" y="176" font-size="12.5" fill="#1f1f1f">相机 C</text>
+<ellipse cx="520" cy="128" rx="58" ry="44" fill="none" stroke="#6b6b6b" stroke-width="1.4" stroke-dasharray="5 4"/>
+<circle cx="520" cy="128" r="6" fill="#262626"/><text x="534" y="122" font-size="12.5" fill="#1f1f1f">碎片 P</text>
+<text x="330" y="196" font-size="12" fill="#6b6b6b">距离容差 ±50 世界单位</text>
+<line x1="70" y1="150" x2="620" y2="117" stroke="#6c6c6c" stroke-width="1.6" marker-end="url(#arw5a)"/>
+<text x="250" y="106" font-size="12" fill="#6c6c6c">当前方向 (P − C) 归一化</text>
+<text x="176" y="140" font-size="12" fill="#262626">标定方向 d̂（Dot = cos θ）</text>
+<text x="600" y="52" font-size="12" fill="#262626">±5° 角锥</text>
+<text x="60" y="228" font-size="12.5" fill="#3a3a3a">通过条件：cos(当前方向, d̂) ≥ 0.996 且 ||P − C| − TargetDistance| ≤ 50</text>
 </svg>
 <figcaption>图 5-1 位置判据的几何构成：角锥与距离容差</figcaption>
 </figure>
@@ -616,8 +609,8 @@ USTRUCT(BlueprintType)
 <p class="eq">Rate = PassCount / CalibratedData.Num() ≥ RequiredPassRate</p>
 <p><code>RequiredPassRate</code> 默认 0.8，取值范围被限制在 0 到 1。它的工程意义是<strong>容忍个别碎片失配</strong>：碎片数量多时，总会有某个碎片因遮挡、贴花偏移或摆放误差而略微超标，若要求 100% 通过，谜题会变得脆弱且难以调优。但比例判据是离散的——通过率只能取 k/N 这些值，因此 0.8 的实际效果取决于碎片数量：</p>
 <p class="caption">表 5-2 `RequiredPassRate = 0.8` 时实际需要的通过数</p>
-<div class="table-wrap"><table><thead><tr><th>碎片数 N</th><th>需要通过数 ⌈0.8N⌉</th><th>允许失配数</th><th>说明</th></tr></thead><tbody><tr><td>2</td><td>2</td><td>0</td><td>比例判据退化为&quot;全部通过&quot;</td></tr><tr><td>4</td><td>4</td><td>0</td><td>0.75 已低于门限</td></tr><tr><td>5</td><td>4</td><td>1</td><td>容错开始生效</td></tr></tbody></table></div>
-<p>这张表揭示了一个容易误判的点：在碎片数小于 5 的场景里，把 <code>RequiredPassRate</code> 设为 0.8 与设为 1.0 的效果完全相同，容错并未真正启用；若要获得&quot;允许一半碎片失配&quot;的语义，需把门限降到 0.5，但那样在两个碎片时就会退化为&quot;只要一个碎片对上&quot;，判定强度大幅下降。</p>
+<div class="table-wrap"><table><thead><tr><th>碎片数 N</th><th>需要通过数 ⌈0.8N⌉</th><th>允许失配数</th><th>说明</th></tr></thead><tbody><tr><td>2</td><td>2</td><td>0</td><td>比例判据退化为“全部通过”</td></tr><tr><td>4</td><td>4</td><td>0</td><td>0.75 已低于门限</td></tr><tr><td>5</td><td>4</td><td>1</td><td>容错开始生效</td></tr></tbody></table></div>
+<p>这张表揭示了一个容易误判的点：在碎片数小于 5 的场景里，把 <code>RequiredPassRate</code> 设为 0.8 与设为 1.0 的效果完全相同，容错并未真正启用；若要获得“允许一半碎片失配”的语义，需把门限降到 0.5，但那样在两个碎片时就会退化为“只要一个碎片对上”，判定强度大幅下降。</p>
 <h3 id="5-5-视线判据-为什么位置判据单独不够">5.5 视线判据：为什么位置判据单独不够</h3>
 <p>位置判据只依赖相机<strong>位置</strong>，与相机<strong>朝向</strong>无关。玩家站在正确位置、低头看着地面时，指向碎片的单位向量与标定值仍然一致，位置相关的两项判据照常通过。要排除这类姿势，必须额外引入朝向约束：</p>
 <p class="caption">代码 5-5 视线判据（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
@@ -628,9 +621,9 @@ USTRUCT(BlueprintType)
 <p>其中参考方向由标定产物直接给出：</p>
 <p class="eq">ViewTargetDir = normalize(CalibratedViewTarget − CalibratedOrigin)</p>
 <p class="eq">ViewDot = CamForward · ViewTargetDir ≥ ViewAngleThreshold</p>
-<p><code>ViewAngleThreshold</code> 默认同样为 0.996，即约 5.1°。它回答&quot;玩家是否正看着图案整体&quot;，与位置判据回答的&quot;玩家是否站在正确位置&quot;正交。</p>
-<p><strong>为什么参考方向取图案中心而不是某个碎片。</strong> 碎片有两个以上时，从原点看向各个碎片的方向互不相同，而相机前向只能有一个方向；若要求视线同时对准每一个碎片，判据在数学上不可满足——除非这些碎片在屏幕上恰好重合，而那正是拼合成功的特例。取几何中心则给出<strong>唯一一个</strong>参考方向，并与&quot;玩家在看完整图案&quot;这一行为直接对应（几何中心的选取理由详见 4.4）。</p>
-<p>有一点必须明确：<code>ViewTargetDir</code> 是标定阶段算出的<strong>固定方向</strong>，与相机的当前位置无关。因此视线判据单独并不构成位置约束——玩家站在任何地方，只要朝向恰好等于该方向，视线判据同样通过；反之，站在正确位置但朝向偏离超过约 5°，视线判据就会失败。两条判据必须取逻辑与，才同时约束&quot;站在哪&quot;与&quot;朝哪看&quot;。</p>
+<p><code>ViewAngleThreshold</code> 默认同样为 0.996，即约 5.1°。它回答“玩家是否正看着图案整体”，与位置判据回答的“玩家是否站在正确位置”正交。</p>
+<p><strong>为什么参考方向取图案中心而不是某个碎片。</strong> 碎片有两个以上时，从原点看向各个碎片的方向互不相同，而相机前向只能有一个方向；若要求视线同时对准每一个碎片，判据在数学上不可满足——除非这些碎片在屏幕上恰好重合，而那正是拼合成功的特例。取几何中心则给出<strong>唯一一个</strong>参考方向，并与“玩家在看完整图案”这一行为直接对应（几何中心的选取理由详见 4.4）。</p>
+<p>有一点必须明确：<code>ViewTargetDir</code> 是标定阶段算出的<strong>固定方向</strong>，与相机的当前位置无关。因此视线判据单独并不构成位置约束——玩家站在任何地方，只要朝向恰好等于该方向，视线判据同样通过；反之，站在正确位置但朝向偏离超过约 5°，视线判据就会失败。两条判据必须取逻辑与，才同时约束“站在哪”与“朝哪看”。</p>
 <h3 id="5-6-联合判定-保持计时与完成">5.6 联合判定、保持计时与完成</h3>
 <p>两条判据的结果被合并为一个瞬时布尔量，并进入计时状态机：</p>
 <p class="caption">代码 5-6 联合判定与保持计时（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
@@ -670,23 +663,22 @@ USTRUCT(BlueprintType)
 <p class="eq">SolveProgress = clamp(HoldTimer / HoldDuration, 0, 1)</p>
 <p>几个关键语义：</p>
 <ul>
-<li><strong>固定步长累加。</strong> <code>HoldTimer</code> 每次增加的是 <code>DetectionInterval</code> 这一标称值，而不是回调的真实时间差。因此&quot;保持时长&quot;被量化为&quot;连续对齐的检测周期数&quot;：<code>HoldDuration = 1.5</code>、<code>DetectionInterval = 0.1</code> 时需要连续 15 个对齐周期。</li>
-<li><strong>进度是归一化的保持量，不是&quot;接近程度&quot;。</strong> <code>SolveProgress</code> 只反映对齐已经持续了多久，不反映站位的精确程度。<code>HoldDuration</code> 取非正值时，首个对齐周期即满足 <code>HoldTimer &gt;= HoldDuration</code>，等价于&quot;一对齐即解出&quot;。</li>
-<li><strong>失配立即清零。</strong> 未对齐的分支不做任何衰减，直接把 <code>HoldTimer</code> 与 <code>SolveProgress</code> 归零，因此保持窗口内不允许中断，谜题是&quot;全有或全无&quot;的；进度回退也因此是瞬时的，视觉上会出现跳变。</li>
+<li><strong>固定步长累加。</strong> <code>HoldTimer</code> 每次增加的是 <code>DetectionInterval</code> 这一标称值，而不是回调的真实时间差。因此“保持时长”被量化为“连续对齐的检测周期数”：<code>HoldDuration = 1.5</code>、<code>DetectionInterval = 0.1</code> 时需要连续 15 个对齐周期。</li>
+<li><strong>进度是归一化的保持量，不是“接近程度”。</strong> <code>SolveProgress</code> 只反映对齐已经持续了多久，不反映站位的精确程度。<code>HoldDuration</code> 取非正值时，首个对齐周期即满足 <code>HoldTimer &gt;= HoldDuration</code>，等价于“一对齐即解出”。</li>
+<li><strong>失配立即清零。</strong> 未对齐的分支不做任何衰减，直接把 <code>HoldTimer</code> 与 <code>SolveProgress</code> 归零，因此保持窗口内不允许中断，谜题是“全有或全无”的；进度回退也因此是瞬时的，视觉上会出现跳变。</li>
 <li><strong>完成即停止检测。</strong> 解出时把 <code>bIsSolved</code> 置真、<code>SolveProgress</code> 固定为 1.0、触发事件，最后清掉循环定时器；此后 <code>CheckPuzzle</code> 即便被调用，函数开头的守卫也会立刻返回。</li>
 </ul>
 <h3 id="5-7-状态机与事件-边沿检测的语义">5.7 状态机与事件：边沿检测的语义</h3>
 <p>事件不是每个对齐周期都触发，而是通过 <code>bWasAligned</code> 做边沿检测：</p>
 <p class="caption">表 5-3 事件触发条件与语义</p>
 <div class="table-wrap"><table><thead><tr><th>事件</th><th>触发条件</th><th>触发次数</th><th>语义</th></tr></thead><tbody><tr><td><code>OnViewAligned</code></td><td>本周期对齐 且 上一周期未对齐</td><td>每次对齐过程一次</td><td>上升沿：开始对齐</td></tr><tr><td><code>OnViewLost</code></td><td>本周期未对齐 且 上一周期已对齐</td><td>每次对齐过程一次</td><td>下降沿：失去对齐</td></tr><tr><td><code>OnProgressUpdated(Progress)</code></td><td>每个对齐周期</td><td>每周期一次，另加完成时的一次 1.0</td><td>进度反馈，驱动发光</td></tr><tr><td><code>OnPuzzleSolved</code></td><td><code>HoldTimer &gt;= HoldDuration</code></td><td>一次</td><td>解出，随后定时器被清除</td></tr></tbody></table></div>
-<p>四个事件都是 <code>BlueprintImplementableEvent</code>：C++ 只负责&quot;什么时候触发&quot;，具体表现（开门、播放动画、音效）由蓝图实现，这是算法与表现分离的常规做法。此外，<code>bWasAligned = bAlignedNow</code> 写在函数的<strong>最后一行</strong>，位于事件触发与发光写入之后——这保证同一周期内所有读取 <code>bWasAligned</code> 的分支看到的都是上一周期的值，边沿判定不会被本周期中途改写。</p>
-<p><code>ResetPuzzle()</code> 的重置语义是&quot;回到未解出、未对齐的初始状态并重新开始检测&quot;：清零 <code>bIsSolved</code>、<code>bWasAligned</code>、<code>HoldTimer</code>、<code>SolveProgress</code>，清除并重建定时器。需要注意它<strong>不会重新标定</strong>——<code>CalibratedData</code>、<code>CalibratedOrigin</code>、<code>CalibratedViewTarget</code> 被完整保留，因此在碎片位置未变的前提下重置是可重复的；若要改变判定基准，必须显式调用 <code>Calibrate()</code>。</p>
+<p>四个事件都是 <code>BlueprintImplementableEvent</code>：C++ 只负责“什么时候触发”，具体表现（开门、播放动画、音效）由蓝图实现，这是算法与表现分离的常规做法。此外，<code>bWasAligned = bAlignedNow</code> 写在函数的<strong>最后一行</strong>，位于事件触发与发光写入之后——这保证同一周期内所有读取 <code>bWasAligned</code> 的分支看到的都是上一周期的值，边沿判定不会被本周期中途改写。</p>
+<p><code>ResetPuzzle()</code> 的重置语义是“回到未解出、未对齐的初始状态并重新开始检测”：清零 <code>bIsSolved</code>、<code>bWasAligned</code>、<code>HoldTimer</code>、<code>SolveProgress</code>，清除并重建定时器。需要注意它<strong>不会重新标定</strong>——<code>CalibratedData</code>、<code>CalibratedOrigin</code>、<code>CalibratedViewTarget</code> 被完整保留，因此在碎片位置未变的前提下重置是可重复的；若要改变判定基准，必须显式调用 <code>Calibrate()</code>。</p>
 <h3 id="5-8-完整判定流程与分段索引">5.8 完整判定流程与分段索引</h3>
 <p><code>CheckPuzzle()</code> 在源码中占据连续的一段（约 96 行），结构可拆为七个段落。前六段已在 5.2 至 5.6 中逐段展开，下表给出索引：</p>
 <p class="caption">表 5-4 `CheckPuzzle()` 的分段结构</p>
-<div class="table-wrap"><table><thead><tr><th>段落</th><th>作用</th><th>关键语句</th><th>相关小节</th></tr></thead><tbody><tr><td>守卫与取视点</td><td>已解出或无标定数据即返回；取得 <code>CamLoc</code> 与 <code>CamForward</code></td><td><code>if (bIsSolved &amp;#124;&amp;#124; CalibratedData.Num() == 0) return;</code></td><td>5.2</td></tr><tr><td>视线判据</td><td>朝向是否对准图案中心</td><td><code>ViewDot &gt;= ViewAngleThreshold</code></td><td>5.5</td></tr><tr><td>位置判据</td><td>逐碎片比对方向与距离</td><td><code>Dot &gt;= DotProductThreshold &amp;&amp; DistDiff &lt;= DistanceTolerance</code></td><td>5.3、5.4</td></tr><tr><td>状态机与发光</td><td>保持计时、事件、发光写入</td><td><code>bAlignedNow</code> / <code>HoldTimer</code> / <code>SetScalarParameterValue</code></td><td>5.6、5.7</td></tr></tbody></table></div>
-<p>调试射线段落只负责显示、不参与判定，作用是把&quot;当前朝向&quot;与&quot;目标方向&quot;画成红绿两条短线，使偏差方向在场景中直接可见。唯一尚未引用的段落是发光写入，它把瞬时布尔量与归一化进度合成为一个标量：</p>
-<p class="caption">代码 5-7 发光参数写入（节选自 `PerspectivePuzzleManager.cpp` 的 `CheckPuzzle()`）</p>
+<div class="table-wrap"><table><thead><tr><th>段落</th><th>作用</th><th>关键语句</th><th>相关小节</th></tr></thead><tbody><tr><td>守卫与取视点</td><td>已解出或无标定数据即返回；取得 <code>CamLoc</code> 与 <code>CamForward</code></td><td><code>if (bIsSolved &amp;#124;&amp;#124; CalibratedData.Num() == 0) return;</code></td><td>5.2</td></tr><tr><td>视线判据</td><td>朝向是否对准图案中心</td><td><code>ViewDot &gt;= ViewAngleThreshold</code></td><td>5.5</td></tr></tbody></table></div>
+<p>| 位置判据 | 逐碎片比对方向与距离 | <code>Dot &gt;= DotProductThreshold &amp;&amp; DistDiff 10代码 5-7 发光参数写入（节选自 </code>PerspectivePuzzleManager.cpp<code> 的 </code>CheckPuzzle()`）</p></p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code>	<span class="tok-com">// 更新碎片发光：对齐时随 SolveProgress 逐渐增强，失焦时归零</span>
 	<span class="tok-key">if</span> (GlowParameterName != NAME_None)
 	{
@@ -696,36 +688,36 @@ USTRUCT(BlueprintType)
 			<span class="tok-key">if</span> (DynMat) DynMat-&gt;SetScalarParameterValue(GlowParameterName, GlowValue);
 		}
 	}</code></pre></div>
-<p>发光值的定义是 <code>GlowValue = bAlignedNow ? SolveProgress : 0.0</code>：对齐时随进度从 0 递增到 1，失焦瞬间归零。它被写入每个碎片的动态材质实例，因此所有碎片<strong>同步发光</strong>；若需要&quot;逐个点亮&quot;，需为每个碎片单独维护进度值。整个过程由 <code>GlowParameterName != NAME_None</code> 守卫，把参数名留空即可整体关闭发光，且不产生任何材质写入开销。</p>
+<p>发光值的定义是 <code>GlowValue = bAlignedNow ? SolveProgress : 0.0</code>：对齐时随进度从 0 递增到 1，失焦瞬间归零。它被写入每个碎片的动态材质实例，因此所有碎片<strong>同步发光</strong>；若需要“逐个点亮”，需为每个碎片单独维护进度值。整个过程由 <code>GlowParameterName != NAME_None</code> 守卫，把参数名留空即可整体关闭发光，且不产生任何材质写入开销。</p>
 <figure>
 <svg viewBox="0 0 780 230" width="780" height="230" role="img" aria-label="判定状态机">
-<defs><marker id="arw5b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b756b"/></marker><marker id="arw5c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a3432a"/></marker></defs>
-<rect x="24" y="76" width="150" height="56" rx="6" fill="#faf8f4" stroke="#d9d4c9"/><text x="99" y="100" text-anchor="middle" font-size="12.5" fill="#1c1a17">未对齐</text><text x="99" y="119" text-anchor="middle" font-size="12" fill="#7b756b">bWasAligned = false</text>
-<rect x="266" y="76" width="220" height="56" rx="6" fill="#f3e7e2" stroke="#a3432a"/><text x="376" y="100" text-anchor="middle" font-size="12.5" fill="#1c1a17">对齐中：HoldTimer 累加</text><text x="376" y="119" text-anchor="middle" font-size="12" fill="#7b756b">SolveProgress = HoldTimer / HoldDuration</text>
-<rect x="578" y="76" width="186" height="56" rx="6" fill="#eef4ee" stroke="#3f9142"/><text x="671" y="100" text-anchor="middle" font-size="12.5" fill="#1c1a17">已解出 bIsSolved</text><text x="671" y="119" text-anchor="middle" font-size="12" fill="#7b756b">定时器被清除，检测停止</text>
-<line x1="174" y1="104" x2="262" y2="104" stroke="#7b756b" marker-end="url(#arw5b)"/><text x="178" y="94" font-size="11.5" fill="#4a463f">bAlignedNow = true</text><text x="178" y="132" font-size="11.5" fill="#a3432a">OnViewAligned</text>
-<line x1="578" y1="104" x2="490" y2="104" stroke="#7b756b" marker-end="url(#arw5b)"/><text x="478" y="94" font-size="11.5" fill="#4a463f">HoldTimer ≥ HoldDuration</text><text x="500" y="132" font-size="11.5" fill="#a3432a">OnPuzzleSolved</text>
-<path d="M330 132 L330 186 L120 186 L120 134" fill="none" stroke="#a3432a" stroke-width="1.4" marker-end="url(#arw5c)"/>
-<text x="140" y="206" font-size="11.5" fill="#a3432a">bAlignedNow = false → OnViewLost，HoldTimer 与 SolveProgress 立即归零</text>
-<text x="24" y="34" font-size="12.5" fill="#1c1a17">每个检测周期（0.1 秒）执行一次 CheckPuzzle：先算 bAlignedNow，再据此选择分支</text>
+<defs><marker id="arw5b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b6b"/></marker><marker id="arw5c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#262626"/></marker></defs>
+<rect x="24" y="76" width="150" height="56" rx="2" fill="#f5f5f5" stroke="#c8c8c8"/><text x="99" y="100" text-anchor="middle" font-size="12.5" fill="#1f1f1f">未对齐</text><text x="99" y="119" text-anchor="middle" font-size="12" fill="#6b6b6b">bWasAligned = false</text>
+<rect x="266" y="76" width="220" height="56" rx="2" fill="#c8c8c8" stroke="#262626"/><text x="376" y="100" text-anchor="middle" font-size="12.5" fill="#1f1f1f">对齐中：HoldTimer 累加</text><text x="376" y="119" text-anchor="middle" font-size="12" fill="#6b6b6b">SolveProgress = HoldTimer / HoldDuration</text>
+<rect x="578" y="76" width="186" height="56" rx="2" fill="#f5f5f5" stroke="#6b6b6b"/><text x="671" y="100" text-anchor="middle" font-size="12.5" fill="#1f1f1f">已解出 bIsSolved</text><text x="671" y="119" text-anchor="middle" font-size="12" fill="#6b6b6b">定时器被清除，检测停止</text>
+<line x1="174" y1="104" x2="262" y2="104" stroke="#6b6b6b" marker-end="url(#arw5b)"/><text x="178" y="94" font-size="11.5" fill="#3a3a3a">bAlignedNow = true</text><text x="178" y="132" font-size="11.5" fill="#262626">OnViewAligned</text>
+<line x1="578" y1="104" x2="490" y2="104" stroke="#6b6b6b" marker-end="url(#arw5b)"/><text x="478" y="94" font-size="11.5" fill="#3a3a3a">HoldTimer ≥ HoldDuration</text><text x="500" y="132" font-size="11.5" fill="#262626">OnPuzzleSolved</text>
+<path d="M330 132 L330 186 L120 186 L120 134" fill="none" stroke="#262626" stroke-width="1.4" marker-end="url(#arw5c)"/>
+<text x="140" y="206" font-size="11.5" fill="#262626">bAlignedNow = false → OnViewLost，HoldTimer 与 SolveProgress 立即归零</text>
+<text x="24" y="34" font-size="12.5" fill="#1f1f1f">每个检测周期（0.1 秒）执行一次 CheckPuzzle：先算 bAlignedNow，再据此选择分支</text>
 </svg>
 <figcaption>图 5-2 判定状态机：对齐边沿、保持计时与完成</figcaption>
 </figure>
 <h3 id="5-9-小结与调参含义">5.9 小结与调参含义</h3>
-<p>检测系统的整体形态是：<strong>一个 10 Hz 的采样器 + 一组空间判据 + 一个保持计时器</strong>。空间判据由四层构成，每层排除一类错误姿势——方向判据排除&quot;横向偏离&quot;；距离判据排除&quot;沿射线前后偏离&quot;造成的视差错位；视线判据排除&quot;位置正确但没看图案&quot;（低头、转头）；通过率判据吸收个别碎片的噪声。四层之上，保持计时器排除&quot;一晃而过&quot;。任何一层被调松，都会重新引入它原本负责排除的那类姿势。</p>
+<p>检测系统的整体形态是：<strong>一个 10 Hz 的采样器 + 一组空间判据 + 一个保持计时器</strong>。空间判据由四层构成，每层排除一类错误姿势——方向判据排除“横向偏离”；距离判据排除“沿射线前后偏离”造成的视差错位；视线判据排除“位置正确但没看图案”（低头、转头）；通过率判据吸收个别碎片的噪声。四层之上，保持计时器排除“一晃而过”。任何一层被调松，都会重新引入它原本负责排除的那类姿势。</p>
 <p class="caption">表 5-5 检测参数、语义与调整后果</p>
-<div class="table-wrap"><table><thead><tr><th>参数</th><th>默认值</th><th>约束</th><th>语义</th><th>放宽的后果</th><th>收紧的后果</th></tr></thead><tbody><tr><td><code>DotProductThreshold</code></td><td>0.996</td><td>0.9 ~ 1.0</td><td>位置方向容差（cos θ）</td><td>站位偏移也通过，判定变钝</td><td>难以站准，可能出现&quot;站对了却不触发&quot;</td></tr><tr><td><code>DistanceTolerance</code></td><td>50</td><td>≥ 0</td><td>距离容差（世界单位）</td><td>沿射线前后移动也通过，视差错位被容忍</td><td>需要距离也精确，前后误差立刻失配</td></tr><tr><td><code>ViewAngleThreshold</code></td><td>0.996</td><td>0.9 ~ 1.0</td><td>视线方向容差</td><td>放低头进入判定，破坏&quot;必须看图案&quot;的约束</td><td>正常注视也可能不达标（碎片有大小，视线未必精确瞄准中心）</td></tr><tr><td><code>RequiredPassRate</code></td><td>0.8</td><td>0 ~ 1</td><td>需要通过的碎片比例</td><td>允许更多碎片失配；N 小时语义会突变</td><td>接近&quot;全部通过&quot;，对摆放误差敏感</td></tr><tr><td><code>HoldDuration</code></td><td>1.5</td><td>≥ 0</td><td>需要持续对齐的秒数</td><td>更易解出，可能被路过触发</td><td>需要长时间保持，操作负担上升</td></tr><tr><td><code>DetectionInterval</code></td><td>0.1</td><td>≥ 0.05</td><td>检测周期</td><td>响应更快、进度更细，但检测开销上升</td><td>响应变迟钝，保持时间的量化粒度变粗</td></tr></tbody></table></div>
-<p><strong>关于&quot;站位要求太严格&quot;的机制解释。</strong> 这类现象最常见的成因并不是阈值太紧，而是标定原点的高度与角色实际视高不一致（见 4.2）。此时方向与距离会<strong>同时</strong>产生系统性偏差，表现为水平站位看起来完全正确却无论如何都不通过。若此时去放松 <code>DotProductThreshold</code>，等于用一个错误的基准去迁就一个错误的站位：不仅要把阈值放到很松才可能通过，还会让判据在&quot;实际错误的站立位置&quot;上也成立，从而破坏谜题的核心机制。</p>
-<p>因此调参的正确顺序是：先看日志中&quot;相机到标定原点的距离&quot;（<code>Offset</code>），它应当趋近 0；再看逐碎片的 <code>Dot</code> 与 <code>DistDiff</code> 中哪一项超标。若 <code>Offset</code> 明显偏大，应先修正 <code>CameraHeightOffset</code>，而不是动阈值。只有当 <code>Offset</code> 已经很小、而 <code>Dot</code> 或 <code>DistDiff</code> 仍稳定略微超标时，才说明容差本身需要放宽——这时也应逐个参数调整并单独验证，避免多个参数同时改动后无法判断是哪一项生效。</p>
+<div class="table-wrap"><table><thead><tr><th>参数</th><th>默认值</th><th>约束</th><th>语义</th><th>放宽的后果</th><th>收紧的后果</th></tr></thead><tbody><tr><td><code>DotProductThreshold</code></td><td>0.996</td><td>0.9 ~ 1.0</td><td>位置方向容差（cos θ）</td><td>站位偏移也通过，判定变钝</td><td>难以站准，可能出现“站对了却不触发”</td></tr><tr><td><code>DistanceTolerance</code></td><td>50</td><td>≥ 0</td><td>距离容差（世界单位）</td><td>沿射线前后移动也通过，视差错位被容忍</td><td>需要距离也精确，前后误差立刻失配</td></tr><tr><td><code>ViewAngleThreshold</code></td><td>0.996</td><td>0.9 ~ 1.0</td><td>视线方向容差</td><td>放低头进入判定，破坏“必须看图案”的约束</td><td>正常注视也可能不达标（碎片有大小，视线未必精确瞄准中心）</td></tr><tr><td><code>RequiredPassRate</code></td><td>0.8</td><td>0 ~ 1</td><td>需要通过的碎片比例</td><td>允许更多碎片失配；N 小时语义会突变</td><td>接近“全部通过”，对摆放误差敏感</td></tr><tr><td><code>HoldDuration</code></td><td>1.5</td><td>≥ 0</td><td>需要持续对齐的秒数</td><td>更易解出，可能被路过触发</td><td>需要长时间保持，操作负担上升</td></tr><tr><td><code>DetectionInterval</code></td><td>0.1</td><td>≥ 0.05</td><td>检测周期</td><td>响应更快、进度更细，但检测开销上升</td><td>响应变迟钝，保持时间的量化粒度变粗</td></tr></tbody></table></div>
+<p><strong>关于“站位要求太严格”的机制解释。</strong> 这类现象最常见的成因并不是阈值太紧，而是标定原点的高度与角色实际视高不一致（见 4.2）。此时方向与距离会<strong>同时</strong>产生系统性偏差，表现为水平站位看起来完全正确却无论如何都不通过。若此时去放松 <code>DotProductThreshold</code>，等于用一个错误的基准去迁就一个错误的站位：不仅要把阈值放到很松才可能通过，还会让判据在“实际错误的站立位置”上也成立，从而破坏谜题的核心机制。</p>
+<p>因此调参的正确顺序是：先看日志中“相机到标定原点的距离”（<code>Offset</code>），它应当趋近 0；再看逐碎片的 <code>Dot</code> 与 <code>DistDiff</code> 中哪一项超标。若 <code>Offset</code> 明显偏大，应先修正 <code>CameraHeightOffset</code>，而不是动阈值。只有当 <code>Offset</code> 已经很小、而 <code>Dot</code> 或 <code>DistDiff</code> 仍稳定略微超标时，才说明容差本身需要放宽——这时也应逐个参数调整并单独验证，避免多个参数同时改动后无法判断是哪一项生效。</p>
 <p><strong>边界与已知取舍：</strong> 检测基于单个玩家的相机且索引固定为 0；保持时长以检测周期为单位量化，最小分辨率等于 <code>DetectionInterval</code>；失配即清零，没有渐进回退；通过率是比例而非加权，所有碎片权重相同；距离容差是绝对量，其相对严格程度随碎片距离变化；解出后检测完全停止，同一 Manager 若要复用必须调用 <code>ResetPuzzle()</code>，若要改变基准还需重新 <code>Calibrate()</code>。</p>
 </section>
 
 <section class="chapter" id="ch6">
 <h2><a class="anchor" href="#ch6" aria-label="链接到本节">#</a><span class="cnum">6</span>图案的表示与视觉反馈</h2>
 <p>透视拼接谜题的视觉部分要解决两个问题：<strong>一张完整图案如何被拆成若干块并各自显示其中一部分</strong>，以及<strong>判定结果如何被玩家看见</strong>。前者决定碎片的表现形态，后者决定反馈是否可感知。</p>
-<p>两者的共同约束是&quot;运行时可改&quot;：拆分方案要能随碎片数量变化而调整，发光强度要能随判定进度连续变化。这一约束把方案推向&quot;材质参数化 + 动态材质实例&quot;的组合，而不是把图案预先切成多张贴图。文中引用的源码片段保留原始标识符与注释，缩进统一按四空格归一。</p>
+<p>两者的共同约束是“运行时可改”：拆分方案要能随碎片数量变化而调整，发光强度要能随判定进度连续变化。这一约束把方案推向“材质参数化 + 动态材质实例”的组合，而不是把图案预先切成多张贴图。文中引用的源码片段保留原始标识符与注释，缩进统一按四空格归一。</p>
 <h3 id="6-1-图案的几何拆分">6.1 图案的几何拆分</h3>
-<p>图案的拆分不发生在图像层面，而发生在<strong>纹理坐标层面</strong>。所有碎片共用同一张源贴图，每个碎片只在自己的材质里声明&quot;取这张贴图的哪一块矩形&quot;，因此拆分块数变化时不需要重新导出任何图像资源。</p>
+<p>图案的拆分不发生在图像层面，而发生在<strong>纹理坐标层面</strong>。所有碎片共用同一张源贴图，每个碎片只在自己的材质里声明“取这张贴图的哪一块矩形”，因此拆分块数变化时不需要重新导出任何图像资源。</p>
 <p>纹理坐标空间是一个单位正方形，两个轴都取值于 <span class="eq">[0, 1]</span>。取子区域由一次仿射变换完成：</p>
 <p class="eq">UV<sub>sample</sub> = UV<sub>texcoord</sub> × Tiling + Offset</p>
 <p>其中 <span class="eq">Tiling</span> 控制缩放（取多大一块），<span class="eq">Offset</span> 控制平移（从哪个位置开始取）。子区域在纹理空间中的覆盖范围为：</p>
@@ -733,36 +725,36 @@ USTRUCT(BlueprintType)
 <p>把图案上下二等分，就是保持横向完整、纵向压缩一半并施加纵向偏移：上半部分取 <span class="eq">Tiling = (1, 0.5)</span>、<span class="eq">Offset = (0, 0)</span>；下半部分取同样的 Tiling，但 <span class="eq">Offset = (0, 0.5)</span>，使取样窗口从纵向中点开始。</p>
 <figure>
 <svg viewBox="0 0 720 260" width="100%" height="260" role="img" aria-label="纹理空间的上下二等分">
-  <text x="30" y="26" font-size="13" fill="#3a3226">源贴图（UV 空间）</text>
-  <rect x="30" y="40" width="180" height="180" fill="#f6f1e7" stroke="#c3b69c"/>
-  <line x1="30" y1="130" x2="210" y2="130" stroke="#c08a8a" stroke-width="1.5" stroke-dasharray="5 3"/>
-  <text x="120" y="92" text-anchor="middle" font-size="12" fill="#6b6154">v ∈ [0.5, 1]</text>
-  <text x="120" y="172" text-anchor="middle" font-size="12" fill="#6b6154">v ∈ [0, 0.5]</text>
-  <text x="24" y="238" font-size="11" fill="#6b6154">v=0</text>
-  <text x="24" y="50" font-size="11" fill="#6b6154">v=1</text>
-  <text x="216" y="238" font-size="11" fill="#6b6154">u=1</text>
-  <text x="120" y="238" text-anchor="middle" font-size="11" fill="#6b6154">u ∈ [0, 1] 全宽保留</text>
-  <rect x="290" y="60" width="170" height="80" rx="6" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="375" y="86" text-anchor="middle" font-size="12" fill="#3a3226">碎片 1 取样窗口</text>
-  <text x="375" y="106" text-anchor="middle" font-size="11" fill="#6b6154">Tiling (1, 0.5)</text>
-  <text x="375" y="124" text-anchor="middle" font-size="11" fill="#6b6154">Offset (0, 0)</text>
-  <rect x="290" y="160" width="170" height="80" rx="6" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="375" y="186" text-anchor="middle" font-size="12" fill="#3a3226">碎片 2 取样窗口</text>
-  <text x="375" y="206" text-anchor="middle" font-size="11" fill="#6b6154">Tiling (1, 0.5)</text>
-  <text x="375" y="224" text-anchor="middle" font-size="11" fill="#6b6154">Offset (0, 0.5)</text>
-  <line x1="212" y1="100" x2="288" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="212" y1="160" x2="288" y2="190" stroke="#a99a80" stroke-width="1.5"/>
-  <rect x="520" y="110" width="170" height="80" rx="6" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="605" y="136" text-anchor="middle" font-size="12" fill="#3a3226">场景中的两个碎片</text>
-  <text x="605" y="156" text-anchor="middle" font-size="11" fill="#6b6154">位于不同纵深位置</text>
-  <text x="605" y="174" text-anchor="middle" font-size="11" fill="#6b6154">仅在特定视点视觉对齐</text>
-  <line x1="462" y1="100" x2="518" y2="132" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="462" y1="200" x2="518" y2="170" stroke="#a99a80" stroke-width="1.5"/>
+  <text x="30" y="26" font-size="13" fill="#262626">源贴图（UV 空间）</text>
+  <rect x="30" y="40" width="180" height="180" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <line x1="30" y1="130" x2="210" y2="130" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="120" y="92" text-anchor="middle" font-size="12" fill="#3f3f3f">v ∈ [0.5, 1]</text>
+  <text x="120" y="172" text-anchor="middle" font-size="12" fill="#3f3f3f">v ∈ [0, 0.5]</text>
+  <text x="24" y="238" font-size="11" fill="#3f3f3f">v=0</text>
+  <text x="24" y="50" font-size="11" fill="#3f3f3f">v=1</text>
+  <text x="216" y="238" font-size="11" fill="#3f3f3f">u=1</text>
+  <text x="120" y="238" text-anchor="middle" font-size="11" fill="#3f3f3f">u ∈ [0, 1] 全宽保留</text>
+  <rect x="290" y="60" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="375" y="86" text-anchor="middle" font-size="12" fill="#262626">碎片 1 取样窗口</text>
+  <text x="375" y="106" text-anchor="middle" font-size="11" fill="#3f3f3f">Tiling (1, 0.5)</text>
+  <text x="375" y="124" text-anchor="middle" font-size="11" fill="#3f3f3f">Offset (0, 0)</text>
+  <rect x="290" y="160" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="375" y="186" text-anchor="middle" font-size="12" fill="#262626">碎片 2 取样窗口</text>
+  <text x="375" y="206" text-anchor="middle" font-size="11" fill="#3f3f3f">Tiling (1, 0.5)</text>
+  <text x="375" y="224" text-anchor="middle" font-size="11" fill="#3f3f3f">Offset (0, 0.5)</text>
+  <line x1="212" y1="100" x2="288" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="212" y1="160" x2="288" y2="190" stroke="#8f8f8f" stroke-width="1.5"/>
+  <rect x="520" y="110" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="605" y="136" text-anchor="middle" font-size="12" fill="#262626">场景中的两个碎片</text>
+  <text x="605" y="156" text-anchor="middle" font-size="11" fill="#3f3f3f">位于不同纵深位置</text>
+  <text x="605" y="174" text-anchor="middle" font-size="11" fill="#3f3f3f">仅在特定视点视觉对齐</text>
+  <line x1="462" y1="100" x2="518" y2="132" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="462" y1="200" x2="518" y2="170" stroke="#8f8f8f" stroke-width="1.5"/>
 </svg>
 <figcaption>图 6-1 图案拆分：同一张贴图按 UV 子区域取样，碎片再被摆到不同纵深</figcaption>
 </figure>
 <p>两个碎片的取样窗口互补且不重叠，合起来覆盖完整图案。由于采样窗口由材质参数给出，把图案拆成四块或九块时，只需要新增材质实例并填入对应的 Tiling 与 Offset，源贴图与节点网络都不必改动。</p>
-<p>碎片在场景中的位置是另一个独立维度：它们被摆放在<strong>不同的纵深</strong>上，彼此之间存在视差。玩家横向移动时，近处碎片在视野中的位移大于远处碎片，两块因此错开；只有回到标定视点，两个取样窗口才在屏幕上重新拼合。拆分方案负责&quot;每块显示什么&quot;，纵深摆放负责&quot;何时能拼合&quot;，两者互不干涉。</p>
+<p>碎片在场景中的位置是另一个独立维度：它们被摆放在<strong>不同的纵深</strong>上，彼此之间存在视差。玩家横向移动时，近处碎片在视野中的位移大于远处碎片，两块因此错开；只有回到标定视点，两个取样窗口才在屏幕上重新拼合。拆分方案负责“每块显示什么”，纵深摆放负责“何时能拼合”，两者互不干涉。</p>
 <p class="caption">表 6-1 二等分方案下两个材质实例的参数取值</p>
 <div class="table-wrap"><table><thead><tr><th>材质实例</th><th>UVTiling</th><th>UVOffset</th><th>覆盖的纹理区域</th><th>承载位置</th></tr></thead><tbody><tr><td><code>MI_Star_Top</code></td><td>(1, 0.5)</td><td>(0, 0)</td><td>纵向上半</td><td>近处（柱面）</td></tr><tr><td><code>MI_Star_Bot</code></td><td>(1, 0.5)</td><td>(0, 0.5)</td><td>纵向下半</td><td>远处（墙面）</td></tr></tbody></table></div>
 <h3 id="6-2-材质侧的-uv-变换-节点结构与参数化">6.2 材质侧的 UV 变换：节点结构与参数化</h3>
@@ -778,9 +770,9 @@ USTRUCT(BlueprintType)
 <p><strong>为什么必须做通道裁剪。</strong> 向量参数的默认通道数是四（RGBA），而纹理坐标只有两个通道。UE 的算术节点要求两侧通道数一致，直接相连会在材质编译时得到类型错误：</p>
 <p class="caption">代码 6-2 通道数不匹配时的编译诊断</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="text"><code>SM6 (Node Multiply) Arithmetic between types float2 and float3 are undefined</code></pre></div>
-<p>这条报错的字面含义是&quot;两个操作数的通道数不同，且不存在这样的算术定义&quot;。它的成因有三种可能，需要逐个排查：一是向量参数本身是四通道；二是向量参数后接了通道裁剪节点，但裁剪后仍保留了三个通道（例如 B 通道未关闭），输出为 <code>float3</code>；三是未做裁剪而直接用四通道参数参与运算。把裁剪节点配置为<strong>只保留 R 与 G</strong>（B、A 均关闭）后，两侧都是 <code>float2</code>，运算即可成立。</p>
-<p>该问题的排查路径值得说明：错误信息只给出节点名与两个类型，并不指出哪一侧&quot;多余&quot;。实际定位时，需要检查裁剪节点的通道勾选状态——它决定了输出通道数，而在细节面板中，多勾一个通道并不会立即报错，直到该节点的下游参与算术运算才暴露。</p>
-<p><strong>为什么在材质实例中调参，而不是修改材质本体。</strong> 母材质负责&quot;有哪些参数、节点如何连接&quot;，材质实例负责&quot;这些参数取什么值&quot;。两者分离带来三点收益：其一，一份母材质配多个实例即可表达任意数量的碎片，不需要复制节点网络；其二，实例只覆盖被显式勾选的参数，其余参数继续继承母材质，因此调整母材质中的公共逻辑会自动传播到全部实例；其三，实例是轻量资产，复制与改名不涉及图结构，新增一个碎片的表现成本接近于零。</p>
+<p>这条报错的字面含义是“两个操作数的通道数不同，且不存在这样的算术定义”。它的成因有三种可能，需要逐个排查：一是向量参数本身是四通道；二是向量参数后接了通道裁剪节点，但裁剪后仍保留了三个通道（例如 B 通道未关闭），输出为 <code>float3</code>；三是未做裁剪而直接用四通道参数参与运算。把裁剪节点配置为<strong>只保留 R 与 G</strong>（B、A 均关闭）后，两侧都是 <code>float2</code>，运算即可成立。</p>
+<p>该问题的排查路径值得说明：错误信息只给出节点名与两个类型，并不指出哪一侧“多余”。实际定位时，需要检查裁剪节点的通道勾选状态——它决定了输出通道数，而在细节面板中，多勾一个通道并不会立即报错，直到该节点的下游参与算术运算才暴露。</p>
+<p><strong>为什么在材质实例中调参，而不是修改材质本体。</strong> 母材质负责“有哪些参数、节点如何连接”，材质实例负责“这些参数取什么值”。两者分离带来三点收益：其一，一份母材质配多个实例即可表达任意数量的碎片，不需要复制节点网络；其二，实例只覆盖被显式勾选的参数，其余参数继续继承母材质，因此调整母材质中的公共逻辑会自动传播到全部实例；其三，实例是轻量资产，复制与改名不涉及图结构，新增一个碎片的表现成本接近于零。</p>
 <h3 id="6-3-承载方式的选择-贴画与网格体">6.3 承载方式的选择：贴画与网格体</h3>
 <p>碎片的载体在实现上并不唯一：可以是贴合表面的贴画组件（<code>UDecalComponent</code>），也可以是独立的网格体组件（<code>UStaticMeshComponent</code>，例如一块平板）。前者沿表面弯曲、天然贴合柱面与墙面；后者是一个独立几何体，位置与朝向完全自由，可用于悬浮碎片。</p>
 <p>系统不要求所有碎片采用同一种载体，因此在初始化时按组件类型<strong>分支处理</strong>：</p>
@@ -810,13 +802,13 @@ USTRUCT(BlueprintType)
     }
 }</code></pre></div>
 <p>这段分支逻辑包含三层判定，每层都有明确的语义。</p>
-<p><strong>第一层是载体优先级。</strong> <code>FindComponentByClass&lt;T&gt;()</code> 在 Actor 的组件集合中查找指定类型的组件，找不到时返回空指针。分支采用 <code>if / else if</code> 而非两个并列的 <code>if</code>，因此<strong>贴画优先于网格体</strong>：当一个 Actor 同时挂载了两种组件时，只有贴画会被处理，网格体分支不会执行。这一优先级与视觉语义一致——贴画是显式声明&quot;此处用于贴合展示&quot;的组件，而网格体是通用组件，可能仅作为碰撞体或占位体存在。</p>
-<p><strong>第二层是材质是否存在。</strong> 贴画分支内部还有一次判空：<code>GetDecalMaterial()</code> 在未指定材质时返回空指针。此处的处理方式是&quot;不创建动态实例&quot;，而不是中断或报错，使未配置材质的碎片被安静跳过。</p>
-<p><strong>第三层是空项容忍。</strong> 无论走哪个分支，<code>DynMat</code> 最后都会被压入 <code>FragmentMaterials</code>，即使它仍为空指针。这保证了 <code>FragmentMaterials</code> 与 <code>FragmentActors</code> <strong>严格等长且按下标一一对应</strong>：索引 i 的材质项永远对应索引 i 的碎片。数组因此可以在需要时按索引关联回碎片，也避免了在下游用&quot;跳过计数&quot;的方式推算对应关系。空项由写入端容忍——发光循环在调用前检查指针是否为空。</p>
+<p><strong>第一层是载体优先级。</strong> <code>FindComponentByClass0()</code> 在 Actor 的组件集合中查找指定类型的组件，找不到时返回空指针。分支采用 <code>if / else if</code> 而非两个并列的 <code>if</code>，因此<strong>贴画优先于网格体</strong>：当一个 Actor 同时挂载了两种组件时，只有贴画会被处理，网格体分支不会执行。这一优先级与视觉语义一致——贴画是显式声明“此处用于贴合展示”的组件，而网格体是通用组件，可能仅作为碰撞体或占位体存在。</p>
+<p><strong>第二层是材质是否存在。</strong> 贴画分支内部还有一次判空：<code>GetDecalMaterial()</code> 在未指定材质时返回空指针。此处的处理方式是“不创建动态实例”，而不是中断或报错，使未配置材质的碎片被安静跳过。</p>
+<p><strong>第三层是空项容忍。</strong> 无论走哪个分支，<code>DynMat</code> 最后都会被压入 <code>FragmentMaterials</code>，即使它仍为空指针。这保证了 <code>FragmentMaterials</code> 与 <code>FragmentActors</code> <strong>严格等长且按下标一一对应</strong>：索引 i 的材质项永远对应索引 i 的碎片。数组因此可以在需要时按索引关联回碎片，也避免了在下游用“跳过计数”的方式推算对应关系。空项由写入端容忍——发光循环在调用前检查指针是否为空。</p>
 <p class="caption">表 6-2 两种承载方式的对照</p>
 <div class="table-wrap"><table><thead><tr><th>维度</th><th>贴画（<code>UDecalComponent</code>）</th><th>网格体（<code>UStaticMeshComponent</code>）</th></tr></thead><tbody><tr><td>几何行为</td><td>投影盒沿表面贴合，图案随表面起伏弯曲</td><td>独立平面，不随表面弯曲</td></tr><tr><td>材质取用</td><td><code>GetDecalMaterial()</code> 取当前材质，替换需显式回写</td><td>直接按材质元素索引创建并设置</td></tr><tr><td>动态实例创建</td><td>三步：取材质 → 创建实例 → 回写组件</td><td>一步：<code>CreateAndSetMaterialInstanceDynamic(0)</code></td></tr><tr><td>摆放自由度</td><td>受投影方向与深度限制，需避免投影溢出到相邻表面</td><td>位置与朝向完全自由，可悬浮</td></tr><tr><td>材质域要求</td><td>必须使用 <code>Deferred Decal</code> 域，混合模式受限</td><td>使用常规表面材质域，混合模式自由</td></tr><tr><td>适用场景</td><td>图案需贴在柱面、墙面等既有表面上</td><td>图案需悬浮于空中，或需要精确控制朝向</td></tr></tbody></table></div>
-<p>贴画分支的三步写法还有一个版本相关的理由。网格体组件提供了&quot;创建并设置&quot;的合并接口，贴画组件在 UE 5.8 中并没有等价的一步式调用：按网格体的习惯传入材质索引会得到编译错误 <code>C2660 &quot;UDecalComponent::CreateDynamicMaterialInstance&quot;: 函数不接受 1 个参数</code>。取材质、创建实例、回写组件这三步虽然更长，但不依赖该组件特有的便捷接口，跨版本更稳定。</p>
-<p>选择贴画路线时还需注意材质域的限制：<code>Deferred Decal</code> 域只接受有限的混合模式，使用常规域材质会直接编译失败，提示信息列出了允许的混合模式集合（<code>TranslucentGreyTransmittance</code>、<code>TranslucentColorTransmittance</code>、<code>AlphaComposite</code>、<code>ColoredTransmittanceOnly</code>）。本方案采用 <code>Translucent</code>，配合深色背景贴图实现&quot;只显示图案本身&quot;的效果。</p>
+<p>贴画分支的三步写法还有一个版本相关的理由。网格体组件提供了“创建并设置”的合并接口，贴画组件在 UE 5.8 中并没有等价的一步式调用：按网格体的习惯传入材质索引会得到编译错误 <code>C2660 &quot;UDecalComponent::CreateDynamicMaterialInstance&quot;: 函数不接受 1 个参数</code>。取材质、创建实例、回写组件这三步虽然更长，但不依赖该组件特有的便捷接口，跨版本更稳定。</p>
+<p>选择贴画路线时还需注意材质域的限制：<code>Deferred Decal</code> 域只接受有限的混合模式，使用常规域材质会直接编译失败，提示信息列出了允许的混合模式集合（<code>TranslucentGreyTransmittance</code>、<code>TranslucentColorTransmittance</code>、<code>AlphaComposite</code>、<code>ColoredTransmittanceOnly</code>）。本方案采用 <code>Translucent</code>，配合深色背景贴图实现“只显示图案本身”的效果。</p>
 <h3 id="6-4-动态材质实例">6.4 动态材质实例</h3>
 <p>材质参数有两类存在形式：资产中保存的材质实例（含母材质）其参数值是<strong>静态</strong>的，作为资产数据被序列化；只有运行时创建的<strong>动态材质实例</strong>（<code>UMaterialInstanceDynamic</code>）才提供写入接口。使用 <code>SetScalarParameterValue</code> 之类的方法改变参数，前提是目标必须是动态实例，否则调用无从作用于渲染。</p>
 <p>因此系统在初始化阶段一次性建立动态实例，并在整个运行期复用：</p>
@@ -825,10 +817,10 @@ USTRUCT(BlueprintType)
     UPROPERTY(Transient)
     TArray&lt;UMaterialInstanceDynamic*&gt; FragmentMaterials;</code></pre></div>
 <p>该数组被标记为 <code>Transient</code>，即不参与序列化：动态实例是运行时对象，没有必要写入存档，也不应在关卡加载时被反序列化。数组的元素类型为裸指针而非智能指针，其生命周期由组件侧的引用保证——每个实例在创建后立即被回写到对应的贴画或网格体组件上，组件持有引用即意味着实例不会被提前回收。</p>
-<p><strong>创建时机被安排在初始化阶段，而不是判定循环中。</strong> 判定循环以固定间隔反复执行，若在其中创建材质实例，每次采样都会产生一批新对象，既浪费内存也会失去&quot;参数可在帧间累积&quot;的前提——发光参数的写入依赖同一个实例被持续复用。把创建集中在 <code>CacheFragmentMaterials()</code> 中执行一次，后续只做写入，是整个发光链路能够平滑连续的前提。</p>
+<p><strong>创建时机被安排在初始化阶段，而不是判定循环中。</strong> 判定循环以固定间隔反复执行，若在其中创建材质实例，每次采样都会产生一批新对象，既浪费内存也会失去“参数可在帧间累积”的前提——发光参数的写入依赖同一个实例被持续复用。把创建集中在 <code>CacheFragmentMaterials()</code> 中执行一次，后续只做写入，是整个发光链路能够平滑连续的前提。</p>
 <p>两条创建路径的差异值得单独说明：</p>
 <ul>
-<li><strong>网格体路径</strong>：<code>CreateAndSetMaterialInstanceDynamic(0)</code> 一步完成&quot;创建实例并将它设置到第 0 个材质元素&quot;。参数 0 表示材质元素索引，网格体可以有多个材质槽，此处固定使用第一个。</li>
+<li><strong>网格体路径</strong>：<code>CreateAndSetMaterialInstanceDynamic(0)</code> 一步完成“创建实例并将它设置到第 0 个材质元素”。参数 0 表示材质元素索引，网格体可以有多个材质槽，此处固定使用第一个。</li>
 <li><strong>贴画路径</strong>：先 <code>GetDecalMaterial()</code> 取得当前材质接口，再 <code>UMaterialInstanceDynamic::Create(DecalMat, Decal)</code> 以该材质为母本创建实例，第二个参数指定外层对象（Owner），最后 <code>SetDecalMaterial(DynMat)</code> 把实例回写到组件。若不执行最后一步，实例虽然存在却不会被渲染使用——这是该路径最容易遗漏的一环。</li>
 </ul>
 <h3 id="6-5-发光反馈">6.5 发光反馈</h3>
@@ -844,55 +836,55 @@ USTRUCT(BlueprintType)
             <span class="tok-key">if</span> (DynMat) DynMat-&gt;SetScalarParameterValue(GlowParameterName, GlowValue);
         }
     }</code></pre></div>
-<p>参数名由 <code>GlowParameterName</code> 决定，默认值为 <code>GlowIntensity</code>。它被设计为可编辑属性，是为了让材质侧的命名不被 C++ 写死；而当该属性被置为空名（<code>NAME_None</code>）时，整段发光逻辑被跳过，系统退化为&quot;无视觉反馈&quot;的纯判定模式。</p>
-<p>写入值 <code>GlowValue</code> 的取值规则是<strong>渐进语义</strong>：处于对齐状态时取当前进度 <code>SolveProgress</code>，否则取 0。进度本身由保持时长归一化而来（<span class="eq">clamp(HoldTimer / HoldDuration, 0, 1)</span>），因此发光强度与&quot;玩家已经正确保持了多久&quot;成正比；一旦失去对齐，<code>SolveProgress</code> 被清零，发光随之熄灭。玩家因此可以从亮度直接读出进度，而不必依赖额外 UI。</p>
+<p>参数名由 <code>GlowParameterName</code> 决定，默认值为 <code>GlowIntensity</code>。它被设计为可编辑属性，是为了让材质侧的命名不被 C++ 写死；而当该属性被置为空名（<code>NAME_None</code>）时，整段发光逻辑被跳过，系统退化为“无视觉反馈”的纯判定模式。</p>
+<p>写入值 <code>GlowValue</code> 的取值规则是<strong>渐进语义</strong>：处于对齐状态时取当前进度 <code>SolveProgress</code>，否则取 0。进度本身由保持时长归一化而来（<span class="eq">clamp(HoldTimer / HoldDuration, 0, 1)</span>），因此发光强度与“玩家已经正确保持了多久”成正比；一旦失去对齐，<code>SolveProgress</code> 被清零，发光随之熄灭。玩家因此可以从亮度直接读出进度，而不必依赖额外 UI。</p>
 <p>材质侧把该标量转换为自发光亮度：</p>
 <figure>
 <svg viewBox="0 0 820 220" width="100%" height="220" role="img" aria-label="发光参数到自发光的链路">
-  <rect x="20" y="70" width="150" height="60" rx="7" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="95" y="94" text-anchor="middle" font-size="12" fill="#3a3226">GlowIntensity</text>
-  <text x="95" y="113" text-anchor="middle" font-size="10" fill="#6b6154">标量参数 0 → 1</text>
-  <rect x="215" y="70" width="120" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="275" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Multiply × K</text>
-  <text x="275" y="113" text-anchor="middle" font-size="10" fill="#6b6154">K 为发光倍数</text>
-  <rect x="380" y="70" width="120" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="440" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Add + 1</text>
-  <text x="440" y="113" text-anchor="middle" font-size="10" fill="#6b6154">零点保持原亮度</text>
-  <rect x="545" y="70" width="130" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="610" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Multiply</text>
-  <text x="610" y="113" text-anchor="middle" font-size="10" fill="#6b6154">与贴图 RGB 相乘</text>
-  <rect x="700" y="70" width="105" height="60" rx="7" fill="#f7ecec" stroke="#c08a8a"/>
-  <text x="752" y="94" text-anchor="middle" font-size="12" fill="#7a3232">Emissive</text>
-  <text x="752" y="113" text-anchor="middle" font-size="10" fill="#7a3232">自发光输出</text>
-  <rect x="520" y="164" width="180" height="44" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="610" y="183" text-anchor="middle" font-size="11" fill="#3a3226">TextureSample.RGB</text>
-  <text x="610" y="199" text-anchor="middle" font-size="10" fill="#6b6154">图案原色</text>
-  <line x1="170" y1="100" x2="213" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="335" y1="100" x2="378" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="500" y1="100" x2="543" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="675" y1="100" x2="698" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="610" y1="162" x2="610" y2="132" stroke="#a99a80" stroke-width="1.5"/>
-  <text x="20" y="40" font-size="11" fill="#6b6154">GlowIntensity = 0 → 自发光 = 贴图 × 1（原色）　　GlowIntensity = 1 → 自发光 = 贴图 × (1 + K)</text>
+  <rect x="20" y="70" width="150" height="60" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="95" y="94" text-anchor="middle" font-size="12" fill="#262626">GlowIntensity</text>
+  <text x="95" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">标量参数 0 → 1</text>
+  <rect x="215" y="70" width="120" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="275" y="94" text-anchor="middle" font-size="12" fill="#262626">Multiply × K</text>
+  <text x="275" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">K 为发光倍数</text>
+  <rect x="380" y="70" width="120" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="440" y="94" text-anchor="middle" font-size="12" fill="#262626">Add + 1</text>
+  <text x="440" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">零点保持原亮度</text>
+  <rect x="545" y="70" width="130" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="610" y="94" text-anchor="middle" font-size="12" fill="#262626">Multiply</text>
+  <text x="610" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">与贴图 RGB 相乘</text>
+  <rect x="700" y="70" width="105" height="60" rx="2" fill="#f5f5f5" stroke="#5a5a5a"/>
+  <text x="752" y="94" text-anchor="middle" font-size="12" fill="#262626">Emissive</text>
+  <text x="752" y="113" text-anchor="middle" font-size="10" fill="#262626">自发光输出</text>
+  <rect x="520" y="164" width="180" height="44" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="610" y="183" text-anchor="middle" font-size="11" fill="#262626">TextureSample.RGB</text>
+  <text x="610" y="199" text-anchor="middle" font-size="10" fill="#3f3f3f">图案原色</text>
+  <line x1="170" y1="100" x2="213" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="335" y1="100" x2="378" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="500" y1="100" x2="543" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="675" y1="100" x2="698" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="610" y1="162" x2="610" y2="132" stroke="#8f8f8f" stroke-width="1.5"/>
+  <text x="20" y="40" font-size="11" fill="#3f3f3f">GlowIntensity = 0 → 自发光 = 贴图 × 1（原色）　　GlowIntensity = 1 → 自发光 = 贴图 × (1 + K)</text>
 </svg>
 <figcaption>图 6-2 发光链路：标量参数经放大与偏置后调制贴图颜色，输出到自发光</figcaption>
 </figure>
 <p>链条中两个常数各有明确职责。乘数 K 决定<strong>动态范围</strong>：参数从 0 变到 1 时，亮度在 <span class="eq">1</span> 与 <span class="eq">1 + K</span> 之间变化，取 K = 6 时对应 7 倍亮度；K 是纯调参量，效果不足时可增大到 15 或 30，链条结构不变。加数 1 则保证<strong>零点语义</strong>：参数为 0 时自发光等于贴图原色，图案保持正常外观，而不是完全熄灭。若省略该偏置，未对齐状态下图案会变成全黑。</p>
-<p><strong>发光接自发光通道而不是基础色，是这条链路的关键选择。</strong> 基础色参与光照着色计算，提高基础色只会让图案&quot;更亮更白&quot;，颜色被稀释，观感是漂洗而非发光；自发光则是直接叠加到最终亮度的独立项，提高它不会改变图案的色相，只是让同一颜色变得更耀眼，观感与光源一致。</p>
-<p>自发光之外还需要一道后处理才能形成&quot;光晕&quot;：自发光本身只提供亮度，扩散感来自泛光（Bloom）。实现方式是在场景中放置一个后处理体积并勾选无限范围（Unbound），将 Bloom Intensity 调到约 <span class="eq">1.5 ~ 3</span>。缺少这一步时，图案会&quot;变亮&quot;但不会&quot;发光&quot;——这是发光反馈在观感上不达预期时首要检查的环节。</p>
+<p><strong>发光接自发光通道而不是基础色，是这条链路的关键选择。</strong> 基础色参与光照着色计算，提高基础色只会让图案“更亮更白”，颜色被稀释，观感是漂洗而非发光；自发光则是直接叠加到最终亮度的独立项，提高它不会改变图案的色相，只是让同一颜色变得更耀眼，观感与光源一致。</p>
+<p>自发光之外还需要一道后处理才能形成“光晕”：自发光本身只提供亮度，扩散感来自泛光（Bloom）。实现方式是在场景中放置一个后处理体积并勾选无限范围（Unbound），将 Bloom Intensity 调到约 <span class="eq">1.5 ~ 3</span>。缺少这一步时，图案会“变亮”但不会“发光”——这是发光反馈在观感上不达预期时首要检查的环节。</p>
 <h3 id="6-6-视觉方案的取舍">6.6 视觉方案的取舍</h3>
-<p>实现&quot;碎片拼合后发光&quot;至少有三条技术路线，它们在可控性、实现成本与最终效果上各有取舍。</p>
+<p>实现“碎片拼合后发光”至少有三条技术路线，它们在可控性、实现成本与最终效果上各有取舍。</p>
 <p class="caption">表 6-3 三种视觉路线的对照</p>
 <div class="table-wrap"><table><thead><tr><th>维度</th><th>材质实例 + 贴画/网格体（本方案）</th><th>真实投影（聚光灯投影贴图）</th><th>屏幕空间叠加</th></tr></thead><tbody><tr><td>图案来源</td><td>单张贴图按 UV 子区域取样</td><td>光源的投影贴图</td><td>屏幕坐标下的图像合成</td></tr><tr><td>拆分方式</td><td>每个碎片一个材质实例，改 Tiling/Offset</td><td>每个投影光源一张投影贴图</td><td>需要按视口尺寸重算位置</td></tr><tr><td>视差来源</td><td>碎片本身的纵深差（真实三维位置）</td><td>投影距离差</td><td>需人为模拟，依赖视口参数</td></tr><tr><td>数量扩展成本</td><td>低：复制实例改两个向量参数</td><td>高：每个投影需独立资源与光源</td><td>中：需维护屏幕空间布局逻辑</td></tr><tr><td>参数可控性</td><td>高：任意标量/向量参数可在运行时写入</td><td>中：受光源属性限制</td><td>中：受渲染管线阶段限制</td></tr><tr><td>与判定系统的耦合</td><td>松：仅通过一个标量参数名关联</td><td>中：需同步光源参数</td><td>紧：依赖相机视口分辨率与宽高比</td></tr><tr><td>主要限制</td><td>贴画路线受 <code>Deferred Decal</code> 材质域与混合模式约束</td><td>效果接近投影仪，几何贴合不如贴画自然</td><td>分辨率相关，改变视口即需重算</td></tr></tbody></table></div>
 <p>本方案选择第一条路线，理由集中在三点。其一是<strong>拆分成本与碎片数量解耦</strong>：图案只保留一份源贴图，新增碎片只增加一个材质实例，不增加图像资源。其二是<strong>反馈通道简单</strong>：视觉层与判定层之间只有一个标量参数，双方可以独立修改——材质侧调整链条结构或常数不影响 C++，C++ 侧改变写入曲线也不影响材质。其三是<strong>视差来源真实</strong>：碎片处于真实的三维位置，视差由透视投影自然产生，不需要在屏幕空间模拟。</p>
-<p>其代价也很明确：贴画路线的材质域被限定为 <code>Deferred Decal</code>，混合模式与可用的着色模型都受到约束，图案的最终观感受表面法线与投影方向影响；网格体路线虽无此约束，却失去了&quot;自动贴合表面&quot;的能力，需要人工把平面摆到与目标表面几乎重合的位置。</p>
+<p>其代价也很明确：贴画路线的材质域被限定为 <code>Deferred Decal</code>，混合模式与可用的着色模型都受到约束，图案的最终观感受表面法线与投影方向影响；网格体路线虽无此约束，却失去了“自动贴合表面”的能力，需要人工把平面摆到与目标表面几乎重合的位置。</p>
 <h3 id="6-7-小结">6.7 小结</h3>
 <ul>
 <li>图案拆分在纹理坐标层面完成：所有碎片共用一张源贴图，每个碎片用一组 <code>Tiling</code> 与 <code>Offset</code> 声明取样窗口，拆分块数变化时不需要重新制作图像资源。</li>
-<li>材质侧的 UV 变换是&quot;先缩放、后平移&quot;的两步链条，顺序不可交换；参数以向量形式声明后再裁剪为双通道，否则会因通道数不一致触发 <code>float2</code> 与 <code>float3</code> 不可运算的编译错误。</li>
+<li>材质侧的 UV 变换是“先缩放、后平移”的两步链条，顺序不可交换；参数以向量形式声明后再裁剪为双通道，否则会因通道数不一致触发 <code>float2</code> 与 <code>float3</code> 不可运算的编译错误。</li>
 <li>参数值放在材质实例而非母材质中：母材质定义参数与拓扑，实例只覆盖数值，新增碎片因此只需复制实例。</li>
 <li>碎片载体在贴画与网格体之间分支处理，<code>if / else if</code> 的顺序使贴画具有优先级；材质数组与碎片列表严格等长同序，空项由写入端容忍，因此单个碎片配置缺失不会破坏索引关系。</li>
-<li>动态材质实例在初始化阶段一次性创建并持续复用，是运行时可写参数的前提；贴画路线需要&quot;取材质、创建实例、回写组件&quot;三步，缺一不可。</li>
-<li>发光通过单个标量参数驱动自发光通道，参数值取&quot;对齐时按进度、失焦时归零&quot;，并配合泛光形成光晕；接到基础色只会造成颜色漂洗，不产生发光观感。</li>
+<li>动态材质实例在初始化阶段一次性创建并持续复用，是运行时可写参数的前提；贴画路线需要“取材质、创建实例、回写组件”三步，缺一不可。</li>
+<li>发光通过单个标量参数驱动自发光通道，参数值取“对齐时按进度、失焦时归零”，并配合泛光形成光晕；接到基础色只会造成颜色漂洗，不产生发光观感。</li>
 </ul>
 </section>
 
@@ -900,41 +892,41 @@ USTRUCT(BlueprintType)
 <h2><a class="anchor" href="#ch7" aria-label="链接到本节">#</a><span class="cnum">7</span>实现要点与工程问题</h2>
 <h3 id="7-1-ue-的构建系统与-uht-反射代码是怎样生成的">7.1 UE 的构建系统与 UHT：反射代码是怎样生成的</h3>
 <p>一个 UE C++ 类与普通 C++ 类最直观的差别，是头文件里那两样东西：末尾的 <code>#include &quot;PerspectivePuzzleManager.generated.h&quot;</code>，以及类体第一行的 <code>GENERATED_BODY()</code>。它们不是可选风格，而是反射系统能够识别这个类的前提。</p>
-<p>UE 的 C++ 构建分为两层。第一层是 <strong>UHT（Unreal Header Tool）</strong>，它不编译代码，而是扫描头文件中出现的 <code>UCLASS</code>、<code>USTRUCT</code>、<code>UPROPERTY</code>、<code>UFUNCTION</code> 等标记，据此生成若干辅助文件，其中最主要的就是 <code>&lt;ClassName&gt;.generated.h</code>。第二层是 <strong>UBT（Unreal Build Tool）</strong> 调用平台编译器（本工程为 MSVC），把头文件、生成文件与源文件一起编译成模块动态库，由引擎在启动时加载。整个顺序如图 7-1 所示。</p>
+<p>UE 的 C++ 构建分为两层。第一层是 <strong>UHT（Unreal Header Tool）</strong>，它不编译代码，而是扫描头文件中出现的 <code>UCLASS</code>、<code>USTRUCT</code>、<code>UPROPERTY</code>、<code>UFUNCTION</code> 等标记，据此生成若干辅助文件，其中最主要的就是 <code>0.generated.h</code>。第二层是 <strong>UBT（Unreal Build Tool）</strong> 调用平台编译器（本工程为 MSVC），把头文件、生成文件与源文件一起编译成模块动态库，由引擎在启动时加载。整个顺序如图 7-1 所示。</p>
 <figure>
 <svg viewBox="0 0 700 250" width="700" height="250" role="img" aria-label="UE C++ 的两层构建流程">
   <defs>
     <marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555555"/>
     </marker>
   </defs>
   <g font-family="sans-serif" font-size="13" text-anchor="middle">
-    <rect x="20" y="40" width="180" height="60" rx="6" fill="#f4f6f8" stroke="#555"/>
+    <rect x="20" y="40" width="180" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="110" y="65">.h 中的</text>
     <text x="110" y="85">UCLASS / UPROPERTY / UFUNCTION</text>
 
-    <line x1="200" y1="70" x2="252" y2="70" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="200" y1="70" x2="252" y2="70" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="254" y="40" width="170" height="60" rx="6" fill="#eef4fb" stroke="#555"/>
+    <rect x="254" y="40" width="170" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="339" y="65">UHT 扫描</text>
     <text x="339" y="85">生成 .generated.h</text>
 
-    <line x1="424" y1="70" x2="476" y2="70" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="424" y1="70" x2="476" y2="70" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="478" y="40" width="200" height="60" rx="6" fill="#eef4fb" stroke="#555"/>
+    <rect x="478" y="40" width="200" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="578" y="65">UBT + MSVC 编译</text>
     <text x="578" y="85">.h / .cpp / .generated.h</text>
 
-    <line x1="578" y1="100" x2="578" y2="140" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="578" y1="100" x2="578" y2="140" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="478" y="142" width="200" height="52" rx="6" fill="#f4f6f8" stroke="#555"/>
+    <rect x="478" y="142" width="200" height="52" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="578" y="164">模块 DLL</text>
     <text x="578" y="182">引擎启动时加载</text>
 
-    <rect x="20" y="142" width="404" height="52" rx="6" fill="#fdf6ee" stroke="#555"/>
+    <rect x="20" y="142" width="404" height="52" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="222" y="164">UHT 未重新生成 → 找不到 .generated.h / 未找到 XX 的函数定义</text>
     <text x="222" y="182">这类报错的根因在生成阶段，而不在语法上</text>
-    <line x1="424" y1="168" x2="476" y2="168" stroke="#555" stroke-dasharray="4 3" marker-end="url(#a7)"/>
+    <line x1="424" y1="168" x2="476" y2="168" stroke="#555555" stroke-dasharray="4 3" marker-end="url(#a7)"/>
   </g>
 </svg>
 <figcaption>图 7-1 UHT 与 UBT 的两层构建流程，以及生成阶段失败时的典型表现</figcaption>
@@ -962,7 +954,7 @@ UCLASS()
 <h3 id="7-2-头文件与源文件的分工">7.2 头文件与源文件的分工</h3>
 <p>在 UE 语境下，声明与实现的分工比通常的 C++ 更明确，因为「哪些内容必须让 UHT 看到」是一条硬约束：只要带反射标记，就必须写在头文件里。</p>
 <p class="caption">表 7-2 UE 工程中头文件与源文件的职责划分</p>
-<div class="table-wrap"><table><thead><tr><th>内容</th><th>位置</th><th>原因</th></tr></thead><tbody><tr><td>类声明、基类、模块导出宏 <code>CPP1_API</code></td><td><code>.h</code></td><td>UHT 只扫描头文件</td></tr><tr><td><code>UCLASS</code> / <code>USTRUCT</code> / <code>UPROPERTY</code> / <code>UFUNCTION</code> 及其 <code>meta</code></td><td><code>.h</code></td><td>反射信息由 UHT 从头文件采集</td></tr><tr><td><code>GENERATED_BODY()</code></td><td><code>.h</code></td><td>生成代码的插入点，必须出现在类体内首部</td></tr><tr><td><code>#include &quot;&lt;类名&gt;.generated.h&quot;</code></td><td><code>.h</code> 的最后一条 include</td><td>见 7.1 节</td></tr><tr><td>纯 C++ 辅助类型的前向声明（如 <code>class UMaterialInstanceDynamic;</code>）</td><td><code>.h</code></td><td>成员只用指针，不需要完整类型，可减少编译依赖</td></tr><tr><td>构造函数、成员函数实现、事件调用点</td><td><code>.cpp</code></td><td>与普通 C++ 相同，写成 <code>类名::函数名</code></td></tr><tr><td>引擎功能头文件（<code>Engine/World.h</code>、<code>DrawDebugHelpers.h</code> 等）</td><td><code>.cpp</code></td><td>只有实现需要这些完整类型</td></tr><tr><td><code>#include &quot;&lt;本类名&gt;.h&quot;</code></td><td><code>.cpp</code> 的第一条 include</td><td>保证类声明与实现一致，并让反射宏先展开</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>内容</th><th>位置</th><th>原因</th></tr></thead><tbody><tr><td>类声明、基类、模块导出宏 <code>CPP1_API</code></td><td><code>.h</code></td><td>UHT 只扫描头文件</td></tr><tr><td><code>UCLASS</code> / <code>USTRUCT</code> / <code>UPROPERTY</code> / <code>UFUNCTION</code> 及其 <code>meta</code></td><td><code>.h</code></td><td>反射信息由 UHT 从头文件采集</td></tr><tr><td><code>GENERATED_BODY()</code></td><td><code>.h</code></td><td>生成代码的插入点，必须出现在类体内首部</td></tr><tr><td><code>#include &quot;2.generated.h&quot;</code></td><td><code>.h</code> 的最后一条 include</td><td>见 7.1 节</td></tr><tr><td>纯 C++ 辅助类型的前向声明（如 <code>class UMaterialInstanceDynamic;</code>）</td><td><code>.h</code></td><td>成员只用指针，不需要完整类型，可减少编译依赖</td></tr><tr><td>构造函数、成员函数实现、事件调用点</td><td><code>.cpp</code></td><td>与普通 C++ 相同，写成 <code>类名::函数名</code></td></tr><tr><td>引擎功能头文件（<code>Engine/World.h</code>、<code>DrawDebugHelpers.h</code> 等）</td><td><code>.cpp</code></td><td>只有实现需要这些完整类型</td></tr><tr><td><code>#include &quot;3.h&quot;</code></td><td><code>.cpp</code> 的第一条 include</td><td>保证类声明与实现一致，并让反射宏先展开</td></tr></tbody></table></div>
 <p>源文件的第一条 include 必须是自身头文件，这条规则对本工程尤其重要：头文件里含有 <code>generated.h</code> 与反射宏，如果源文件先包含其他引擎头文件，就可能在这些头文件间接引入的类型声明之前展开生成代码，产生难以定位的连带错误。</p>
 <p class="caption">代码 7-2 源文件的 include 区（节选自 PerspectivePuzzleManager.cpp 第 1–12 行）</p>
 <div class="code-wrap"><button class="copy" type="button" aria-label="复制代码">复制</button><pre class="code" data-lang="cpp"><code><span class="tok-com">// Fill out your copyright notice in the Description page of Project Settings.</span>
@@ -977,20 +969,20 @@ UCLASS()
 <span class="tok-pre">#include</span> <span class="tok-str">&quot;Materials/MaterialInstanceDynamic.h&quot;</span>
 <span class="tok-pre">#include</span> <span class="tok-str">&quot;Materials/MaterialInterface.h&quot;</span>
 <span class="tok-pre">#include</span> <span class="tok-str">&quot;DrawDebugHelpers.h&quot;</span></code></pre></div>
-<p>头文件中只前向声明 <code>UMaterialInstanceDynamic</code>，完整定义放在源文件，理由是成员 <code>TArray&lt;UMaterialInstanceDynamic*&gt; FragmentMaterials</code> 只用到指针；指针大小固定，无需完整类型。把重量级的 <code>Materials/MaterialInstanceDynamic.h</code> 放在源文件，可避免该头文件被任何包含本头文件的翻译单元连锁引入。这一取舍在 7.3 节还会再次出现，因为前向声明与模板组合时会触发另一类错误。</p>
+<p>头文件中只前向声明 <code>UMaterialInstanceDynamic</code>，完整定义放在源文件，理由是成员 <code>TArray0 FragmentMaterials</code> 只用到指针；指针大小固定，无需完整类型。把重量级的 <code>Materials/MaterialInstanceDynamic.h</code> 放在源文件，可避免该头文件被任何包含本头文件的翻译单元连锁引入。这一取舍在 7.3 节还会再次出现，因为前向声明与模板组合时会触发另一类错误。</p>
 <h3 id="7-3-编译错误的分类与定位">7.3 编译错误的分类与定位</h3>
 <p>UE 工程中的报错信息有一个显著特点：<strong>最先出现的错误往往不是根因</strong>。当生成阶段失败时，编译器看到的是一批缺少声明与宏展开的代码，于是从引擎模板内部到业务代码会连续报出十几条互不相关的错误。定位的关键是分清「生成阶段失败」与「真实语法错误」。</p>
 <p>以引擎头文件 <code>StaticAssertCompleteType.h</code> 为例，报告中出现的是两条错误：</p>
 <ul>
-<li><code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase&lt;&lt;错误类型&gt;&gt;&quot; 的模板参数列表中使用或无法从中推导</code>（位于 <code>StaticAssertCompleteType.h</code> 第 34 行）</li>
+<li><code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase1&gt;&quot; 的模板参数列表中使用或无法从中推导</code>（位于 <code>StaticAssertCompleteType.h</code> 第 34 行）</li>
 <li><code>E0094 数组的大小必须大于零</code>（位于同一文件第 35 行）</li>
-<li>连带出现 <code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;TIsContiguousContainer&lt;&lt;错误类型&gt;&gt;&quot; 的模板参数列表中使用或无法从中推导</code> 与多条 <code>E0094</code>（位于 <code>IsContiguousContainer.h</code> 第 41–44 行）</li>
+<li>连带出现 <code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;TIsContiguousContainer2&gt;&quot; 的模板参数列表中使用或无法从中推导</code> 与多条 <code>E0094</code>（位于 <code>IsContiguousContainer.h</code> 第 41–44 行）</li>
 </ul>
-<p>这些位置都在引擎内部，不可能由业务代码的直接改动引起。它们的实际含义是：某个容器模板在实例化时拿到了一个<strong>不完整类型</strong>（只有前向声明、没有定义的类），引擎为此准备的静态断言在展开时失败，错误于是被报告在断言所在的头文件里。在本工程中，触发条件是把容器元素写成 <code>TObjectPtr&lt;T&gt;</code> 而 <code>T</code> 只是前向声明；改用裸指针数组 <code>TArray&lt;T*&gt;</code> 后该组报错消失。这一取舍已在 7.2 节说明：成员 <code>FragmentMaterials</code> 使用裸指针，其生命周期由持有它的 Decal/网格体组件保证。</p>
+<p>这些位置都在引擎内部，不可能由业务代码的直接改动引起。它们的实际含义是：某个容器模板在实例化时拿到了一个<strong>不完整类型</strong>（只有前向声明、没有定义的类），引擎为此准备的静态断言在展开时失败，错误于是被报告在断言所在的头文件里。在本工程中，触发条件是把容器元素写成 <code>TObjectPtr3</code> 而 <code>T</code> 只是前向声明；改用裸指针数组 <code>TArray4</code> 后该组报错消失。这一取舍已在 7.2 节说明：成员 <code>FragmentMaterials</code> 使用裸指针，其生命周期由持有它的 Decal/网格体组件保证。</p>
 <p>另一类报错来自生成阶段本身，形态与处置如表 7-3。</p>
 <p class="caption">表 7-3 生成阶段失败的典型报错与处置</p>
 <div class="table-wrap"><table><thead><tr><th>报错文本</th><th>实际含义</th><th>处置</th></tr></thead><tbody><tr><td><code>无法打开 源 文件 &quot;PerspectivePuzzleManager.generated.h&quot;</code></td><td>生成头文件不存在或未被生成</td><td>确认头文件名与类声明一致；清理 <code>Intermediate/Build/Win64/UnrealEditor/Inc/CPP1</code> 后重新构建，强制 UHT 重新生成</td></tr><tr><td><code>无法打开 源 文件 &quot;SharedDefinitions.UnrealEd.Project.ValApi.ValExpApi.Cpp20.InclOrderUnreal5_6.h&quot;</code></td><td>构建配置中的共享定义文件缺失，通常伴随生成目录被清理或构建中途失败</td><td>关闭编辑器后做一次完整重建，让 UBT 重新生成全部中间文件</td></tr><tr><td><code>未找到 &quot;OnPuzzleSolved&quot; 的函数定义</code>（<code>OnViewAligned</code> / <code>OnViewLost</code> / <code>OnProgressUpdated</code> 同）</td><td><code>BlueprintImplementableEvent</code> 的实现位于蓝图侧，C++ 只负责调用点；当 <code>GENERATED_BODY()</code> 未生效时，这些调用点找不到对应声明</td><td>检查 <code>GENERATED_BODY()</code> 是否位于类体首部、生成头文件是否为最后一条 include</td></tr><tr><td><code>The identifier &#39;GENERATED_BODY&#39; was detected in a block being skipped. Was this intentional?</code></td><td>宏出现在被条件编译跳过的代码块内，UHT 未能处理</td><td>移除包裹类声明的条件编译，使 <code>GENERATED_BODY()</code> 始终处于活动分支</td></tr><tr><td><code>类 &quot;UObject&quot; 没有成员 &quot;Tick&quot;</code> / <code>类 &quot;UObject&quot; 没有成员 &quot;BeginPlay&quot;</code></td><td>基类声明未生效，编译器按最简基类解析</td><td>与上一条同源，先修好生成阶段，不要逐个修改函数名</td></tr></tbody></table></div>
-<p>由此可以得到一条稳定的排查顺序：<strong>先看是否存在 &quot;无法打开 …generated.h&quot; 或 &quot;未找到…的函数定义&quot;，再决定是否需要阅读后面的模板报错</strong>。前者是生成阶段问题，后者绝大多数是其连带结果。把头文件改动之后的一整批报错都当作语法错误逐条修改，是最容易走偏的路径。</p>
+<p>由此可以得到一条稳定的排查顺序：<strong>先看是否存在 “无法打开 …generated.h” 或 “未找到…的函数定义”，再决定是否需要阅读后面的模板报错</strong>。前者是生成阶段问题，后者绝大多数是其连带结果。把头文件改动之后的一整批报错都当作语法错误逐条修改，是最容易走偏的路径。</p>
 <h3 id="7-4-源码编码与中文注释">7.4 源码编码与中文注释</h3>
 <p>UE 的构建系统对源文件编码敏感，本工程采用的约定是：<strong>含中文注释的头文件与源文件一律保存为 UTF-8 with BOM（带签名的 UTF-8，代码页 65001）</strong>。三种编码状态的表现如表 7-4。</p>
 <p class="caption">表 7-4 源文件编码状态与表现</p>
@@ -1054,7 +1046,7 @@ UCLASS()
 <ol>
 <li><strong>反射代码由 UHT 生成，生成失败会伪装成满屏语法错误。</strong> <code>.generated.h</code> 与 <code>GENERATED_BODY()</code> 是反射的前提；排查时应先确认生成阶段是否成功，再阅读模板与语法报错。</li>
 <li><strong>头文件承载声明与反射标记，源文件承载实现与引擎依赖。</strong> 生成头文件置于所有 include 之后、源文件首条 include 为自身头文件，这两条约定共同保证宏展开顺序稳定。</li>
-<li><strong>模板静态断言报错通常指向一个不完整类型。</strong> <code>E0842</code> / <code>E0094</code> 出现在引擎头文件中时，应回头检查容器元素的书写方式（如 <code>TObjectPtr&lt;T&gt;</code> 与前向声明类型组合），而不是修改引擎侧代码。</li>
+<li><strong>模板静态断言报错通常指向一个不完整类型。</strong> <code>E0842</code> / <code>E0094</code> 出现在引擎头文件中时，应回头检查容器元素的书写方式（如 <code>TObjectPtr0</code> 与前向声明类型组合），而不是修改引擎侧代码。</li>
 <li><strong>编码约定必须全工程统一。</strong> 带 BOM 与不带 BOM 两条路线各自成立，混用会产生局部乱码；双重 BOM 会直接破坏 UHT 解析。</li>
 <li><strong>定时器使检测频率与帧率解耦，但也带来时间语义上的近似。</strong> <code>SetTimer</code> 的循环触发配合 <code>bIsSolved</code> 提前返回与求解后 <code>ClearTimer</code>，构成了停止检测的双重保障；而保持时长按名义间隔累加，是需要知晓的实现细节。</li>
 <li><strong>可用的调试手段应把「阈值」与「实测值」一并暴露。</strong> 这样一条日志就能回答「哪条判据没通过、差多少」，避免在参数面板中反复试错。</li>
@@ -1189,7 +1181,7 @@ UCLASS()
 <p><strong>附录 A　参数速查表</strong></p>
 <h3 id="a-1-拼图与标定参数">A.1 拼图与标定参数</h3>
 <p class="caption">表 A-1 Puzzle 分类参数（PerspectivePuzzleManager.h 中的公开 UPROPERTY）</p>
-<div class="table-wrap"><table><thead><tr><th>参数</th><th>类型</th><th>默认值</th><th>单位/量纲</th><th>取值范围（meta）</th></tr></thead><tbody><tr><td><code>FragmentActors</code></td><td><code>TArray&lt;AActor*&gt;</code></td><td>空数组</td><td>—</td><td>无限制</td></tr><tr><td><code>CameraHeightOffset</code></td><td><code>float</code></td><td><code>160.0f</code></td><td>世界单位（厘米）</td><td><code>ClampMin = 0.0f</code></td></tr><tr><td><code>GlowParameterName</code></td><td><code>FName</code></td><td><code>TEXT(&quot;GlowIntensity&quot;)</code></td><td>—</td><td>无限制</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>参数</th><th>类型</th><th>默认值</th><th>单位/量纲</th><th>取值范围（meta）</th></tr></thead><tbody><tr><td><code>FragmentActors</code></td><td><code>TArray2</code></td><td>空数组</td><td>—</td><td>无限制</td></tr><tr><td><code>CameraHeightOffset</code></td><td><code>float</code></td><td><code>160.0f</code></td><td>世界单位（厘米）</td><td><code>ClampMin = 0.0f</code></td></tr><tr><td><code>GlowParameterName</code></td><td><code>FName</code></td><td><code>TEXT(&quot;GlowIntensity&quot;)</code></td><td>—</td><td>无限制</td></tr></tbody></table></div>
 <p><code>FragmentActors</code> 是标定的输入：<code>Calibrate()</code> 遍历该数组逐个采集碎片的相对方向与距离。数组为空时采集到的点数为零，<code>CheckPuzzle</code> 在入口处即返回，整套检测不会执行。数组中出现空元素时该项被跳过，不会计入总数。</p>
 <p><code>CameraHeightOffset</code> 决定标定原点的抬升高度。标定原点由 <code>Calibrate()</code> 用 <code>GetActorLocation() + FVector(0, 0, CameraHeightOffset)</code> 计算，即把管理器放置在地面高度、由该参数抬到玩家眼睛高度。调大表示标定原点更高，运行时相机也必须更高才能匹配；调小则反之。该值应等于实际玩家相机在该站立点的高度，否则即使站位正确，方向点积也会系统性偏低。</p>
 <p><code>GlowParameterName</code> 是运行时写入碎片材质的标量参数名。取值为 <code>NAME_None</code> 时跳过整段发光控制，碎片材质保持不变；取值为材质中不存在的参数名时，写入调用不会报错，但不会有任何视觉变化——这是「对齐了却不发光」的第一排查点。</p>
@@ -1207,7 +1199,7 @@ UCLASS()
 <p><strong>附录 B　常见错误与排查对照表</strong></p>
 <h3 id="b-1-构建期与运行期故障对照">B.1 构建期与运行期故障对照</h3>
 <p class="caption">表 B-1 常见错误、根因与处置</p>
-<div class="table-wrap"><table><thead><tr><th>编号</th><th>报错/现象</th><th>根因</th><th>处置</th></tr></thead><tbody><tr><td>B-1</td><td><code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase&lt;&lt;错误类型&gt;&gt;&quot; 的模板参数列表中使用或无法从中推导</code> 与 <code>E0094 数组的大小必须大于零</code>，位置指向 <code>StaticAssertCompleteType.h</code> 第 34、35 行，并连带 <code>IsContiguousContainer.h</code> 第 41–44 行</td><td>容器模板实例化时元素类型不完整（只有前向声明）。本工程的触发条件是把成员写成 <code>TArray&lt;TObjectPtr&lt;T&gt;&gt;</code> 而 <code>T</code> 未定义</td><td>把该类成员改为裸指针数组（本工程为 <code>TArray&lt;UMaterialInstanceDynamic*&gt;</code>）；报错位置在引擎内部，不要修改引擎头文件</td></tr><tr><td>B-2</td><td><code>无法打开 源 文件 &quot;PerspectivePuzzleManager.generated.h&quot;</code></td><td>生成头文件缺失：头文件名与类声明不匹配，或 UHT 未重新生成</td><td>核对文件名与 <code>#include</code> 中的名称一致；清理 <code>Intermediate/Build/Win64/UnrealEditor/Inc/CPP1</code> 后重新构建</td></tr><tr><td>B-3</td><td><code>无法打开 源 文件 &quot;SharedDefinitions.UnrealEd.Project.ValApi.ValExpApi.Cpp20.InclOrderUnreal5_6.h&quot;</code></td><td>共享定义文件随中间目录一并被清理，或上一次构建中途失败留下不完整状态</td><td>关闭编辑器后执行一次完整重建，使构建系统重新生成全部中间文件</td></tr><tr><td>B-4</td><td><code>The identifier &#39;GENERATED_BODY&#39; was detected in a block being skipped. Was this intentional?</code></td><td><code>GENERATED_BODY()</code> 位于被条件编译跳过的代码块中，UHT 未处理该宏</td><td>把 <code>GENERATED_BODY()</code> 移出条件编译区，使其始终处于活动分支</td></tr><tr><td>B-5</td><td><code>未找到 &quot;OnPuzzleSolved&quot; 的函数定义</code>（<code>OnViewAligned</code> / <code>OnViewLost</code> / <code>OnProgressUpdated</code> 同），或 <code>类 &quot;UObject&quot; 没有成员 &quot;Tick&quot;/&quot;BeginPlay&quot;</code></td><td><code>GENERATED_BODY()</code> 未生效，反射生成的声明缺失，基类被按最简类型解析</td><td>按 B-2、B-4 先修好生成阶段；不要逐个改动函数名或强制转换类型</td></tr><tr><td>B-6</td><td>头文件改动后行为不更新，构建提示 <code>Unable to build while Live Coding is active</code></td><td>编辑器内置的 Live Coding 正在占用构建通道</td><td>关闭编辑器后构建，或在编辑器中使用 Live Coding 的编译快捷键（<code>Ctrl + Alt + F11</code>）触发补丁编译</td></tr><tr><td>B-7</td><td>构建长时间无响应，或提示文件被占用</td><td>编辑器进程仍持有模块动态库，热重载后的改动未真正生效</td><td>完全关闭编辑器再构建；构建成功后由编辑器重新加载模块。改动涉及类布局（新增 <code>UPROPERTY</code>、改变基类）时，必须走完整重建而非补丁编译</td></tr><tr><td>B-8</td><td>中文注释显示为乱码</td><td>源文件保存为无 BOM 的 UTF-8，编辑器按本地代码页（简体中文环境为 936）解码</td><td>以「UTF-8 with BOM」（代码页 65001）重新保存；或在构建配置中显式指定 UTF-8 源字符集，二者取其一并全工程统一</td></tr><tr><td>B-9</td><td>加入注释后构建直接失败，并出现 B-4、B-5 一类连带报错</td><td>文件头出现双重 BOM（<code>EF BB BF EF BB BF</code>），UHT 解析失败</td><td>读取文件前三个字节确认 BOM 数量，仅保留一个；重新保存后再构建</td></tr><tr><td>B-10</td><td>Decal 图案的透明区域显示为黑色方块</td><td>材质未连接不透明度输入，或混合模式不是半透明；贴图透明区域在取样后仍参与了输出</td><td>把 Decal 材质的混合模式设为半透明（Translucent），并把贴图 Alpha 接入不透明度输入；确认贴图自身的 Alpha 通道完整</td></tr><tr><td>B-11</td><td>在母材质中修改参数数值后，场景中的图案没有任何变化</td><td>参数值由材质实例覆盖：母材质决定「有哪些参数」，实例决定「参数取什么值」</td><td>在材质实例上设置参数值；需要运行时修改时，用 <code>UMaterialInstanceDynamic::Create(材质接口, 组件)</code> 创建动态实例并通过 <code>SetScalarParameterValue(参数名, 值)</code> 写入</td></tr><tr><td>B-12</td><td>对齐了但图案不发光，或发光始终为最大亮度</td><td>参数名不匹配或发光链路接错：<code>GlowParameterName</code> 与材质中的标量参数名不一致时写入无效；发光接到基础色而非自发光时表现为颜色被漂白</td><td>核对参数名逐字符一致；发光接入自发光颜色输入，并用 <code>GlowIntensity = 0 → 亮度 ×1</code>、<code>= 1 → 亮度 ×(1+倍数)</code> 的关系核对节点连接</td></tr><tr><td>B-13</td><td>站位正确但检测不触发，日志中的点积只有 0.86 左右</td><td>标定原点高度与实际相机高度不一致，方向存在系统性偏差</td><td>令 <code>CameraHeightOffset</code> 等于玩家相机在该站立点的高度；用 <code>CheckPuzzle</code> 打印的「相机位置 / 标定位置 / 距离」核对</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>编号</th><th>报错/现象</th><th>根因</th><th>处置</th></tr></thead><tbody><tr><td>B-1</td><td><code>E0842 模板参数 &quot;T&quot; 未在类模板 &quot;UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase11&gt;&quot; 的模板参数列表中使用或无法从中推导</code> 与 <code>E0094 数组的大小必须大于零</code>，位置指向 <code>StaticAssertCompleteType.h</code> 第 34、35 行，并连带 <code>IsContiguousContainer.h</code> 第 41–44 行</td><td>容器模板实例化时元素类型不完整（只有前向声明）。本工程的触发条件是把成员写成 <code>TArray12&gt;</code> 而 <code>T</code> 未定义</td><td>把该类成员改为裸指针数组（本工程为 <code>TArray13</code>）；报错位置在引擎内部，不要修改引擎头文件</td></tr><tr><td>B-2</td><td><code>无法打开 源 文件 &quot;PerspectivePuzzleManager.generated.h&quot;</code></td><td>生成头文件缺失：头文件名与类声明不匹配，或 UHT 未重新生成</td><td>核对文件名与 <code>#include</code> 中的名称一致；清理 <code>Intermediate/Build/Win64/UnrealEditor/Inc/CPP1</code> 后重新构建</td></tr><tr><td>B-3</td><td><code>无法打开 源 文件 &quot;SharedDefinitions.UnrealEd.Project.ValApi.ValExpApi.Cpp20.InclOrderUnreal5_6.h&quot;</code></td><td>共享定义文件随中间目录一并被清理，或上一次构建中途失败留下不完整状态</td><td>关闭编辑器后执行一次完整重建，使构建系统重新生成全部中间文件</td></tr><tr><td>B-4</td><td><code>The identifier &#39;GENERATED_BODY&#39; was detected in a block being skipped. Was this intentional?</code></td><td><code>GENERATED_BODY()</code> 位于被条件编译跳过的代码块中，UHT 未处理该宏</td><td>把 <code>GENERATED_BODY()</code> 移出条件编译区，使其始终处于活动分支</td></tr><tr><td>B-5</td><td><code>未找到 &quot;OnPuzzleSolved&quot; 的函数定义</code>（<code>OnViewAligned</code> / <code>OnViewLost</code> / <code>OnProgressUpdated</code> 同），或 <code>类 &quot;UObject&quot; 没有成员 &quot;Tick&quot;/&quot;BeginPlay&quot;</code></td><td><code>GENERATED_BODY()</code> 未生效，反射生成的声明缺失，基类被按最简类型解析</td><td>按 B-2、B-4 先修好生成阶段；不要逐个改动函数名或强制转换类型</td></tr><tr><td>B-6</td><td>头文件改动后行为不更新，构建提示 <code>Unable to build while Live Coding is active</code></td><td>编辑器内置的 Live Coding 正在占用构建通道</td><td>关闭编辑器后构建，或在编辑器中使用 Live Coding 的编译快捷键（<code>Ctrl + Alt + F11</code>）触发补丁编译</td></tr><tr><td>B-7</td><td>构建长时间无响应，或提示文件被占用</td><td>编辑器进程仍持有模块动态库，热重载后的改动未真正生效</td><td>完全关闭编辑器再构建；构建成功后由编辑器重新加载模块。改动涉及类布局（新增 <code>UPROPERTY</code>、改变基类）时，必须走完整重建而非补丁编译</td></tr><tr><td>B-8</td><td>中文注释显示为乱码</td><td>源文件保存为无 BOM 的 UTF-8，编辑器按本地代码页（简体中文环境为 936）解码</td><td>以「UTF-8 with BOM」（代码页 65001）重新保存；或在构建配置中显式指定 UTF-8 源字符集，二者取其一并全工程统一</td></tr><tr><td>B-9</td><td>加入注释后构建直接失败，并出现 B-4、B-5 一类连带报错</td><td>文件头出现双重 BOM（<code>EF BB BF EF BB BF</code>），UHT 解析失败</td><td>读取文件前三个字节确认 BOM 数量，仅保留一个；重新保存后再构建</td></tr><tr><td>B-10</td><td>Decal 图案的透明区域显示为黑色方块</td><td>材质未连接不透明度输入，或混合模式不是半透明；贴图透明区域在取样后仍参与了输出</td><td>把 Decal 材质的混合模式设为半透明（Translucent），并把贴图 Alpha 接入不透明度输入；确认贴图自身的 Alpha 通道完整</td></tr><tr><td>B-11</td><td>在母材质中修改参数数值后，场景中的图案没有任何变化</td><td>参数值由材质实例覆盖：母材质决定「有哪些参数」，实例决定「参数取什么值」</td><td>在材质实例上设置参数值；需要运行时修改时，用 <code>UMaterialInstanceDynamic::Create(材质接口, 组件)</code> 创建动态实例并通过 <code>SetScalarParameterValue(参数名, 值)</code> 写入</td></tr><tr><td>B-12</td><td>对齐了但图案不发光，或发光始终为最大亮度</td><td>参数名不匹配或发光链路接错：<code>GlowParameterName</code> 与材质中的标量参数名不一致时写入无效；发光接到基础色而非自发光时表现为颜色被漂白</td><td>核对参数名逐字符一致；发光接入自发光颜色输入，并用 <code>GlowIntensity = 0 → 亮度 ×1</code>、<code>= 1 → 亮度 ×(1+倍数)</code> 的关系核对节点连接</td></tr><tr><td>B-13</td><td>站位正确但检测不触发，日志中的点积只有 0.86 左右</td><td>标定原点高度与实际相机高度不一致，方向存在系统性偏差</td><td>令 <code>CameraHeightOffset</code> 等于玩家相机在该站立点的高度；用 <code>CheckPuzzle</code> 打印的「相机位置 / 标定位置 / 距离」核对</td></tr></tbody></table></div>
 <h3 id="b-2-排查顺序">B.2 排查顺序</h3>
 <ol>
 <li><strong>先看构建是否真的成功。</strong> 出现 B-2 至 B-5 中任意一条时，其余报错都不必阅读；生成阶段恢复正常后，多数错误会自行消失。</li>
@@ -1312,8 +1304,8 @@ UCLASS()
       </div>
 
       <footer class="paper-footer">
-        <p>本文档为纯静态资源：无框架、无外部依赖、可离线打开，可直接使用 Ctrl+P 导出为 A4 版式的 PDF。</p>
-        <p class="tiny">构建时间 2026-10-16 10:17 UTC · 构建脚本 <code>tools/build-docs.mjs</code></p>
+        <p>全文约 8.0 万字，含 29 段代码、28 张表、8 幅插图；按中文技术文档的常规速度估计，通读约需 191 分钟。</p>
+        <p class="tiny">本文档为纯静态页面，可用浏览器直接打印或导出为 A4 版式 PDF。构建时间 2026-10-16 10:40 UTC。</p>
       </footer>
     </article>
   </main>

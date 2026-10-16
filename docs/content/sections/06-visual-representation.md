@@ -5,11 +5,11 @@ title: 图案的表示与视觉反馈
 
 透视拼接谜题的视觉部分要解决两个问题：**一张完整图案如何被拆成若干块并各自显示其中一部分**，以及**判定结果如何被玩家看见**。前者决定碎片的表现形态，后者决定反馈是否可感知。
 
-两者的共同约束是"运行时可改"：拆分方案要能随碎片数量变化而调整，发光强度要能随判定进度连续变化。这一约束把方案推向"材质参数化 + 动态材质实例"的组合，而不是把图案预先切成多张贴图。文中引用的源码片段保留原始标识符与注释，缩进统一按四空格归一。
+两者的共同约束是“运行时可改”：拆分方案要能随碎片数量变化而调整，发光强度要能随判定进度连续变化。这一约束把方案推向“材质参数化 + 动态材质实例”的组合，而不是把图案预先切成多张贴图。文中引用的源码片段保留原始标识符与注释，缩进统一按四空格归一。
 
 ### 6.1 图案的几何拆分
 
-图案的拆分不发生在图像层面，而发生在**纹理坐标层面**。所有碎片共用同一张源贴图，每个碎片只在自己的材质里声明"取这张贴图的哪一块矩形"，因此拆分块数变化时不需要重新导出任何图像资源。
+图案的拆分不发生在图像层面，而发生在**纹理坐标层面**。所有碎片共用同一张源贴图，每个碎片只在自己的材质里声明“取这张贴图的哪一块矩形”，因此拆分块数变化时不需要重新导出任何图像资源。
 
 纹理坐标空间是一个单位正方形，两个轴都取值于 <span class="eq">[0, 1]</span>。取子区域由一次仿射变换完成：
 
@@ -23,38 +23,38 @@ title: 图案的表示与视觉反馈
 
 <figure>
 <svg viewBox="0 0 720 260" width="100%" height="260" role="img" aria-label="纹理空间的上下二等分">
-  <text x="30" y="26" font-size="13" fill="#3a3226">源贴图（UV 空间）</text>
-  <rect x="30" y="40" width="180" height="180" fill="#f6f1e7" stroke="#c3b69c"/>
-  <line x1="30" y1="130" x2="210" y2="130" stroke="#c08a8a" stroke-width="1.5" stroke-dasharray="5 3"/>
-  <text x="120" y="92" text-anchor="middle" font-size="12" fill="#6b6154">v ∈ [0.5, 1]</text>
-  <text x="120" y="172" text-anchor="middle" font-size="12" fill="#6b6154">v ∈ [0, 0.5]</text>
-  <text x="24" y="238" font-size="11" fill="#6b6154">v=0</text>
-  <text x="24" y="50" font-size="11" fill="#6b6154">v=1</text>
-  <text x="216" y="238" font-size="11" fill="#6b6154">u=1</text>
-  <text x="120" y="238" text-anchor="middle" font-size="11" fill="#6b6154">u ∈ [0, 1] 全宽保留</text>
-  <rect x="290" y="60" width="170" height="80" rx="6" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="375" y="86" text-anchor="middle" font-size="12" fill="#3a3226">碎片 1 取样窗口</text>
-  <text x="375" y="106" text-anchor="middle" font-size="11" fill="#6b6154">Tiling (1, 0.5)</text>
-  <text x="375" y="124" text-anchor="middle" font-size="11" fill="#6b6154">Offset (0, 0)</text>
-  <rect x="290" y="160" width="170" height="80" rx="6" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="375" y="186" text-anchor="middle" font-size="12" fill="#3a3226">碎片 2 取样窗口</text>
-  <text x="375" y="206" text-anchor="middle" font-size="11" fill="#6b6154">Tiling (1, 0.5)</text>
-  <text x="375" y="224" text-anchor="middle" font-size="11" fill="#6b6154">Offset (0, 0.5)</text>
-  <line x1="212" y1="100" x2="288" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="212" y1="160" x2="288" y2="190" stroke="#a99a80" stroke-width="1.5"/>
-  <rect x="520" y="110" width="170" height="80" rx="6" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="605" y="136" text-anchor="middle" font-size="12" fill="#3a3226">场景中的两个碎片</text>
-  <text x="605" y="156" text-anchor="middle" font-size="11" fill="#6b6154">位于不同纵深位置</text>
-  <text x="605" y="174" text-anchor="middle" font-size="11" fill="#6b6154">仅在特定视点视觉对齐</text>
-  <line x1="462" y1="100" x2="518" y2="132" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="462" y1="200" x2="518" y2="170" stroke="#a99a80" stroke-width="1.5"/>
+  <text x="30" y="26" font-size="13" fill="#262626">源贴图（UV 空间）</text>
+  <rect x="30" y="40" width="180" height="180" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <line x1="30" y1="130" x2="210" y2="130" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="120" y="92" text-anchor="middle" font-size="12" fill="#3f3f3f">v ∈ [0.5, 1]</text>
+  <text x="120" y="172" text-anchor="middle" font-size="12" fill="#3f3f3f">v ∈ [0, 0.5]</text>
+  <text x="24" y="238" font-size="11" fill="#3f3f3f">v=0</text>
+  <text x="24" y="50" font-size="11" fill="#3f3f3f">v=1</text>
+  <text x="216" y="238" font-size="11" fill="#3f3f3f">u=1</text>
+  <text x="120" y="238" text-anchor="middle" font-size="11" fill="#3f3f3f">u ∈ [0, 1] 全宽保留</text>
+  <rect x="290" y="60" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="375" y="86" text-anchor="middle" font-size="12" fill="#262626">碎片 1 取样窗口</text>
+  <text x="375" y="106" text-anchor="middle" font-size="11" fill="#3f3f3f">Tiling (1, 0.5)</text>
+  <text x="375" y="124" text-anchor="middle" font-size="11" fill="#3f3f3f">Offset (0, 0)</text>
+  <rect x="290" y="160" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="375" y="186" text-anchor="middle" font-size="12" fill="#262626">碎片 2 取样窗口</text>
+  <text x="375" y="206" text-anchor="middle" font-size="11" fill="#3f3f3f">Tiling (1, 0.5)</text>
+  <text x="375" y="224" text-anchor="middle" font-size="11" fill="#3f3f3f">Offset (0, 0.5)</text>
+  <line x1="212" y1="100" x2="288" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="212" y1="160" x2="288" y2="190" stroke="#8f8f8f" stroke-width="1.5"/>
+  <rect x="520" y="110" width="170" height="80" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="605" y="136" text-anchor="middle" font-size="12" fill="#262626">场景中的两个碎片</text>
+  <text x="605" y="156" text-anchor="middle" font-size="11" fill="#3f3f3f">位于不同纵深位置</text>
+  <text x="605" y="174" text-anchor="middle" font-size="11" fill="#3f3f3f">仅在特定视点视觉对齐</text>
+  <line x1="462" y1="100" x2="518" y2="132" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="462" y1="200" x2="518" y2="170" stroke="#8f8f8f" stroke-width="1.5"/>
 </svg>
 <figcaption>图 6-1 图案拆分：同一张贴图按 UV 子区域取样，碎片再被摆到不同纵深</figcaption>
 </figure>
 
 两个碎片的取样窗口互补且不重叠，合起来覆盖完整图案。由于采样窗口由材质参数给出，把图案拆成四块或九块时，只需要新增材质实例并填入对应的 Tiling 与 Offset，源贴图与节点网络都不必改动。
 
-碎片在场景中的位置是另一个独立维度：它们被摆放在**不同的纵深**上，彼此之间存在视差。玩家横向移动时，近处碎片在视野中的位移大于远处碎片，两块因此错开；只有回到标定视点，两个取样窗口才在屏幕上重新拼合。拆分方案负责"每块显示什么"，纵深摆放负责"何时能拼合"，两者互不干涉。
+碎片在场景中的位置是另一个独立维度：它们被摆放在**不同的纵深**上，彼此之间存在视差。玩家横向移动时，近处碎片在视野中的位移大于远处碎片，两块因此错开；只有回到标定视点，两个取样窗口才在屏幕上重新拼合。拆分方案负责“每块显示什么”，纵深摆放负责“何时能拼合”，两者互不干涉。
 
 <p class="caption">表 6-1 二等分方案下两个材质实例的参数取值</p>
 
@@ -87,11 +87,11 @@ TexCoord ──▶ Multiply(A) ──▶ Add(A) ──▶ TextureSample.UVs
 SM6 (Node Multiply) Arithmetic between types float2 and float3 are undefined
 ```
 
-这条报错的字面含义是"两个操作数的通道数不同，且不存在这样的算术定义"。它的成因有三种可能，需要逐个排查：一是向量参数本身是四通道；二是向量参数后接了通道裁剪节点，但裁剪后仍保留了三个通道（例如 B 通道未关闭），输出为 `float3`；三是未做裁剪而直接用四通道参数参与运算。把裁剪节点配置为**只保留 R 与 G**（B、A 均关闭）后，两侧都是 `float2`，运算即可成立。
+这条报错的字面含义是“两个操作数的通道数不同，且不存在这样的算术定义”。它的成因有三种可能，需要逐个排查：一是向量参数本身是四通道；二是向量参数后接了通道裁剪节点，但裁剪后仍保留了三个通道（例如 B 通道未关闭），输出为 `float3`；三是未做裁剪而直接用四通道参数参与运算。把裁剪节点配置为**只保留 R 与 G**（B、A 均关闭）后，两侧都是 `float2`，运算即可成立。
 
-该问题的排查路径值得说明：错误信息只给出节点名与两个类型，并不指出哪一侧"多余"。实际定位时，需要检查裁剪节点的通道勾选状态——它决定了输出通道数，而在细节面板中，多勾一个通道并不会立即报错，直到该节点的下游参与算术运算才暴露。
+该问题的排查路径值得说明：错误信息只给出节点名与两个类型，并不指出哪一侧“多余”。实际定位时，需要检查裁剪节点的通道勾选状态——它决定了输出通道数，而在细节面板中，多勾一个通道并不会立即报错，直到该节点的下游参与算术运算才暴露。
 
-**为什么在材质实例中调参，而不是修改材质本体。** 母材质负责"有哪些参数、节点如何连接"，材质实例负责"这些参数取什么值"。两者分离带来三点收益：其一，一份母材质配多个实例即可表达任意数量的碎片，不需要复制节点网络；其二，实例只覆盖被显式勾选的参数，其余参数继续继承母材质，因此调整母材质中的公共逻辑会自动传播到全部实例；其三，实例是轻量资产，复制与改名不涉及图结构，新增一个碎片的表现成本接近于零。
+**为什么在材质实例中调参，而不是修改材质本体。** 母材质负责“有哪些参数、节点如何连接”，材质实例负责“这些参数取什么值”。两者分离带来三点收益：其一，一份母材质配多个实例即可表达任意数量的碎片，不需要复制节点网络；其二，实例只覆盖被显式勾选的参数，其余参数继续继承母材质，因此调整母材质中的公共逻辑会自动传播到全部实例；其三，实例是轻量资产，复制与改名不涉及图结构，新增一个碎片的表现成本接近于零。
 
 ### 6.3 承载方式的选择：贴画与网格体
 
@@ -129,11 +129,11 @@ void APerspectivePuzzleManager::CacheFragmentMaterials()
 
 这段分支逻辑包含三层判定，每层都有明确的语义。
 
-**第一层是载体优先级。** `FindComponentByClass<T>()` 在 Actor 的组件集合中查找指定类型的组件，找不到时返回空指针。分支采用 `if / else if` 而非两个并列的 `if`，因此**贴画优先于网格体**：当一个 Actor 同时挂载了两种组件时，只有贴画会被处理，网格体分支不会执行。这一优先级与视觉语义一致——贴画是显式声明"此处用于贴合展示"的组件，而网格体是通用组件，可能仅作为碰撞体或占位体存在。
+**第一层是载体优先级。** `FindComponentByClass0()` 在 Actor 的组件集合中查找指定类型的组件，找不到时返回空指针。分支采用 `if / else if` 而非两个并列的 `if`，因此**贴画优先于网格体**：当一个 Actor 同时挂载了两种组件时，只有贴画会被处理，网格体分支不会执行。这一优先级与视觉语义一致——贴画是显式声明“此处用于贴合展示”的组件，而网格体是通用组件，可能仅作为碰撞体或占位体存在。
 
-**第二层是材质是否存在。** 贴画分支内部还有一次判空：`GetDecalMaterial()` 在未指定材质时返回空指针。此处的处理方式是"不创建动态实例"，而不是中断或报错，使未配置材质的碎片被安静跳过。
+**第二层是材质是否存在。** 贴画分支内部还有一次判空：`GetDecalMaterial()` 在未指定材质时返回空指针。此处的处理方式是“不创建动态实例”，而不是中断或报错，使未配置材质的碎片被安静跳过。
 
-**第三层是空项容忍。** 无论走哪个分支，`DynMat` 最后都会被压入 `FragmentMaterials`，即使它仍为空指针。这保证了 `FragmentMaterials` 与 `FragmentActors` **严格等长且按下标一一对应**：索引 i 的材质项永远对应索引 i 的碎片。数组因此可以在需要时按索引关联回碎片，也避免了在下游用"跳过计数"的方式推算对应关系。空项由写入端容忍——发光循环在调用前检查指针是否为空。
+**第三层是空项容忍。** 无论走哪个分支，`DynMat` 最后都会被压入 `FragmentMaterials`，即使它仍为空指针。这保证了 `FragmentMaterials` 与 `FragmentActors` **严格等长且按下标一一对应**：索引 i 的材质项永远对应索引 i 的碎片。数组因此可以在需要时按索引关联回碎片，也避免了在下游用“跳过计数”的方式推算对应关系。空项由写入端容忍——发光循环在调用前检查指针是否为空。
 
 <p class="caption">表 6-2 两种承载方式的对照</p>
 
@@ -146,9 +146,9 @@ void APerspectivePuzzleManager::CacheFragmentMaterials()
 | 材质域要求 | 必须使用 `Deferred Decal` 域，混合模式受限 | 使用常规表面材质域，混合模式自由 |
 | 适用场景 | 图案需贴在柱面、墙面等既有表面上 | 图案需悬浮于空中，或需要精确控制朝向 |
 
-贴画分支的三步写法还有一个版本相关的理由。网格体组件提供了"创建并设置"的合并接口，贴画组件在 UE 5.8 中并没有等价的一步式调用：按网格体的习惯传入材质索引会得到编译错误 `C2660 "UDecalComponent::CreateDynamicMaterialInstance": 函数不接受 1 个参数`。取材质、创建实例、回写组件这三步虽然更长，但不依赖该组件特有的便捷接口，跨版本更稳定。
+贴画分支的三步写法还有一个版本相关的理由。网格体组件提供了“创建并设置”的合并接口，贴画组件在 UE 5.8 中并没有等价的一步式调用：按网格体的习惯传入材质索引会得到编译错误 `C2660 "UDecalComponent::CreateDynamicMaterialInstance": 函数不接受 1 个参数`。取材质、创建实例、回写组件这三步虽然更长，但不依赖该组件特有的便捷接口，跨版本更稳定。
 
-选择贴画路线时还需注意材质域的限制：`Deferred Decal` 域只接受有限的混合模式，使用常规域材质会直接编译失败，提示信息列出了允许的混合模式集合（`TranslucentGreyTransmittance`、`TranslucentColorTransmittance`、`AlphaComposite`、`ColoredTransmittanceOnly`）。本方案采用 `Translucent`，配合深色背景贴图实现"只显示图案本身"的效果。
+选择贴画路线时还需注意材质域的限制：`Deferred Decal` 域只接受有限的混合模式，使用常规域材质会直接编译失败，提示信息列出了允许的混合模式集合（`TranslucentGreyTransmittance`、`TranslucentColorTransmittance`、`AlphaComposite`、`ColoredTransmittanceOnly`）。本方案采用 `Translucent`，配合深色背景贴图实现“只显示图案本身”的效果。
 
 ### 6.4 动态材质实例
 
@@ -165,11 +165,11 @@ void APerspectivePuzzleManager::CacheFragmentMaterials()
 
 该数组被标记为 `Transient`，即不参与序列化：动态实例是运行时对象，没有必要写入存档，也不应在关卡加载时被反序列化。数组的元素类型为裸指针而非智能指针，其生命周期由组件侧的引用保证——每个实例在创建后立即被回写到对应的贴画或网格体组件上，组件持有引用即意味着实例不会被提前回收。
 
-**创建时机被安排在初始化阶段，而不是判定循环中。** 判定循环以固定间隔反复执行，若在其中创建材质实例，每次采样都会产生一批新对象，既浪费内存也会失去"参数可在帧间累积"的前提——发光参数的写入依赖同一个实例被持续复用。把创建集中在 `CacheFragmentMaterials()` 中执行一次，后续只做写入，是整个发光链路能够平滑连续的前提。
+**创建时机被安排在初始化阶段，而不是判定循环中。** 判定循环以固定间隔反复执行，若在其中创建材质实例，每次采样都会产生一批新对象，既浪费内存也会失去“参数可在帧间累积”的前提——发光参数的写入依赖同一个实例被持续复用。把创建集中在 `CacheFragmentMaterials()` 中执行一次，后续只做写入，是整个发光链路能够平滑连续的前提。
 
 两条创建路径的差异值得单独说明：
 
-- **网格体路径**：`CreateAndSetMaterialInstanceDynamic(0)` 一步完成"创建实例并将它设置到第 0 个材质元素"。参数 0 表示材质元素索引，网格体可以有多个材质槽，此处固定使用第一个。
+- **网格体路径**：`CreateAndSetMaterialInstanceDynamic(0)` 一步完成“创建实例并将它设置到第 0 个材质元素”。参数 0 表示材质元素索引，网格体可以有多个材质槽，此处固定使用第一个。
 - **贴画路径**：先 `GetDecalMaterial()` 取得当前材质接口，再 `UMaterialInstanceDynamic::Create(DecalMat, Decal)` 以该材质为母本创建实例，第二个参数指定外层对象（Owner），最后 `SetDecalMaterial(DynMat)` 把实例回写到组件。若不执行最后一步，实例虽然存在却不会被渲染使用——这是该路径最容易遗漏的一环。
 
 ### 6.5 发光反馈
@@ -191,51 +191,51 @@ C++ 侧在每次采样结束时写入：
     }
 ```
 
-参数名由 `GlowParameterName` 决定，默认值为 `GlowIntensity`。它被设计为可编辑属性，是为了让材质侧的命名不被 C++ 写死；而当该属性被置为空名（`NAME_None`）时，整段发光逻辑被跳过，系统退化为"无视觉反馈"的纯判定模式。
+参数名由 `GlowParameterName` 决定，默认值为 `GlowIntensity`。它被设计为可编辑属性，是为了让材质侧的命名不被 C++ 写死；而当该属性被置为空名（`NAME_None`）时，整段发光逻辑被跳过，系统退化为“无视觉反馈”的纯判定模式。
 
-写入值 `GlowValue` 的取值规则是**渐进语义**：处于对齐状态时取当前进度 `SolveProgress`，否则取 0。进度本身由保持时长归一化而来（<span class="eq">clamp(HoldTimer / HoldDuration, 0, 1)</span>），因此发光强度与"玩家已经正确保持了多久"成正比；一旦失去对齐，`SolveProgress` 被清零，发光随之熄灭。玩家因此可以从亮度直接读出进度，而不必依赖额外 UI。
+写入值 `GlowValue` 的取值规则是**渐进语义**：处于对齐状态时取当前进度 `SolveProgress`，否则取 0。进度本身由保持时长归一化而来（<span class="eq">clamp(HoldTimer / HoldDuration, 0, 1)</span>），因此发光强度与“玩家已经正确保持了多久”成正比；一旦失去对齐，`SolveProgress` 被清零，发光随之熄灭。玩家因此可以从亮度直接读出进度，而不必依赖额外 UI。
 
 材质侧把该标量转换为自发光亮度：
 
 <figure>
 <svg viewBox="0 0 820 220" width="100%" height="220" role="img" aria-label="发光参数到自发光的链路">
-  <rect x="20" y="70" width="150" height="60" rx="7" fill="#f3ecdf" stroke="#c0ad8c"/>
-  <text x="95" y="94" text-anchor="middle" font-size="12" fill="#3a3226">GlowIntensity</text>
-  <text x="95" y="113" text-anchor="middle" font-size="10" fill="#6b6154">标量参数 0 → 1</text>
-  <rect x="215" y="70" width="120" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="275" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Multiply × K</text>
-  <text x="275" y="113" text-anchor="middle" font-size="10" fill="#6b6154">K 为发光倍数</text>
-  <rect x="380" y="70" width="120" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="440" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Add + 1</text>
-  <text x="440" y="113" text-anchor="middle" font-size="10" fill="#6b6154">零点保持原亮度</text>
-  <rect x="545" y="70" width="130" height="60" rx="7" fill="#f6f1e7" stroke="#c3b69c"/>
-  <text x="610" y="94" text-anchor="middle" font-size="12" fill="#3a3226">Multiply</text>
-  <text x="610" y="113" text-anchor="middle" font-size="10" fill="#6b6154">与贴图 RGB 相乘</text>
-  <rect x="700" y="70" width="105" height="60" rx="7" fill="#f7ecec" stroke="#c08a8a"/>
-  <text x="752" y="94" text-anchor="middle" font-size="12" fill="#7a3232">Emissive</text>
-  <text x="752" y="113" text-anchor="middle" font-size="10" fill="#7a3232">自发光输出</text>
-  <rect x="520" y="164" width="180" height="44" rx="7" fill="#eef3ee" stroke="#9db39d"/>
-  <text x="610" y="183" text-anchor="middle" font-size="11" fill="#3a3226">TextureSample.RGB</text>
-  <text x="610" y="199" text-anchor="middle" font-size="10" fill="#6b6154">图案原色</text>
-  <line x1="170" y1="100" x2="213" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="335" y1="100" x2="378" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="500" y1="100" x2="543" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="675" y1="100" x2="698" y2="100" stroke="#a99a80" stroke-width="1.5"/>
-  <line x1="610" y1="162" x2="610" y2="132" stroke="#a99a80" stroke-width="1.5"/>
-  <text x="20" y="40" font-size="11" fill="#6b6154">GlowIntensity = 0 → 自发光 = 贴图 × 1（原色）　　GlowIntensity = 1 → 自发光 = 贴图 × (1 + K)</text>
+  <rect x="20" y="70" width="150" height="60" rx="2" fill="#f5f5f5" stroke="#b0b0b0"/>
+  <text x="95" y="94" text-anchor="middle" font-size="12" fill="#262626">GlowIntensity</text>
+  <text x="95" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">标量参数 0 → 1</text>
+  <rect x="215" y="70" width="120" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="275" y="94" text-anchor="middle" font-size="12" fill="#262626">Multiply × K</text>
+  <text x="275" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">K 为发光倍数</text>
+  <rect x="380" y="70" width="120" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="440" y="94" text-anchor="middle" font-size="12" fill="#262626">Add + 1</text>
+  <text x="440" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">零点保持原亮度</text>
+  <rect x="545" y="70" width="130" height="60" rx="2" fill="#f5f5f5" stroke="#b9b9b9"/>
+  <text x="610" y="94" text-anchor="middle" font-size="12" fill="#262626">Multiply</text>
+  <text x="610" y="113" text-anchor="middle" font-size="10" fill="#3f3f3f">与贴图 RGB 相乘</text>
+  <rect x="700" y="70" width="105" height="60" rx="2" fill="#f5f5f5" stroke="#5a5a5a"/>
+  <text x="752" y="94" text-anchor="middle" font-size="12" fill="#262626">Emissive</text>
+  <text x="752" y="113" text-anchor="middle" font-size="10" fill="#262626">自发光输出</text>
+  <rect x="520" y="164" width="180" height="44" rx="2" fill="#f5f5f5" stroke="#7a7a7a"/>
+  <text x="610" y="183" text-anchor="middle" font-size="11" fill="#262626">TextureSample.RGB</text>
+  <text x="610" y="199" text-anchor="middle" font-size="10" fill="#3f3f3f">图案原色</text>
+  <line x1="170" y1="100" x2="213" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="335" y1="100" x2="378" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="500" y1="100" x2="543" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="675" y1="100" x2="698" y2="100" stroke="#8f8f8f" stroke-width="1.5"/>
+  <line x1="610" y1="162" x2="610" y2="132" stroke="#8f8f8f" stroke-width="1.5"/>
+  <text x="20" y="40" font-size="11" fill="#3f3f3f">GlowIntensity = 0 → 自发光 = 贴图 × 1（原色）　　GlowIntensity = 1 → 自发光 = 贴图 × (1 + K)</text>
 </svg>
 <figcaption>图 6-2 发光链路：标量参数经放大与偏置后调制贴图颜色，输出到自发光</figcaption>
 </figure>
 
 链条中两个常数各有明确职责。乘数 K 决定**动态范围**：参数从 0 变到 1 时，亮度在 <span class="eq">1</span> 与 <span class="eq">1 + K</span> 之间变化，取 K = 6 时对应 7 倍亮度；K 是纯调参量，效果不足时可增大到 15 或 30，链条结构不变。加数 1 则保证**零点语义**：参数为 0 时自发光等于贴图原色，图案保持正常外观，而不是完全熄灭。若省略该偏置，未对齐状态下图案会变成全黑。
 
-**发光接自发光通道而不是基础色，是这条链路的关键选择。** 基础色参与光照着色计算，提高基础色只会让图案"更亮更白"，颜色被稀释，观感是漂洗而非发光；自发光则是直接叠加到最终亮度的独立项，提高它不会改变图案的色相，只是让同一颜色变得更耀眼，观感与光源一致。
+**发光接自发光通道而不是基础色，是这条链路的关键选择。** 基础色参与光照着色计算，提高基础色只会让图案“更亮更白”，颜色被稀释，观感是漂洗而非发光；自发光则是直接叠加到最终亮度的独立项，提高它不会改变图案的色相，只是让同一颜色变得更耀眼，观感与光源一致。
 
-自发光之外还需要一道后处理才能形成"光晕"：自发光本身只提供亮度，扩散感来自泛光（Bloom）。实现方式是在场景中放置一个后处理体积并勾选无限范围（Unbound），将 Bloom Intensity 调到约 <span class="eq">1.5 ~ 3</span>。缺少这一步时，图案会"变亮"但不会"发光"——这是发光反馈在观感上不达预期时首要检查的环节。
+自发光之外还需要一道后处理才能形成“光晕”：自发光本身只提供亮度，扩散感来自泛光（Bloom）。实现方式是在场景中放置一个后处理体积并勾选无限范围（Unbound），将 Bloom Intensity 调到约 <span class="eq">1.5 ~ 3</span>。缺少这一步时，图案会“变亮”但不会“发光”——这是发光反馈在观感上不达预期时首要检查的环节。
 
 ### 6.6 视觉方案的取舍
 
-实现"碎片拼合后发光"至少有三条技术路线，它们在可控性、实现成本与最终效果上各有取舍。
+实现“碎片拼合后发光”至少有三条技术路线，它们在可控性、实现成本与最终效果上各有取舍。
 
 <p class="caption">表 6-3 三种视觉路线的对照</p>
 
@@ -251,14 +251,14 @@ C++ 侧在每次采样结束时写入：
 
 本方案选择第一条路线，理由集中在三点。其一是**拆分成本与碎片数量解耦**：图案只保留一份源贴图，新增碎片只增加一个材质实例，不增加图像资源。其二是**反馈通道简单**：视觉层与判定层之间只有一个标量参数，双方可以独立修改——材质侧调整链条结构或常数不影响 C++，C++ 侧改变写入曲线也不影响材质。其三是**视差来源真实**：碎片处于真实的三维位置，视差由透视投影自然产生，不需要在屏幕空间模拟。
 
-其代价也很明确：贴画路线的材质域被限定为 `Deferred Decal`，混合模式与可用的着色模型都受到约束，图案的最终观感受表面法线与投影方向影响；网格体路线虽无此约束，却失去了"自动贴合表面"的能力，需要人工把平面摆到与目标表面几乎重合的位置。
+其代价也很明确：贴画路线的材质域被限定为 `Deferred Decal`，混合模式与可用的着色模型都受到约束，图案的最终观感受表面法线与投影方向影响；网格体路线虽无此约束，却失去了“自动贴合表面”的能力，需要人工把平面摆到与目标表面几乎重合的位置。
 
 ### 6.7 小结
 
 - 图案拆分在纹理坐标层面完成：所有碎片共用一张源贴图，每个碎片用一组 `Tiling` 与 `Offset` 声明取样窗口，拆分块数变化时不需要重新制作图像资源。
-- 材质侧的 UV 变换是"先缩放、后平移"的两步链条，顺序不可交换；参数以向量形式声明后再裁剪为双通道，否则会因通道数不一致触发 `float2` 与 `float3` 不可运算的编译错误。
+- 材质侧的 UV 变换是“先缩放、后平移”的两步链条，顺序不可交换；参数以向量形式声明后再裁剪为双通道，否则会因通道数不一致触发 `float2` 与 `float3` 不可运算的编译错误。
 - 参数值放在材质实例而非母材质中：母材质定义参数与拓扑，实例只覆盖数值，新增碎片因此只需复制实例。
 - 碎片载体在贴画与网格体之间分支处理，`if / else if` 的顺序使贴画具有优先级；材质数组与碎片列表严格等长同序，空项由写入端容忍，因此单个碎片配置缺失不会破坏索引关系。
-- 动态材质实例在初始化阶段一次性创建并持续复用，是运行时可写参数的前提；贴画路线需要"取材质、创建实例、回写组件"三步，缺一不可。
-- 发光通过单个标量参数驱动自发光通道，参数值取"对齐时按进度、失焦时归零"，并配合泛光形成光晕；接到基础色只会造成颜色漂洗，不产生发光观感。
+- 动态材质实例在初始化阶段一次性创建并持续复用，是运行时可写参数的前提；贴画路线需要“取材质、创建实例、回写组件”三步，缺一不可。
+- 发光通过单个标量参数驱动自发光通道，参数值取“对齐时按进度、失焦时归零”，并配合泛光形成光晕；接到基础色只会造成颜色漂洗，不产生发光观感。
 

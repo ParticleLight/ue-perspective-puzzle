@@ -7,42 +7,42 @@ title: 实现要点与工程问题
 
 一个 UE C++ 类与普通 C++ 类最直观的差别，是头文件里那两样东西：末尾的 `#include "PerspectivePuzzleManager.generated.h"`，以及类体第一行的 `GENERATED_BODY()`。它们不是可选风格，而是反射系统能够识别这个类的前提。
 
-UE 的 C++ 构建分为两层。第一层是 **UHT（Unreal Header Tool）**，它不编译代码，而是扫描头文件中出现的 `UCLASS`、`USTRUCT`、`UPROPERTY`、`UFUNCTION` 等标记，据此生成若干辅助文件，其中最主要的就是 `<ClassName>.generated.h`。第二层是 **UBT（Unreal Build Tool）** 调用平台编译器（本工程为 MSVC），把头文件、生成文件与源文件一起编译成模块动态库，由引擎在启动时加载。整个顺序如图 7-1 所示。
+UE 的 C++ 构建分为两层。第一层是 **UHT（Unreal Header Tool）**，它不编译代码，而是扫描头文件中出现的 `UCLASS`、`USTRUCT`、`UPROPERTY`、`UFUNCTION` 等标记，据此生成若干辅助文件，其中最主要的就是 `0.generated.h`。第二层是 **UBT（Unreal Build Tool）** 调用平台编译器（本工程为 MSVC），把头文件、生成文件与源文件一起编译成模块动态库，由引擎在启动时加载。整个顺序如图 7-1 所示。
 
 <figure>
 <svg viewBox="0 0 700 250" width="700" height="250" role="img" aria-label="UE C++ 的两层构建流程">
   <defs>
     <marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555555"/>
     </marker>
   </defs>
   <g font-family="sans-serif" font-size="13" text-anchor="middle">
-    <rect x="20" y="40" width="180" height="60" rx="6" fill="#f4f6f8" stroke="#555"/>
+    <rect x="20" y="40" width="180" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="110" y="65">.h 中的</text>
     <text x="110" y="85">UCLASS / UPROPERTY / UFUNCTION</text>
 
-    <line x1="200" y1="70" x2="252" y2="70" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="200" y1="70" x2="252" y2="70" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="254" y="40" width="170" height="60" rx="6" fill="#eef4fb" stroke="#555"/>
+    <rect x="254" y="40" width="170" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="339" y="65">UHT 扫描</text>
     <text x="339" y="85">生成 .generated.h</text>
 
-    <line x1="424" y1="70" x2="476" y2="70" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="424" y1="70" x2="476" y2="70" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="478" y="40" width="200" height="60" rx="6" fill="#eef4fb" stroke="#555"/>
+    <rect x="478" y="40" width="200" height="60" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="578" y="65">UBT + MSVC 编译</text>
     <text x="578" y="85">.h / .cpp / .generated.h</text>
 
-    <line x1="578" y1="100" x2="578" y2="140" stroke="#555" marker-end="url(#a7)"/>
+    <line x1="578" y1="100" x2="578" y2="140" stroke="#555555" marker-end="url(#a7)"/>
 
-    <rect x="478" y="142" width="200" height="52" rx="6" fill="#f4f6f8" stroke="#555"/>
+    <rect x="478" y="142" width="200" height="52" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="578" y="164">模块 DLL</text>
     <text x="578" y="182">引擎启动时加载</text>
 
-    <rect x="20" y="142" width="404" height="52" rx="6" fill="#fdf6ee" stroke="#555"/>
+    <rect x="20" y="142" width="404" height="52" rx="2" fill="#f5f5f5" stroke="#555555"/>
     <text x="222" y="164">UHT 未重新生成 → 找不到 .generated.h / 未找到 XX 的函数定义</text>
     <text x="222" y="182">这类报错的根因在生成阶段，而不在语法上</text>
-    <line x1="424" y1="168" x2="476" y2="168" stroke="#555" stroke-dasharray="4 3" marker-end="url(#a7)"/>
+    <line x1="424" y1="168" x2="476" y2="168" stroke="#555555" stroke-dasharray="4 3" marker-end="url(#a7)"/>
   </g>
 </svg>
 <figcaption>图 7-1 UHT 与 UBT 的两层构建流程，以及生成阶段失败时的典型表现</figcaption>
@@ -94,11 +94,11 @@ class CPP1_API APerspectivePuzzleManager : public AActor
 | 类声明、基类、模块导出宏 `CPP1_API` | `.h` | UHT 只扫描头文件 |
 | `UCLASS` / `USTRUCT` / `UPROPERTY` / `UFUNCTION` 及其 `meta` | `.h` | 反射信息由 UHT 从头文件采集 |
 | `GENERATED_BODY()` | `.h` | 生成代码的插入点，必须出现在类体内首部 |
-| `#include "<类名>.generated.h"` | `.h` 的最后一条 include | 见 7.1 节 |
+| `#include "2.generated.h"` | `.h` 的最后一条 include | 见 7.1 节 |
 | 纯 C++ 辅助类型的前向声明（如 `class UMaterialInstanceDynamic;`） | `.h` | 成员只用指针，不需要完整类型，可减少编译依赖 |
 | 构造函数、成员函数实现、事件调用点 | `.cpp` | 与普通 C++ 相同，写成 `类名::函数名` |
 | 引擎功能头文件（`Engine/World.h`、`DrawDebugHelpers.h` 等） | `.cpp` | 只有实现需要这些完整类型 |
-| `#include "<本类名>.h"` | `.cpp` 的第一条 include | 保证类声明与实现一致，并让反射宏先展开 |
+| `#include "3.h"` | `.cpp` 的第一条 include | 保证类声明与实现一致，并让反射宏先展开 |
 
 源文件的第一条 include 必须是自身头文件，这条规则对本工程尤其重要：头文件里含有 `generated.h` 与反射宏，如果源文件先包含其他引擎头文件，就可能在这些头文件间接引入的类型声明之前展开生成代码，产生难以定位的连带错误。
 
@@ -119,7 +119,7 @@ class CPP1_API APerspectivePuzzleManager : public AActor
 #include "DrawDebugHelpers.h"
 ```
 
-头文件中只前向声明 `UMaterialInstanceDynamic`，完整定义放在源文件，理由是成员 `TArray<UMaterialInstanceDynamic*> FragmentMaterials` 只用到指针；指针大小固定，无需完整类型。把重量级的 `Materials/MaterialInstanceDynamic.h` 放在源文件，可避免该头文件被任何包含本头文件的翻译单元连锁引入。这一取舍在 7.3 节还会再次出现，因为前向声明与模板组合时会触发另一类错误。
+头文件中只前向声明 `UMaterialInstanceDynamic`，完整定义放在源文件，理由是成员 `TArray0 FragmentMaterials` 只用到指针；指针大小固定，无需完整类型。把重量级的 `Materials/MaterialInstanceDynamic.h` 放在源文件，可避免该头文件被任何包含本头文件的翻译单元连锁引入。这一取舍在 7.3 节还会再次出现，因为前向声明与模板组合时会触发另一类错误。
 
 ### 7.3 编译错误的分类与定位
 
@@ -127,11 +127,11 @@ UE 工程中的报错信息有一个显著特点：**最先出现的错误往往
 
 以引擎头文件 `StaticAssertCompleteType.h` 为例，报告中出现的是两条错误：
 
-- `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase<<错误类型>>" 的模板参数列表中使用或无法从中推导`（位于 `StaticAssertCompleteType.h` 第 34 行）
+- `E0842 模板参数 "T" 未在类模板 "UEStaticAssertCompleteType_Private::TUEStaticAssertTypeCheckerBase1>" 的模板参数列表中使用或无法从中推导`（位于 `StaticAssertCompleteType.h` 第 34 行）
 - `E0094 数组的大小必须大于零`（位于同一文件第 35 行）
-- 连带出现 `E0842 模板参数 "T" 未在类模板 "TIsContiguousContainer<<错误类型>>" 的模板参数列表中使用或无法从中推导` 与多条 `E0094`（位于 `IsContiguousContainer.h` 第 41–44 行）
+- 连带出现 `E0842 模板参数 "T" 未在类模板 "TIsContiguousContainer2>" 的模板参数列表中使用或无法从中推导` 与多条 `E0094`（位于 `IsContiguousContainer.h` 第 41–44 行）
 
-这些位置都在引擎内部，不可能由业务代码的直接改动引起。它们的实际含义是：某个容器模板在实例化时拿到了一个**不完整类型**（只有前向声明、没有定义的类），引擎为此准备的静态断言在展开时失败，错误于是被报告在断言所在的头文件里。在本工程中，触发条件是把容器元素写成 `TObjectPtr<T>` 而 `T` 只是前向声明；改用裸指针数组 `TArray<T*>` 后该组报错消失。这一取舍已在 7.2 节说明：成员 `FragmentMaterials` 使用裸指针，其生命周期由持有它的 Decal/网格体组件保证。
+这些位置都在引擎内部，不可能由业务代码的直接改动引起。它们的实际含义是：某个容器模板在实例化时拿到了一个**不完整类型**（只有前向声明、没有定义的类），引擎为此准备的静态断言在展开时失败，错误于是被报告在断言所在的头文件里。在本工程中，触发条件是把容器元素写成 `TObjectPtr3` 而 `T` 只是前向声明；改用裸指针数组 `TArray4` 后该组报错消失。这一取舍已在 7.2 节说明：成员 `FragmentMaterials` 使用裸指针，其生命周期由持有它的 Decal/网格体组件保证。
 
 另一类报错来自生成阶段本身，形态与处置如表 7-3。
 
@@ -145,7 +145,7 @@ UE 工程中的报错信息有一个显著特点：**最先出现的错误往往
 | `The identifier 'GENERATED_BODY' was detected in a block being skipped. Was this intentional?` | 宏出现在被条件编译跳过的代码块内，UHT 未能处理 | 移除包裹类声明的条件编译，使 `GENERATED_BODY()` 始终处于活动分支 |
 | `类 "UObject" 没有成员 "Tick"` / `类 "UObject" 没有成员 "BeginPlay"` | 基类声明未生效，编译器按最简基类解析 | 与上一条同源，先修好生成阶段，不要逐个修改函数名 |
 
-由此可以得到一条稳定的排查顺序：**先看是否存在 "无法打开 …generated.h" 或 "未找到…的函数定义"，再决定是否需要阅读后面的模板报错**。前者是生成阶段问题，后者绝大多数是其连带结果。把头文件改动之后的一整批报错都当作语法错误逐条修改，是最容易走偏的路径。
+由此可以得到一条稳定的排查顺序：**先看是否存在 “无法打开 …generated.h” 或 “未找到…的函数定义”，再决定是否需要阅读后面的模板报错**。前者是生成阶段问题，后者绝大多数是其连带结果。把头文件改动之后的一整批报错都当作语法错误逐条修改，是最容易走偏的路径。
 
 ### 7.4 源码编码与中文注释
 
@@ -249,7 +249,7 @@ void APerspectivePuzzleManager::ResetPuzzle()
 
 1. **反射代码由 UHT 生成，生成失败会伪装成满屏语法错误。** `.generated.h` 与 `GENERATED_BODY()` 是反射的前提；排查时应先确认生成阶段是否成功，再阅读模板与语法报错。
 2. **头文件承载声明与反射标记，源文件承载实现与引擎依赖。** 生成头文件置于所有 include 之后、源文件首条 include 为自身头文件，这两条约定共同保证宏展开顺序稳定。
-3. **模板静态断言报错通常指向一个不完整类型。** `E0842` / `E0094` 出现在引擎头文件中时，应回头检查容器元素的书写方式（如 `TObjectPtr<T>` 与前向声明类型组合），而不是修改引擎侧代码。
+3. **模板静态断言报错通常指向一个不完整类型。** `E0842` / `E0094` 出现在引擎头文件中时，应回头检查容器元素的书写方式（如 `TObjectPtr0` 与前向声明类型组合），而不是修改引擎侧代码。
 4. **编码约定必须全工程统一。** 带 BOM 与不带 BOM 两条路线各自成立，混用会产生局部乱码；双重 BOM 会直接破坏 UHT 解析。
 5. **定时器使检测频率与帧率解耦，但也带来时间语义上的近似。** `SetTimer` 的循环触发配合 `bIsSolved` 提前返回与求解后 `ClearTimer`，构成了停止检测的双重保障；而保持时长按名义间隔累加，是需要知晓的实现细节。
 6. **可用的调试手段应把「阈值」与「实测值」一并暴露。** 这样一条日志就能回答「哪条判据没通过、差多少」，避免在参数面板中反复试错。

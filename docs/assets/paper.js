@@ -1,24 +1,16 @@
-/* 论文页交互：进度、主题、打印、目录过滤、滚动定位、代码复制（零依赖） */
+/* 文档页交互：目录过滤、滚动定位、移动端目录、代码复制、打印（零依赖） */
 (function () {
   "use strict";
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  /* theme */
-  var saved = null;
-  try { saved = localStorage.getItem("paper-theme"); } catch (e) {}
-  var initial = saved || "light";
-  document.documentElement.setAttribute("data-theme", initial);
-  $("#btnTheme").addEventListener("click", function () {
-    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    try { localStorage.setItem("paper-theme", next); } catch (e) {}
-  });
+  var printBtn = $("#btnPrint");
+  if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
 
-  /* print */
-  $("#btnPrint").addEventListener("click", function () { window.print(); });
+  var topBtn = $("#btnTop");
+  if (topBtn) topBtn.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
 
-  /* mobile toc drawer */
+  /* 移动端目录抽屉 */
   var tocBtn = $("#btnToc");
   if (tocBtn) tocBtn.addEventListener("click", function () { document.body.classList.toggle("toc-open"); });
   document.addEventListener("click", function (e) {
@@ -33,32 +25,21 @@
     });
   });
 
-  /* progress + back to top */
-  var bar = $("#progressBar");
-  function onScroll() {
-    var h = document.documentElement;
-    var max = h.scrollHeight - h.clientHeight;
-    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
-  }
-  document.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-  $("#btnTop").addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
-
-  /* toc filter */
+  /* 目录过滤 */
   var filter = $("#tocFilter");
   if (filter) {
     filter.addEventListener("input", function () {
       var q = filter.value.trim().toLowerCase();
       $$("#toc .toc-chapter").forEach(function (li) {
-        var text = li.textContent.toLowerCase();
-        var hit = !q || text.indexOf(q) !== -1;
-        li.classList.toggle("filtered", !hit);
+        li.classList.toggle("filtered", !!q && li.textContent.toLowerCase().indexOf(q) === -1);
       });
     });
-    filter.addEventListener("keydown", function (e) { if (e.key === "Escape") { filter.value = ""; filter.dispatchEvent(new Event("input")); } });
+    filter.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { filter.value = ""; filter.dispatchEvent(new Event("input")); }
+    });
   }
 
-  /* scroll spy */
+  /* 滚动定位：目录高亮 */
   var links = {};
   $$("#toc a").forEach(function (a) {
     var id = (a.getAttribute("href") || "").slice(1);
@@ -66,7 +47,7 @@
   });
   var targets = $$(".body h2[id], .body h3[id]");
   var sidebar = $("#sidebar");
-  if ("IntersectionObserver" in window && targets.length) {
+  if ("IntersectionObserver" in window && targets.length && sidebar) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
@@ -75,13 +56,13 @@
         $$("#toc a.active").forEach(function (x) { x.classList.remove("active"); });
         a.classList.add("active");
         var r = a.getBoundingClientRect(), sr = sidebar.getBoundingClientRect();
-        if (r.top < sr.top + 40 || r.bottom > sr.bottom - 40) a.scrollIntoView({ block: "nearest" });
+        if (r.top < sr.top + 36 || r.bottom > sr.bottom - 36) a.scrollIntoView({ block: "nearest" });
       });
-    }, { rootMargin: "-72px 0px -72% 0px", threshold: 0 });
+    }, { rootMargin: "-60px 0px -72% 0px", threshold: 0 });
     targets.forEach(function (t) { io.observe(t); });
   }
 
-  /* copy buttons */
+  /* 代码复制 */
   document.addEventListener("click", function (e) {
     var btn = e.target && e.target.closest ? e.target.closest(".code-wrap .copy") : null;
     if (!btn) return;
@@ -97,13 +78,12 @@
     } else { done(); }
   });
 
-  /* deep link highlight */
+  /* 锚点跳转 */
   function jump() {
     var id = location.hash.slice(1);
     if (!id) return;
     var el = document.getElementById(id);
-    if (!el) return;
-    el.scrollIntoView({ block: "start" });
+    if (el) el.scrollIntoView({ block: "start" });
   }
   window.addEventListener("hashchange", jump);
   if (location.hash) setTimeout(jump, 80);

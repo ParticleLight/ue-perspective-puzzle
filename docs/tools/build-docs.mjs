@@ -63,7 +63,7 @@ chapters.forEach(function (ch) {
 });
 
 const readMin = Math.max(1, Math.round(chars / 420));
-const stats = [chars.toLocaleString("en-US") + " 字", readMin + " 分钟", codeCount + " 段代码", tableCount + " 张表", figCount + " 幅图"];
+const stats = "全文约 " + (chars / 10000).toFixed(1) + " 万字，含 " + codeCount + " 段代码、" + tableCount + " 张表、" + figCount + " 幅插图；按中文技术文档的常规速度估计，通读约需 " + readMin + " 分钟。";
 
 const tocHtml = toc.map(function (t) {
   return '<li class="toc-chapter"><a href="#' + t.id + '">' + esc(t.label) + "</a>" +
@@ -82,7 +82,7 @@ const map = {
   SOURCE: esc(front.data.source || ""),
   DOCTYPE: esc(front.data.doctype || "技术报告"),
   TOC: tocHtml,
-  STATS: stats.map(function (s) { return "<span>" + esc(s) + "</span>"; }).join(""),
+  STATS: esc(stats),
   ABSTRACT: md(front.body),
   BODY: htmlBody,
   GENERATED: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC"

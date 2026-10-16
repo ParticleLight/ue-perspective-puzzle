@@ -1,56 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{TITLE}}</title>
 <meta name="description" content="{{DESCRIPTION}}">
 <meta name="author" content="{{AUTHORS}}">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <meta property="og:title" content="{{TITLE}}">
 <meta property="og:description" content="{{DESCRIPTION}}">
 <meta property="og:type" content="article">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c2603f'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='white' font-family='Georgia,serif'%3E%C2%A7%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2316181a' font-family='Georgia,serif'%3E%C2%A7%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/paper.css">
 </head>
 <body>
-<div class="progress"><span id="progressBar"></span></div>
-
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#top"><span class="mark">§</span><span class="brand-title">{{SHORTTITLE}}</span></a>
-    <nav class="topnav">
-      <a href="#ch1">正文</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="running-title" href="#top">{{SHORTTITLE}}</a>
+    <nav>
+      <a href="#abstract">摘要</a>
       <a href="#appendix">附录</a>
       <a href="#references">参考文献</a>
+      <button id="btnToc" class="text-btn only-mobile" type="button">目录</button>
+      <button id="btnPrint" class="text-btn" type="button">打印</button>
     </nav>
-    <div class="topbar-actions">
-      <button id="btnTheme" class="icon-btn" title="切换深色 / 浅色">◐</button>
-      <button id="btnPrint" class="icon-btn" title="打印 / 导出 PDF">打印</button>
-      <button id="btnToc" class="icon-btn only-mobile" title="目录">目录</button>
-    </div>
   </div>
 </header>
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <div class="side-head">
-      <input id="tocFilter" type="search" placeholder="过滤目录…" autocomplete="off">
+      <input id="tocFilter" type="search" placeholder="过滤目录" autocomplete="off">
     </div>
     <nav class="toc" id="toc"><ul>{{TOC}}</ul></nav>
     <div class="side-foot">
-      <div class="side-stats">{{STATS}}</div>
-      <button id="btnTop" class="mini" type="button">↑ 回到顶部</button>
+      <button id="btnTop" class="text-btn" type="button">回到顶部</button>
     </div>
   </aside>
 
   <main id="top" class="paper">
     <article>
       <header class="title-block">
-        <p class="doctype">{{DOCTYPE}}</p>
         <h1>{{TITLE}}</h1>
         <p class="subtitle">{{SUBTITLE}}</p>
-        <p class="byline">{{AUTHORS}}<span class="dot">·</span>{{DATE}}</p>
+        <p class="byline">{{AUTHORS}}<span class="sep">·</span>{{DATE}}<span class="sep">·</span>{{DOCTYPE}}</p>
         <p class="source-line">{{SOURCE}}</p>
       </header>
 
@@ -64,8 +57,8 @@
       </div>
 
       <footer class="paper-footer">
-        <p>本文档为纯静态资源：无框架、无外部依赖、可离线打开，可直接使用 Ctrl+P 导出为 A4 版式的 PDF。</p>
-        <p class="tiny">构建时间 {{GENERATED}} · 构建脚本 <code>tools/build-docs.mjs</code></p>
+        <p>{{STATS}}</p>
+        <p class="tiny">本文档为纯静态页面，可用浏览器直接打印或导出为 A4 版式 PDF。构建时间 {{GENERATED}}。</p>
       </footer>
     </article>
   </main>
