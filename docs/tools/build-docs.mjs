@@ -62,6 +62,15 @@ chapters.forEach(function (ch) {
   toc.push({ id: id, num: ch.num, label: isSpecial ? heading : ch.num + "  " + ch.title, subs: subs });
 });
 
+/* 摘要里的「关键词」段落单独提出来，放到摘要框下方（参考论文页的版式） */
+let abstractHtml = md(front.body);
+let keywordsHtml = "";
+const kwMatch = abstractHtml.match(/<p><strong>关键词<\/strong>[：:]?([\s\S]*?)<\/p>/);
+if (kwMatch) {
+  keywordsHtml = "<strong>关键词：</strong>" + kwMatch[1].trim();
+  abstractHtml = abstractHtml.replace(kwMatch[0], "").trim();
+}
+
 const readMin = Math.max(1, Math.round(chars / 420));
 const stats = "全文约 " + (chars / 10000).toFixed(1) + " 万字，含 " + codeCount + " 段代码、" + tableCount + " 张表、" + figCount + " 幅插图；按中文技术文档的常规速度估计，通读约需 " + readMin + " 分钟。";
 
@@ -83,7 +92,8 @@ const map = {
   DOCTYPE: esc(front.data.doctype || "技术报告"),
   TOC: tocHtml,
   STATS: esc(stats),
-  ABSTRACT: md(front.body),
+  ABSTRACT: abstractHtml,
+  KEYWORDS: keywordsHtml,
   BODY: htmlBody,
   GENERATED: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC"
 };
@@ -92,6 +102,11 @@ Object.keys(map).forEach(function (k) {
 });
 const leftover = page.match(/\{\{[A-Z]+\}\}/g);
 if (leftover) console.error("WARNING: unresolved placeholders:", leftover.join(","));
+const ctrl = page.match(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g);
+if (ctrl) {
+  console.error("ERROR: 生成结果中残留 " + ctrl.length + " 个控制字符（通常是 Markdown 预处理留下的占位符），已中止构建。");
+  process.exit(1);
+}
 
 fs.writeFileSync(path.join(ROOT, "index.html"), page, "utf8");
 console.log("chapters: " + chapters.map(function (c) { return c.num + ":" + c.file; }).join(", "));

@@ -3,6 +3,7 @@
   --ink:#16181a; --ink-soft:#3c4046; --muted:#6c7178; --faint:#8b9096;
   --rule:#c9ccd0; --rule-soft:#e6e8ea; --paper:#ffffff; --shade:#f7f7f8; --side:#fbfbfa;
   --link:#1a4a7a;
+  --accent:#1a5fb4; --accent-soft:#eaf2fb; --accent-line:#cfe0f5;
   --serif:Georgia,"Times New Roman","Source Han Serif SC","Noto Serif SC","Songti SC",SimSun,serif;
   --sans:"Segoe UI",system-ui,-apple-system,"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
   --mono:ui-monospace,SFMono-Regular,"Cascadia Mono",Consolas,"Liberation Mono",Menlo,monospace;
@@ -11,6 +12,7 @@ html[data-theme="dark"]{
   --ink:#e9e6e2; --ink-soft:#c4c0ba; --muted:#9b978f; --faint:#7e7a73;
   --rule:#3b3e43; --rule-soft:#2b2e32; --paper:#17191c; --shade:#1f2226; --side:#141618;
   --link:#86b7e8;
+  --accent:#78b0ee; --accent-soft:#16222f; --accent-line:#274056;
 }
 html[data-theme="dark"] .tok-key{color:#f2efeb}
 html[data-theme="dark"] .tok-str,html[data-theme="dark"] .tok-num,html[data-theme="dark"] .tok-fn{color:#c9c5bf}
@@ -33,7 +35,7 @@ a:hover{text-decoration:underline}
 /* 报头：一条细线，无背景、无阴影 */
 .masthead{border-bottom:1px solid var(--rule-soft);background:var(--paper)}
 .masthead-inner{display:flex;align-items:baseline;gap:20px;max-width:1400px;margin:0 auto;padding:10px 24px}
-.running-title{font-size:13.5px;color:var(--ink-soft);font-family:var(--serif);max-width:52ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.running-title{font-size:14px;font-weight:700;color:var(--accent);font-family:var(--serif);max-width:52ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .masthead nav{margin-left:auto;display:flex;gap:18px;font-family:var(--sans);font-size:13px}
 .masthead nav a{color:var(--muted)}
 .masthead nav a:hover{color:var(--ink);text-decoration:none}
@@ -75,10 +77,12 @@ body.toc-filtering .toc .toc-chapter ul{display:block}
 .source-line{margin:6px 0 0;font-family:var(--sans);font-size:12px;color:var(--faint)}
 
 /* 摘要 */
-.abstract{margin:0 0 40px;padding:0 0 22px;border-bottom:1px solid var(--rule-soft);font-size:16px}
-.abstract-title{margin:0 0 12px;font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.34em;color:var(--ink);text-align:center}
+.abstract{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:18px 22px;margin:0 0 16px;font-size:15.5px}
+.abstract-title{margin:0 0 8px;font-family:var(--sans);font-size:14px;font-weight:700;color:var(--accent);text-align:left;letter-spacing:0}
 .abstract p{margin:0 0 10px;text-align:justify}
 .abstract p:last-child{margin-bottom:0}
+.kw{margin:0 0 36px;font-size:14.5px;color:var(--muted)}
+.kw strong{color:var(--ink)}
 
 /* 标题层级 */
 .chapter{content-visibility:auto;contain-intrinsic-size:auto 2200px}
@@ -100,14 +104,14 @@ body.toc-filtering .toc .toc-chapter ul{display:block}
 .body :not(pre)>code{font-family:var(--mono);font-size:.86em;background:var(--shade);border:1px solid var(--rule-soft);padding:0 3px;overflow-wrap:anywhere}
 .body sup,.body sub{font-size:.72em}
 
-/* 表格：三线表 */
-.table-wrap{max-width:100%;margin:8px 0 20px}
-.body table{border-collapse:collapse;width:100%;table-layout:auto;margin:0;font-family:var(--sans);font-size:13px;line-height:1.7}
-.body thead th{border-top:1.4px solid var(--ink);border-bottom:1px solid var(--ink);padding:7px 12px 7px 0;text-align:left;font-weight:700}
-.body tbody td{border-bottom:1px solid var(--rule-soft);padding:7px 12px 7px 0;vertical-align:top}
-.body tbody tr:last-child td{border-bottom:1.4px solid var(--ink)}
+/* 表格：全网格 + 表头底色 */
+.table-wrap{max-width:100%;margin:16px 0}
+.body table{border-collapse:collapse;width:100%;table-layout:auto;margin:0;font-family:var(--sans);font-size:13.5px;line-height:1.7}
+.body thead th{background:var(--shade);border:1px solid var(--rule);padding:7px 10px;text-align:center;font-weight:700;vertical-align:top}
+.body tbody td{border:1px solid var(--rule);padding:7px 10px;vertical-align:top}
+.body tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--shade) 55%,transparent)}
 .body table code{white-space:normal;overflow-wrap:anywhere;background:none;border:0;padding:0}
-.body td:last-child,.body th:last-child{padding-right:0}
+
 
 /* 图表与公式 */
 .caption{font-family:var(--sans);font-size:12.5px;color:var(--muted);line-height:1.7;margin:16px 0 6px;text-align:left}
@@ -120,7 +124,7 @@ span.eq{font-style:italic;white-space:nowrap}
 
 /* 代码清单：灰底细框、单色高亮 */
 .code-wrap{position:relative;margin:6px 0 20px}
-pre.code{margin:0;background:var(--shade);border:1px solid var(--rule-soft);padding:14px 16px;overflow:auto;
+pre.code{margin:0;background:var(--shade);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;overflow:auto;
   font-family:var(--mono);font-size:12.8px;line-height:1.7;tab-size:4;color:#242424}
 pre.code code{font-family:inherit;background:none;border:0;padding:0}
 .code-wrap .copy{position:absolute;top:6px;right:8px;opacity:0;background:none;border:0;color:var(--faint);
@@ -160,15 +164,14 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
   @page{size:A4;margin:20mm 18mm}
   html,body{background:#fff!important;color:#000!important}
   /* 默认打印成白底；?print=dark 时改为深色打印 */
-  html[data-theme="dark"]:not(.print-dark){--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#fafafa;--side:#fff}
+  html[data-theme="dark"]:not(.print-dark){--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#f3f3f4;--side:#fff;--accent:#1a5fb4;--accent-soft:#eaf2fb;--accent-line:#cfe0f5}
   html[data-theme="dark"]:not(.print-dark) figure svg{background:#fff;padding:0}
   .chapter{content-visibility:visible!important;contain-intrinsic-size:none!important}
   html.print-dark,html.print-dark body,html.print-dark .shell,html.print-dark .paper,html.print-dark article{background:#17191c!important;color:#e9e6e2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html.print-dark body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:#17191c;z-index:-1;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  html.print-dark{--ink:#e9e6e2;--ink-soft:#c6c2bc;--muted:#a09c95;--faint:#8a867f;--rule:#4c4f54;--rule-soft:#34373c;--paper:#17191c;--shade:#1f2226;--side:#17191c}
+  html.print-dark{--ink:#e9e6e2;--ink-soft:#c6c2bc;--muted:#a09c95;--faint:#8a867f;--rule:#4c4f54;--rule-soft:#34373c;--paper:#17191c;--shade:#1f2226;--side:#17191c;--accent:#9dc3ea;--accent-soft:#16222f;--accent-line:#274056}
   html.print-dark figure svg{background:#f2f2f3!important;padding:10px}
-  html.print-dark .body thead th{border-top-color:#cbc8c2;border-bottom-color:#cbc8c2}
-  html.print-dark .body tbody tr:last-child td{border-bottom-color:#cbc8c2}
+
   html.print-dark pre.code{background:#1f2226!important;border-color:#3b3e43!important;color:#ddd9d3!important}
   html.print-dark .tok-key{color:#f2efeb}
   html.print-dark .tok-str,html.print-dark .tok-num,html.print-dark .tok-fn{color:#c9c5bf}
@@ -180,14 +183,16 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
   .paper article{max-width:none}
   body{font-size:10.5pt;line-height:1.8;font-family:"Songti SC","Noto Serif SC",SimSun,Georgia,serif}
   .title-block{page-break-after:avoid;padding-bottom:14px}
-  .abstract{font-size:10pt;border-bottom:1px solid #999}
+  .abstract{font-size:10pt;background:var(--accent-soft)!important;border:1px solid var(--accent-line)!important;border-radius:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .abstract-title{color:var(--accent)}
+  .body thead th{background:var(--shade)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .body tbody tr:nth-child(even) td{background:transparent!important}
   .body h2{page-break-after:avoid;margin-top:22px}
   .body h3{page-break-after:avoid}
   pre.code,.table-wrap,figure,.abstract{page-break-inside:avoid}
   pre.code{background:#fafafa;border:1px solid #ddd;font-size:9pt;white-space:pre-wrap;word-break:break-word}
   .body table{font-size:9.5pt}
-  .body thead th{border-top:1.2pt solid #000;border-bottom:.6pt solid #000}
-  .body tbody tr:last-child td{border-bottom:1.2pt solid #000}
+  .body table th,.body table td{border:.5pt solid #999}
   a{color:#000;text-decoration:none}
   .body a[href^="http"]::after{content:" (" attr(href) ")";font-size:8.5pt;color:#444;word-break:break-all}
   .caption,figcaption,.tiny{color:#333}

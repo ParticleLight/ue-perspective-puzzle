@@ -21,6 +21,7 @@
       <a href="#abstract">摘要</a>
       <a href="#appendix">附录</a>
       <a href="#references">参考文献</a>
+      <a href="https://github.com/ParticleLight/ue-perspective-puzzle" target="_blank" rel="noopener">仓库</a>
       <button id="btnToc" class="text-btn only-mobile" type="button">目录</button>
       <button id="btnTheme" class="text-btn" type="button" title="切换深色 / 浅色">深色</button>
       <button id="btnPrint" class="text-btn" type="button">打印</button>
@@ -64,8 +65,8 @@
 <p>本文给出该谜题在虚幻引擎 5 中的一个完整实现，核心是一套<strong>方向—距离联合判据</strong>：标定阶段记录每个碎片相对标定原点的单位方向与直线距离；运行阶段以玩家相机为参考点，重复计算同一组方向与距离并逐项比对，同时用图案中心方向约束观察朝向，最后以通过率与保持时间决定谜题是否解开。</p>
 <p>本文的主要内容包括：（1）把「正确视角」形式化为可计算的数据，并说明为何选择方向与距离而非绝对坐标；（2）给出检测判据的完整定义、阈值语义（阈值以余弦形式表达角度容差）与状态机设计；（3）给出碎片图案在材质层的切分方法与运行期发光反馈的实现（动态材质实例驱动自发光参数）；（4）整理虚幻引擎反射系统的编译约束与常见故障的定位方法；（5）给出参数标定的实验方法与调试手段。</p>
 <p>文中所有实现细节均取自实际工程的源码，参数默认值与取值范围与源码一致；关键判据均给出几何解释与失效条件分析。</p>
-<p><strong>关键词</strong>：虚幻引擎 5；视角检测；点积；方向—距离判据；标定；动态材质实例；贴花；自发光</p>
       </section>
+      <p class="kw"><strong>关键词：</strong>虚幻引擎 5；视角检测；点积；方向—距离判据；标定；动态材质实例；贴花；自发光</p>
 
       <div class="body">
 
@@ -1094,7 +1095,7 @@ UCLASS()
 
       <footer class="paper-footer">
         <p>全文约 13.9 万字，含 29 段代码、28 张表、8 幅插图；按中文技术文档的常规速度估计，通读约需 331 分钟。</p>
-        <p class="tiny">本文档为纯静态页面，可用浏览器直接打印或导出为 A4 版式 PDF。构建时间 2026-10-16 14:01 UTC。</p>
+        <p class="tiny">本文档为纯静态页面，可用浏览器直接打印或导出为 A4 版式 PDF。构建时间 2026-10-16 14:30 UTC。</p>
       </footer>
     </article>
   </main>
