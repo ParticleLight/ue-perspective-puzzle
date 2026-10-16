@@ -4,6 +4,25 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
+  /* 主题：默认跟随系统，选择记入 localStorage */
+  var themeBtn = $("#btnTheme");
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    document.documentElement.style.colorScheme = t === "dark" ? "dark" : "light";
+    if (themeBtn) themeBtn.textContent = t === "dark" ? "浅色" : "深色";
+  }
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem("paper-theme"); } catch (e) {}
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(saved || (prefersDark ? "dark" : "light"));
+  })();
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem("paper-theme", next); } catch (e) {}
+  });
+
   var printBtn = $("#btnPrint");
   if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
 

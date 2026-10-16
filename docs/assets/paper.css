@@ -7,6 +7,16 @@
   --sans:"Segoe UI",system-ui,-apple-system,"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
   --mono:ui-monospace,SFMono-Regular,"Cascadia Mono",Consolas,"Liberation Mono",Menlo,monospace;
 }
+html[data-theme="dark"]{
+  --ink:#e9e6e2; --ink-soft:#c4c0ba; --muted:#9b978f; --faint:#7e7a73;
+  --rule:#3b3e43; --rule-soft:#2b2e32; --paper:#17191c; --shade:#1f2226; --side:#141618;
+  --link:#86b7e8;
+}
+html[data-theme="dark"] .tok-key{color:#f2efeb}
+html[data-theme="dark"] .tok-str,html[data-theme="dark"] .tok-num,html[data-theme="dark"] .tok-fn{color:#c9c5bf}
+html[data-theme="dark"] .tok-com{color:#8b8781}
+html[data-theme="dark"] pre.code{color:#ddd9d3}
+html[data-theme="dark"] figure svg{filter:invert(1) hue-rotate(180deg) brightness(1.04)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-padding-top:64px}
@@ -147,7 +157,9 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
 /* 打印：A4 论文版式 */
 @media print{
   @page{size:A4;margin:20mm 18mm}
-  html,body{background:#fff;color:#000}
+  html,body{background:#fff!important;color:#000!important}
+  html[data-theme="dark"]{--ink:#000;--ink-soft:#222;--muted:#444;--faint:#555;--rule:#999;--rule-soft:#ccc;--paper:#fff;--shade:#fafafa;--side:#fff}
+  html[data-theme="dark"] figure svg{filter:none}
   .masthead,.sidebar,.code-wrap .copy,.anchor{display:none!important}
   .shell{display:block;max-width:none}
   .paper{padding:0}
