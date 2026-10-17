@@ -71,6 +71,7 @@ body.toc-filtering .toc .toc-chapter ul{display:block}
 /* 题名区 */
 .title-block{text-align:center;padding-bottom:22px;border-bottom:1px solid var(--rule);margin-bottom:30px}
 .title-block h1{font-size:30px;line-height:1.45;margin:0 0 14px;font-weight:700;letter-spacing:0}
+.title-en{margin:2px 0 12px;font-family:var(--serif);font-size:16.5px;color:var(--muted);line-height:1.6;letter-spacing:.005em}
 .subtitle{margin:0 0 18px;font-size:16.5px;color:var(--ink-soft);line-height:1.75}
 .byline{margin:0;font-family:var(--sans);font-size:13px;color:var(--muted)}
 .byline .sep{margin:0 .5em;color:var(--rule)}

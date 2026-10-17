@@ -84,6 +84,7 @@ let page = fs.readFileSync(path.join(HERE, "page-template.html"), "utf8");
 const map = {
   TITLE: esc(front.data.title || "技术文档"),
   SHORTTITLE: esc(front.data.shortTitle || front.data.title || ""),
+  TITLE_EN: esc(front.data.titleEn || ""),
   SUBTITLE: esc(front.data.subtitle || ""),
   DESCRIPTION: esc(front.data.subtitle || ""),
   AUTHORS: esc(front.data.authors || ""),

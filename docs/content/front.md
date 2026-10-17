@@ -1,5 +1,6 @@
 ---
 title: 透视图案拼接谜题：基于方向—距离联合判据的视角检测系统
+titleEn: Perspective Image Assembly Puzzle — A View-Angle Detection System with Joint Direction–Distance Criteria
 shortTitle: 透视图案拼接谜题的视角检测系统
 subtitle: 虚幻引擎 5 中的系统架构、标定方法、运行期检测与视觉反馈实现
 doctype: 技术报告 · Technical Report
