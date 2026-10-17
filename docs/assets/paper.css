@@ -146,17 +146,33 @@ pre.code code{font-family:inherit;background:none;border:0;padding:0}
 /* 窄屏 */
 @media (max-width:1180px){
   .shell{grid-template-columns:1fr}
-  .sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;height:auto;z-index:50;transform:translateX(-102%);transition:transform .18s ease;box-shadow:0 0 24px rgba(0,0,0,.08)}
-  body.toc-open .sidebar{transform:none;top:42px}
+  /* 顶栏：单行不换行，放不下就横向滑动 */
+  .masthead{position:sticky;top:0;z-index:60}
+  .masthead-inner{flex-wrap:nowrap;gap:14px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .masthead-inner::-webkit-scrollbar{display:none}
+  .masthead nav{gap:16px;white-space:nowrap;flex-wrap:nowrap}
+  .masthead nav a,.masthead .text-btn{white-space:nowrap;font-size:13px}
+  .running-title{max-width:34vw}
+  /* 目录抽屉：铺满可视高度 + 遮罩 */
+  .sidebar{position:fixed;top:0;left:0;width:290px;height:100vh;height:100dvh;z-index:70;transform:translateX(-102%);transition:transform .18s ease;box-shadow:2px 0 20px rgba(0,0,0,.18);overscroll-behavior:contain}
+  body.toc-open .sidebar{transform:none}
+  body.toc-open::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:65}
   .paper{padding:30px 20px 80px}
   .only-mobile{display:inline-block}
-  .running-title{max-width:30ch}
-  .masthead nav{gap:14px}
+}
+@media (max-width:620px){
+  .running-title{display:none}
 }
 @media (max-width:560px){
   body{font-size:16.5px}
-  .title-block h1{font-size:24px}
+  .title-block h1{font-size:23px}
   .paper{padding:24px 16px 70px}
+  /* 宽表改为横向滑动，而不是把每个字压成一列 */
+  .body table{min-width:560px;font-size:13px}
+  .body thead th,.body tbody td{padding:6px 8px}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .code-wrap .copy{opacity:1}
+  figure svg{padding:0}
 }
 
 /* 打印：A4 论文版式 */

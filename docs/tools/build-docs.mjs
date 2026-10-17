@@ -95,7 +95,8 @@ const map = {
   ABSTRACT: abstractHtml,
   KEYWORDS: keywordsHtml,
   BODY: htmlBody,
-  GENERATED: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC"
+  GENERATED: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC",
+  ASSETVER: Date.now().toString(36)
 };
 Object.keys(map).forEach(function (k) {
   page = page.split("{{" + k + "}}").join(map[k]);
